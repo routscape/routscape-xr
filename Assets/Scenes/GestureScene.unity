@@ -267,8 +267,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactorFilters: []
-  _maxInteractors: 2
-  _maxSelectingInteractors: 2
+  _maxInteractors: -1
+  _maxSelectingInteractors: -1
   _data: {fileID: 0}
   _pointableElement: {fileID: 678175603}
   _rigidbody: {fileID: 1008346632}
@@ -290,8 +290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactorFilters: []
-  _maxInteractors: 2
-  _maxSelectingInteractors: 2
+  _maxInteractors: -1
+  _maxSelectingInteractors: -1
   _data: {fileID: 0}
   _pointableElement: {fileID: 678175603}
   _rigidbody: {fileID: 1008346632}
@@ -336,7 +336,7 @@ MonoBehaviour:
   _oneGrabTransformer: {fileID: 1008346636}
   _twoGrabTransformer: {fileID: 1008346635}
   _targetTransform: {fileID: 1008346631}
-  _maxGrabPoints: 2
+  _maxGrabPoints: -1
   _rigidbody: {fileID: 1008346632}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
@@ -509,8 +509,8 @@ GameObject:
   - component: {fileID: 1008346632}
   - component: {fileID: 1008346634}
   - component: {fileID: 1008346633}
-  - component: {fileID: 1008346635}
   - component: {fileID: 1008346636}
+  - component: {fileID: 1008346635}
   m_Layer: 0
   m_Name: Sample Grabbable
   m_TagString: Untagged
@@ -602,7 +602,7 @@ Transform:
   m_GameObject: {fileID: 1008346627}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0.3}
   m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -679,7 +679,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1008346627}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb7085c111fcb44493d57d4e336d3fd, type: 3}
+  m_Script: {fileID: 11500000, guid: b7d5b315fa2f5ba43a37eb9d1902e767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _positionConstraints:
@@ -741,7 +741,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1008346627}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb7085c111fcb44493d57d4e336d3fd, type: 3}
+  m_Script: {fileID: 11500000, guid: b7d5b315fa2f5ba43a37eb9d1902e767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _positionConstraints:
