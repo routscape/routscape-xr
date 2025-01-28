@@ -17,12 +17,28 @@ public class MapMeshGenerator : MonoBehaviour
 
         if (_map == null)
         {
+            Debug.LogWarning("MapMeshGenerator: Map object not found in children of " + gameObject.name);
             enabled = false;
             return;
         }
 
         _meshFilter = gameObject.GetComponent<MeshFilter>();
+
+        if (_meshFilter == null)
+        {
+            Debug.LogWarning("MapMeshGenerator: Mesh filter not found in " + gameObject.name);
+            enabled = false;
+            return;
+        }
+
         _meshCollider = gameObject.GetComponent<MeshCollider>();
+
+        if (_meshFilter == null)
+        {
+            Debug.LogWarning("MapMeshGenerator: Mesh collider not found in " + gameObject.name);
+            enabled = false;
+            return;
+        }
 
         // Generate new mesh for this object's mesh filter and mesh collider
         _generatedMesh = new Mesh();
@@ -30,6 +46,14 @@ public class MapMeshGenerator : MonoBehaviour
         _meshCollider.sharedMesh = _generatedMesh;
 
         var mapManager = _map.GetComponent<AbstractMap>();
+
+        if (mapManager == null)
+        {
+            Debug.LogWarning("MapMeshGenerator: AbstractMap component not found in " + _map.name);
+            enabled = false;
+            return;
+        }
+
         mapManager.OnTileFinished += UpdateMesh;
     }
 
