@@ -9,8 +9,8 @@ public class MapMeshGenerator : MonoBehaviour
     private MeshCollider _meshCollider;
     private MeshFilter _meshFilter;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
+    // OnEnable is called when the object is enabled
+    private void OnEnable()
     {
         // Find the map object within the children
         _map = transform.Find("Map").gameObject;
@@ -54,6 +54,8 @@ public class MapMeshGenerator : MonoBehaviour
             return;
         }
 
+        Debug.Log("MapMeshGenerator: Initialized on object " + gameObject.name);
+
         mapManager.OnTileFinished += UpdateMesh;
     }
 
@@ -73,5 +75,8 @@ public class MapMeshGenerator : MonoBehaviour
         // Update mesh filter and collider
         _meshFilter.mesh = _generatedMesh;
         _meshCollider.sharedMesh = _generatedMesh;
+
+        // Sanity check: Log mesh vertices count
+        Debug.Log("MapMeshGenerator: Tile " + tile.name + " has " + tileMesh.vertexCount + " vertices");
     }
 }
