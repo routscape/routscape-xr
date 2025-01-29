@@ -69,8 +69,12 @@ public class MapMeshGenerator : MonoBehaviour
         // Combine with this object's mesh
         var combine = new CombineInstance[1];
         combine[0].mesh = tileMesh;
-        combine[0].transform = Matrix4x4.identity;
+        combine[0].transform = tileMeshFilter.transform.worldToLocalMatrix;
         _generatedMesh.CombineMeshes(combine, true, false);
+
+        // Fix position of the mesh
+        _generatedMesh.RecalculateBounds();
+        _generatedMesh.RecalculateNormals();
 
         // Update mesh filter and collider
         _meshFilter.mesh = _generatedMesh;
