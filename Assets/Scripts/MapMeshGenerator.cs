@@ -61,16 +61,17 @@ public class MapMeshGenerator : MonoBehaviour
 
     private void UpdateMesh(UnityTile tile)
     {
-        var tileMesh = tile.MeshFilter.sharedMesh;
+        var tileMeshFilter = tile.MeshFilter;
+        tileMeshFilter.transform.localPosition = Vector3.zero;
+        tileMeshFilter.transform.localRotation = Quaternion.identity;
+        tileMeshFilter.transform.localScale = Vector3.one;
+
+        var tileMesh = tileMeshFilter.sharedMesh;
 
         // Combine with this object's mesh
         var combine = new CombineInstance[1];
         combine[0].mesh = tileMesh;
         _generatedMesh.CombineMeshes(combine, true, false);
-
-        // Fix position of the mesh
-        _generatedMesh.RecalculateBounds();
-        _generatedMesh.RecalculateNormals();
 
         // Update mesh filter and collider
         _meshFilter.mesh = _generatedMesh;
