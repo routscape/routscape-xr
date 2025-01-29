@@ -4,20 +4,18 @@ using UnityEngine;
 
 public class MapMeshGenerator : MonoBehaviour
 {
+    [SerializeField] private GameObject map;
+
     private Mesh _generatedMesh;
-    private GameObject _map;
     private MeshCollider _meshCollider;
     private MeshFilter _meshFilter;
 
     // OnEnable is called when the object is enabled
     private void OnEnable()
     {
-        // Find the map object within the children
-        _map = transform.Find("Map").gameObject;
-
-        if (_map == null)
+        if (map == null)
         {
-            Debug.LogWarning("MapMeshGenerator: Map object not found in children of " + gameObject.name);
+            Debug.LogWarning("MapMeshGenerator: Map object not serialized in " + gameObject.name);
             enabled = false;
             return;
         }
@@ -45,11 +43,11 @@ public class MapMeshGenerator : MonoBehaviour
         _meshFilter.mesh = _generatedMesh;
         _meshCollider.sharedMesh = _generatedMesh;
 
-        var mapManager = _map.GetComponent<AbstractMap>();
+        var mapManager = map.GetComponent<AbstractMap>();
 
         if (mapManager == null)
         {
-            Debug.LogWarning("MapMeshGenerator: AbstractMap component not found in " + _map.name);
+            Debug.LogWarning("MapMeshGenerator: AbstractMap component not found in " + map.name);
             enabled = false;
             return;
         }
@@ -61,11 +59,17 @@ public class MapMeshGenerator : MonoBehaviour
 
     private void UpdateMesh(UnityTile tile)
     {
-        var tileMesh = tile.MeshFilter.sharedMesh;
+        var tileMeshFilter = tile.MeshFilter;
+        tileMeshFilter.transform.position = Vector3.zero;
+        tileMeshFilter.transform.rotation = Quaternion.identity;
+        tileMeshFilter.transform.localScale = Vector3.one;
+
+        var tileMesh = tileMeshFilter.sharedMesh;
 
         // Combine with this object's mesh
         var combine = new CombineInstance[1];
         combine[0].mesh = tileMesh;
+        combine[0].transform = tileMeshFilter.transform.worldToLocalMatrix;
         _generatedMesh.CombineMeshes(combine, true, false);
 
         // Fix position of the mesh
