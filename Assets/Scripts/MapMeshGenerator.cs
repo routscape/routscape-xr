@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-using Mapbox.Map;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.MeshGeneration.Data;
 using UnityEngine;
 
 public class MapMeshGenerator : MonoBehaviour
 {
-    private int _expectedTileCount;
     private Mesh _generatedMesh;
     private GameObject _map;
     private MeshCollider _meshCollider;
     private MeshFilter _meshFilter;
-    private List<UnityTile> _tiles;
 
     // OnEnable is called when the object is enabled
     private void OnEnable()
@@ -60,55 +56,28 @@ public class MapMeshGenerator : MonoBehaviour
 
         Debug.Log("MapMeshGenerator: Initialized on object " + gameObject.name);
 
-        mapManager.OnTilesStarting += IncrementTileCount;
-        mapManager.OnTileFinished += AcknowledgeTile;
+        mapManager.OnTileFinished += UpdateMesh;
     }
 
-    private void IncrementTileCount(List<UnwrappedTileId> tileList)
+    private void UpdateMesh(UnityTile tile)
     {
-        _expectedTileCount += tileList.Count;
-        Debug.Log("MapMeshGenerator: Expected tile count is now " + _expectedTileCount);
-    }
+        var tileMeshFilter = tile.MeshFilter;
+        tileMeshFilter.transform.localPosition = Vector3.zero;
+        tileMeshFilter.transform.localRotation = Quaternion.identity;
+        tileMeshFilter.transform.localScale = Vector3.one;
 
-    private void AcknowledgeTile(UnityTile tile)
-    {
-        if (_tiles == null) _tiles = new List<UnityTile>();
+        var tileMesh = tileMeshFilter.sharedMesh;
 
-        _tiles.Add(tile);
-        Debug.Log("MapMeshGenerator: Tile received, count is now " + _tiles.Count);
-
-        if (_tiles.Count >= _expectedTileCount)
-        {
-            Debug.Log("MapMeshGenerator: All tiles received, updating mesh");
-
-            _expectedTileCount = 0;
-            _tiles.Clear();
-
-            UpdateMesh();
-        }
-    }
-
-    private void UpdateMesh()
-    {
-        // Clear existing mesh
-        _generatedMesh.Clear();
-
-        // Combine all tile meshes into one
-        var combine = new CombineInstance[_tiles.Count];
-        var i = 0;
-
-        foreach (var tile in _tiles)
-        {
-            var tileMesh = tile.MeshFilter.sharedMesh;
-            combine[i].mesh = tileMesh;
-            combine[i].transform = tile.transform.localToWorldMatrix;
-            i++;
-        }
-
-        _generatedMesh.CombineMeshes(combine, false, false);
+        // Combine with this object's mesh
+        var combine = new CombineInstance[1];
+        combine[0].mesh = tileMesh;
+        _generatedMesh.CombineMeshes(combine, true, false);
 
         // Update mesh filter and collider
         _meshFilter.mesh = _generatedMesh;
         _meshCollider.sharedMesh = _generatedMesh;
+
+        // Sanity check: Log mesh vertices count
+        Debug.Log("MapMeshGenerator: Tile " + tile.name + " has " + tileMesh.vertexCount + " vertices");
     }
 }
