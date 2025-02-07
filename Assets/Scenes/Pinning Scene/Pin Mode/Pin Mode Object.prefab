@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2426531411183648855}
   - component: {fileID: 7707421787679592679}
   - component: {fileID: 2801940185651279173}
+  - component: {fileID: 2985857609125703629}
   m_Layer: 0
   m_Name: Grabbable
   m_TagString: Untagged
@@ -159,6 +160,52 @@ MonoBehaviour:
       AxisRange:
         Min: 1
         Max: 1
+--- !u!114 &2985857609125703629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201998194202180578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f8f6e9e6f3e114b9bf9a57c2160615, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pointable: {fileID: 7707421787679592679}
+  _whenRelease:
+    m_PersistentCalls:
+      m_Calls: []
+  _whenHover:
+    m_PersistentCalls:
+      m_Calls: []
+  _whenUnhover:
+    m_PersistentCalls:
+      m_Calls: []
+  _whenSelect:
+    m_PersistentCalls:
+      m_Calls: []
+  _whenUnselect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 756651935331039756}
+        m_TargetAssemblyTypeName: PinRaycast, Assembly-CSharp
+        m_MethodName: OnDrop
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _whenMove:
+    m_PersistentCalls:
+      m_Calls: []
+  _whenCancel:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1248984257764031205
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,6 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 1535507948664883348}
+  mapPin: {fileID: 8478618658482240049, guid: 12a199d80bf54614496a3b0b4b8a5ef5, type: 3}
 --- !u!1818360609 &5996783240613690842
 RotationConstraint:
   m_ObjectHideFlags: 0
@@ -400,7 +448,6 @@ Transform:
   - {fileID: 2423157691127386507}
   - {fileID: 1146232477901952416}
   - {fileID: 2880856200075369979}
-  - {fileID: 792028228514425760}
   m_Father: {fileID: 5785391759718116921}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &1806990964531192402
@@ -504,37 +551,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &7513675696983890603
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 792028228514425760}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &792028228514425760
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7513675696983890603}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.6396086, y: -1.7063051, z: -0.23112799}
-  m_LocalScale: {x: 26.82072, y: 22.955318, z: 30.111979}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8522113921498228795}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8478618658482240049
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,7 +561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5785391759718116921}
   m_Layer: 0
-  m_Name: Pin Object
+  m_Name: Pin Mode Object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
