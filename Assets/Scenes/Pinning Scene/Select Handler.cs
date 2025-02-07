@@ -12,6 +12,8 @@ public class SelectHandler : MonoBehaviour
     [SerializeField] private Transform _rightPinchArea;
     [SerializeField] private HandGrabInteractor _leftHandGrabInteractor;
     [SerializeField] private HandGrabInteractor _rightHandGrabInteractor;
+    [SerializeField] private RayInteractor _leftRayInteractor;
+    [SerializeField] private RayInteractor _rightRayInteractor;
     private bool _clicked = false;
     void Start()
     {
@@ -27,6 +29,7 @@ public class SelectHandler : MonoBehaviour
     private void SpawnPin()
     {
         var instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
+        instantiatedPin.SetActive(false);
         Debug.Log("Interactor state: " + _rightHandGrabInteractor.State);
         HandGrabInteractable pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
         if (pinGrabbable == null)
@@ -39,14 +42,21 @@ public class SelectHandler : MonoBehaviour
          *
          * Investigate if other interactors can affect the state of other interactors.
          */
-        
+       
+        _rightRayInteractor.Disable();
+        _rightHandGrabInteractor.Enable();
         instantiatedPin.SetActive(true);
-      
+        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);
+        
         Debug.Log("Pin state: " + pinGrabbable.State);
     }
 
     public void OnClick(PointerEvent eventData)
     {
+        if (_rightRayInteractor.State == InteractorState.Disabled)
+        {
+            return;
+        }
         if (_clicked)
         {
             _clicked = false;
