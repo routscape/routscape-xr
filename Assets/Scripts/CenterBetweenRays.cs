@@ -17,7 +17,13 @@ public class CenterBetweenRays : MonoBehaviour
             return;
         }
 
-        var rayInteractor = (RayInteractor)pointerEvent.Data;
+        var rayInteractor = pointerEvent.Data as RayInteractor;
+
+        if (rayInteractor == null)
+        {
+            Debug.LogError("[CenterBetweenRays] Unexpected pointer event data type: " + pointerEvent.Data.GetType());
+            return;
+        }
 
         // Fill in the positions of the two rays
         if (!_position1Set)
@@ -50,6 +56,14 @@ public class CenterBetweenRays : MonoBehaviour
 
     public void OnDeselect(PointerEvent pointerEvent)
     {
+        var rayInteractor = pointerEvent.Data as RayInteractor;
+
+        if (rayInteractor == null)
+        {
+            Debug.LogError("[CenterBetweenRays] Unexpected pointer event data type: " + pointerEvent.Data.GetType());
+            return;
+        }
+
         if (pointerEvent.Type != PointerEventType.Unselect)
         {
             Debug.LogError("[CenterBetweenRays] Unexpected pointer event type: " + pointerEvent.Type);
