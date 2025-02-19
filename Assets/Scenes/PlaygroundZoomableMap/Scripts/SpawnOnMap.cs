@@ -1,4 +1,4 @@
-﻿namespace Mapbox.Examples
+﻿namespace Scenes.Playground
 {
 	using UnityEngine;
 	using Mapbox.Utils;
