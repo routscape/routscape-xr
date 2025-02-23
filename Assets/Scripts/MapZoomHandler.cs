@@ -22,8 +22,6 @@ public class MapZoomHandler : MonoBehaviour
         var distance = Vector3.Distance(_leftHandPosition, _rightHandPosition);
         var zoomAmount = distance * zoomSpeed;
 
-        Debug.Log($"[MapZoomHandler] Distance: {distance}, Zoom amount: {zoomAmount}");
-
         var zoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
 
         mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, zoom);
