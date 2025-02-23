@@ -2,7 +2,7 @@ using Oculus.Interaction.Input;
 
 namespace Utils
 {
-    public class HandGrabbing
+    public static class HandGrabbing
     {
         public static bool IsGrabbing(IHand hand)
         {
