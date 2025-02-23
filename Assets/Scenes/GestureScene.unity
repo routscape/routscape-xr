@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &34863980 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2483171111766613643, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1975594688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b942c16a6d6a4edaad7c18c7d5762cdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &357520744
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,7 +366,7 @@ GameObject:
   - component: {fileID: 491427151}
   - component: {fileID: 491427165}
   - component: {fileID: 491427166}
-  - component: {fileID: 491427168}
+  - component: {fileID: 491427171}
   - component: {fileID: 491427170}
   - component: {fileID: 491427169}
   m_Layer: 0
@@ -436,18 +447,6 @@ MonoBehaviour:
     MaxAngle:
       Constrain: 0
       Value: 0
---- !u!114 &491427168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491427150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30ee9c5165a437f4f896a3e075944b42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &491427169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +463,7 @@ MonoBehaviour:
   _whenActivated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 491427168}
+      - m_Target: {fileID: 491427171}
         m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
         m_MethodName: OnRightGrab
         m_Mode: 1
@@ -479,7 +478,7 @@ MonoBehaviour:
   _whenDeactivated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 491427168}
+      - m_Target: {fileID: 491427171}
         m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
         m_MethodName: OnRightUngrab
         m_Mode: 1
@@ -508,7 +507,7 @@ MonoBehaviour:
   _whenActivated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 491427168}
+      - m_Target: {fileID: 491427171}
         m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
         m_MethodName: OnLeftGrab
         m_Mode: 1
@@ -523,7 +522,7 @@ MonoBehaviour:
   _whenDeactivated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 491427168}
+      - m_Target: {fileID: 491427171}
         m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
         m_MethodName: OnLeftUngrab
         m_Mode: 1
@@ -536,6 +535,22 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   _emitOnFirstUpdate: 1
+--- !u!114 &491427171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491427150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ee9c5165a437f4f896a3e075944b42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapManager: {fileID: 114478715947305609}
+  leftFingerFeatureStateProvider: {fileID: 34863980}
+  rightFingerFeatureStateProvider: {fileID: 1232036646}
+  zoomSpeed: 0.1
 --- !u!21 &631503393
 Material:
   serializedVersion: 8
@@ -1019,6 +1034,17 @@ MonoBehaviour:
   installationRoutineCheckpoint:
     _installationRoutineId: 
     _installationVariants: []
+--- !u!114 &1232036646 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2483171112586171397, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1975594688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b942c16a6d6a4edaad7c18c7d5762cdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1427562393
 GameObject:
   m_ObjectHideFlags: 0
