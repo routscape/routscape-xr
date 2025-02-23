@@ -2,6 +2,7 @@ using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
 using Oculus.Interaction.PoseDetection;
 using UnityEngine;
+using static Utils.HandGrabbing;
 
 public class MapZoomHandler : MonoBehaviour
 {
@@ -29,12 +30,15 @@ public class MapZoomHandler : MonoBehaviour
 
     public void OnLeftGrab()
     {
-        _isGrabbingLeft = true;
-
         Pose leftHandPose;
         var leftHand = leftFingerFeatureStateProvider.Hand;
+
+        if (!IsGrabbing(leftHand)) return;
+
         leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
         _leftHandPosition = leftHandPose.position;
+
+        _isGrabbingLeft = true;
     }
 
     public void OnLeftUngrab()
@@ -44,12 +48,15 @@ public class MapZoomHandler : MonoBehaviour
 
     public void OnRightGrab()
     {
-        _isGrabbingRight = true;
-
         Pose rightHandPose;
         var rightHand = rightFingerFeatureStateProvider.Hand;
+
+        if (!IsGrabbing(rightHand)) return;
+
         rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
         _rightHandPosition = rightHandPose.position;
+
+        _isGrabbingRight = true;
     }
 
     public void OnRightUngrab()
