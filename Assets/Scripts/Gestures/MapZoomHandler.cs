@@ -1,5 +1,4 @@
 using Mapbox.Unity.Map;
-using Oculus.Interaction;
 using Oculus.Interaction.Input;
 using Oculus.Interaction.PoseDetection;
 using UnityEngine;
@@ -13,58 +12,59 @@ namespace Gestures
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
 
-        [SerializeField] private float zoomSpeed = 0.1f;
+        [SerializeField] private float zoomSpeed = 1f;
         private int _grabCount;
+        private bool _isZooming;
+        private float _lastDistance;
+
+        private void Start()
+        {
+            InitializeReferenceDistance();
+        }
 
         private void LateUpdate()
         {
-            if (_grabCount != 2) return;
-
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            if (!IsGrabbing(leftHand) || !IsGrabbing(rightHand)) return;
+            if (_isZooming && (!IsGrabbing(leftHand) || !IsGrabbing(rightHand)))
+            {
+                _isZooming = false;
+                return;
+            }
+
+            if (!_isZooming && IsGrabbing(leftHand) && IsGrabbing(rightHand))
+            {
+                _isZooming = true;
+                InitializeReferenceDistance();
+                return;
+            }
+
+            if (!_isZooming) return;
 
             Pose leftHandPose, rightHandPose;
             leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
             rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
             var leftHandPosition = leftHandPose.position;
             var rightHandPosition = rightHandPose.position;
-
             var distance = Vector3.Distance(leftHandPosition, rightHandPosition);
-            var zoomAmount = distance * zoomSpeed;
 
+            var zoomAmount = zoomSpeed * (distance - _lastDistance);
             var zoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
-
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, zoom);
+
+            _lastDistance = distance;
         }
 
-        public void OnSelect(PointerEvent pointerEvent)
+        private void InitializeReferenceDistance()
         {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var leftHand = leftFingerFeatureStateProvider.Hand;
+            var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            if (rayInteractor == null)
-            {
-                Debug.LogErrorFormat("[MapZoomHandler] Expected RayInteractor but got {0}",
-                    pointerEvent.Data.GetType().Name);
-                return;
-            }
-
-            ++_grabCount;
-        }
-
-        public void OnDeselect(PointerEvent pointerEvent)
-        {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
-
-            if (rayInteractor == null)
-            {
-                Debug.LogErrorFormat("[MapZoomHandler] Expected RayInteractor but got {0}",
-                    pointerEvent.Data.GetType().Name);
-                return;
-            }
-
-            --_grabCount;
+            Pose leftHandPose, rightHandPose;
+            leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
+            rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
+            _lastDistance = Vector3.Distance(leftHandPose.position, rightHandPose.position);
         }
     }
 }
