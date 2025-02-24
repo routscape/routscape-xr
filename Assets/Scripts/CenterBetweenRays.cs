@@ -1,8 +1,15 @@
 using Oculus.Interaction;
+using Oculus.Interaction.PoseDetection;
 using UnityEngine;
+using static Utils.HandGrabbing;
 
 public class CenterBetweenRays : MonoBehaviour
 {
+    [SerializeField] private bool restrictToPinch;
+    [SerializeField] private bool restrictToGrab;
+    [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
+    [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
+
     private Vector3 _position1;
     private bool _position1Set;
 
@@ -22,6 +29,20 @@ public class CenterBetweenRays : MonoBehaviour
         if (rayInteractor == null)
         {
             Debug.LogError("[CenterBetweenRays] Unexpected pointer event data type: " + pointerEvent.Data.GetType());
+            return;
+        }
+
+        if (restrictToPinch && (!IsPinching(leftFingerFeatureStateProvider.Hand) ||
+                                !IsPinching(rightFingerFeatureStateProvider.Hand)))
+        {
+            Debug.Log("[CenterBetweenRays] Not pinching with both hands");
+            return;
+        }
+
+        if (restrictToGrab && (!IsGrabbing(leftFingerFeatureStateProvider.Hand) ||
+                               !IsGrabbing(rightFingerFeatureStateProvider.Hand)))
+        {
+            Debug.Log("[CenterBetweenRays] Not grabbing with both hands");
             return;
         }
 
