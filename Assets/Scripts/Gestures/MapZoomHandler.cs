@@ -13,7 +13,6 @@ namespace Gestures
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
 
         [SerializeField] private float zoomSpeed = 1f;
-        private int _grabCount;
         private bool _isZooming;
         private float _lastDistance;
 
