@@ -718,6 +718,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e972e99e6fa01048abd78b7a5afcc7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  restrictToPinch: 1
+  restrictToGrab: 0
+  leftFingerFeatureStateProvider: {fileID: 34863980}
+  rightFingerFeatureStateProvider: {fileID: 1232036646}
 --- !u!1 &957122307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1842,8 +1846,6 @@ GameObject:
   - component: {fileID: 1938663804}
   - component: {fileID: 1938663808}
   - component: {fileID: 1938663807}
-  - component: {fileID: 1938663810}
-  - component: {fileID: 1938663809}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -1963,6 +1965,18 @@ MonoBehaviour:
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1938663808}
+        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
+        m_MethodName: OnSelect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 685364399}
         m_TargetAssemblyTypeName: CenterBetweenRays, Assembly-CSharp
         m_MethodName: OnSelect
@@ -1990,6 +2004,18 @@ MonoBehaviour:
   _whenUnselect:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1938663808}
+        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
+        m_MethodName: OnDeselect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 685364399}
         m_TargetAssemblyTypeName: CenterBetweenRays, Assembly-CSharp
         m_MethodName: OnDeselect
@@ -2048,94 +2074,6 @@ MonoBehaviour:
   leftFingerFeatureStateProvider: {fileID: 34863980}
   rightFingerFeatureStateProvider: {fileID: 1232036646}
   zoomSpeed: 0.1
---- !u!114 &1938663809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1938663801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d2705674196dfc4da9c25fbacda72d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _activeState: {fileID: 1975594689}
-  _whenActivated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnRightGrab
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _whenDeactivated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnRightUngrab
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _emitOnFirstUpdate: 1
---- !u!114 &1938663810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1938663801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d2705674196dfc4da9c25fbacda72d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _activeState: {fileID: 1975594693}
-  _whenActivated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnLeftGrab
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _whenDeactivated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnLeftUngrab
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _emitOnFirstUpdate: 1
 --- !u!1001 &1975594688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2248,28 +2186,6 @@ PrefabInstance:
       insertIndex: 1
       addedObject: {fileID: 1033196928}
   m_SourcePrefab: {fileID: 100100000, guid: f54012181eacade4ea242c65f804720f, type: 3}
---- !u!114 &1975594689 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8382781336412041845, guid: f54012181eacade4ea242c65f804720f, type: 3}
-  m_PrefabInstance: {fileID: 1975594688}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14164f8f23faae4293baeb84485b3d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1975594693 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8382781336380242995, guid: f54012181eacade4ea242c65f804720f, type: 3}
-  m_PrefabInstance: {fileID: 1975594688}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14164f8f23faae4293baeb84485b3d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2004122495
 GameObject:
   m_ObjectHideFlags: 0

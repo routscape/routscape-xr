@@ -1,4 +1,5 @@
 using Mapbox.Unity.Map;
+using Oculus.Interaction;
 using Oculus.Interaction.Input;
 using Oculus.Interaction.PoseDetection;
 using UnityEngine;
@@ -11,16 +12,24 @@ public class MapZoomHandler : MonoBehaviour
     [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
 
     [SerializeField] private float zoomSpeed = 0.1f;
-    private bool _isGrabbingLeft;
-    private bool _isGrabbingRight;
-    private Vector3 _leftHandPosition;
-    private Vector3 _rightHandPosition;
+    private int _grabCount;
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
-        if (!_isGrabbingLeft || !_isGrabbingRight) return;
+        if (_grabCount != 2) return;
 
-        var distance = Vector3.Distance(_leftHandPosition, _rightHandPosition);
+        var leftHand = leftFingerFeatureStateProvider.Hand;
+        var rightHand = rightFingerFeatureStateProvider.Hand;
+
+        if (!IsGrabbing(leftHand) || !IsGrabbing(rightHand)) return;
+
+        Pose leftHandPose, rightHandPose;
+        leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
+        rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
+        var leftHandPosition = leftHandPose.position;
+        var rightHandPosition = rightHandPose.position;
+
+        var distance = Vector3.Distance(leftHandPosition, rightHandPosition);
         var zoomAmount = distance * zoomSpeed;
 
         var zoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
@@ -28,39 +37,31 @@ public class MapZoomHandler : MonoBehaviour
         mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, zoom);
     }
 
-    public void OnLeftGrab()
+    public void OnSelect(PointerEvent pointerEvent)
     {
-        Pose leftHandPose;
-        var leftHand = leftFingerFeatureStateProvider.Hand;
+        var rayInteractor = pointerEvent.Data as RayInteractor;
 
-        if (!IsGrabbing(leftHand)) return;
+        if (rayInteractor == null)
+        {
+            Debug.LogErrorFormat("[MapZoomHandler] Expected RayInteractor but got {0}",
+                pointerEvent.Data.GetType().Name);
+            return;
+        }
 
-        leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
-        _leftHandPosition = leftHandPose.position;
-
-        _isGrabbingLeft = true;
+        ++_grabCount;
     }
 
-    public void OnLeftUngrab()
+    public void OnDeselect(PointerEvent pointerEvent)
     {
-        _isGrabbingLeft = false;
-    }
+        var rayInteractor = pointerEvent.Data as RayInteractor;
 
-    public void OnRightGrab()
-    {
-        Pose rightHandPose;
-        var rightHand = rightFingerFeatureStateProvider.Hand;
+        if (rayInteractor == null)
+        {
+            Debug.LogErrorFormat("[MapZoomHandler] Expected RayInteractor but got {0}",
+                pointerEvent.Data.GetType().Name);
+            return;
+        }
 
-        if (!IsGrabbing(rightHand)) return;
-
-        rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
-        _rightHandPosition = rightHandPose.position;
-
-        _isGrabbingRight = true;
-    }
-
-    public void OnRightUngrab()
-    {
-        _isGrabbingRight = false;
+        --_grabCount;
     }
 }
