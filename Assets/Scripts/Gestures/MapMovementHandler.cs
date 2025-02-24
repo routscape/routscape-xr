@@ -2,65 +2,68 @@ using Mapbox.Unity.Map;
 using Oculus.Interaction;
 using UnityEngine;
 
-public class MapMovementHandler : MonoBehaviour
+namespace Gestures
 {
-    [SerializeField] private AbstractMap mapManager;
-
-    private int _grabCount;
-    private int _interactorId = -1;
-    private Vector3 _referencePosition;
-
-    public void OnSelect(PointerEvent pointerEvent)
+    public class MapMovementHandler : MonoBehaviour
     {
-        var rayInteractor = pointerEvent.Data as RayInteractor;
+        [SerializeField] private AbstractMap mapManager;
 
-        if (rayInteractor == null)
+        private int _grabCount;
+        private int _interactorId = -1;
+        private Vector3 _referencePosition;
+
+        public void OnSelect(PointerEvent pointerEvent)
         {
-            Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
-                pointerEvent.Data.GetType().Name);
-            return;
+            var rayInteractor = pointerEvent.Data as RayInteractor;
+
+            if (rayInteractor == null)
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+
+            if (++_grabCount != 1) return;
+
+            _interactorId = pointerEvent.Identifier;
+            _referencePosition = rayInteractor.End;
         }
 
-        if (++_grabCount != 1) return;
-
-        _interactorId = pointerEvent.Identifier;
-        _referencePosition = rayInteractor.End;
-    }
-
-    public void OnDeselect(PointerEvent pointerEvent)
-    {
-        var rayInteractor = pointerEvent.Data as RayInteractor;
-
-        if (rayInteractor == null)
+        public void OnDeselect(PointerEvent pointerEvent)
         {
-            Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
-                pointerEvent.Data.GetType().Name);
-            return;
+            var rayInteractor = pointerEvent.Data as RayInteractor;
+
+            if (rayInteractor == null)
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+
+            _interactorId = -1;
+            --_grabCount;
         }
 
-        _interactorId = -1;
-        --_grabCount;
-    }
-
-    public void OnMove(PointerEvent pointerEvent)
-    {
-        var rayInteractor = pointerEvent.Data as RayInteractor;
-
-        if (rayInteractor == null)
+        public void OnMove(PointerEvent pointerEvent)
         {
-            Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
-                pointerEvent.Data.GetType().Name);
-            return;
+            var rayInteractor = pointerEvent.Data as RayInteractor;
+
+            if (rayInteractor == null)
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+
+            if (pointerEvent.Identifier != _interactorId) return;
+            if (_grabCount != 1) return;
+
+            var delta = rayInteractor.End - _referencePosition;
+
+            _referencePosition = rayInteractor.End;
+
+            var newLatLong = mapManager.WorldToGeoPosition(mapManager.Root.position - delta);
+            mapManager.UpdateMap(newLatLong);
         }
-
-        if (pointerEvent.Identifier != _interactorId) return;
-        if (_grabCount != 1) return;
-
-        var delta = rayInteractor.End - _referencePosition;
-
-        _referencePosition = rayInteractor.End;
-
-        var newLatLong = mapManager.WorldToGeoPosition(mapManager.Root.position - delta);
-        mapManager.UpdateMap(newLatLong);
     }
 }
