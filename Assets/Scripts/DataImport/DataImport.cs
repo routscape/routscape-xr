@@ -13,6 +13,13 @@ public class DataImport : MonoBehaviour
 	[SerializeField, Range(0, 100)]  
     private float heightThresholdPercentage = 0;
     
+    private enum DataLayer {
+	    landelevation,
+	    floodrisk
+    }
+    
+    [SerializeField] private DataLayer dataLayer;
+    
     private readonly StreamReader _reader = new StreamReader("Assets/Resources/Data/landelevation.json");
 	private List<GameObject> cubes = new List<GameObject>();
     private List<float> cubeHeights = new List<float>();
@@ -48,42 +55,44 @@ public class DataImport : MonoBehaviour
 			cubes.Add(cube);
         	cubeHeights.Add(dataObject.y);
 	        
+	        // Set cube material
 	        MeshRenderer renderer = cube.GetComponent<MeshRenderer>();
 	        if (renderer != null && waterMaterial != null)
 	        {
-		        renderer.material = waterMaterial; // Assign material
+		        renderer.material = waterMaterial;
 	        }
 
-        	// // Set Color (elevation-based)
-        	// if (dataObject.y <= 2)
-        	// {
-         //    	cubeRenderer.material.SetColor("_Color", new Color32(0xFF, 0xFF, 0xCC, 0xFF));
-        	// }
-        	// else if (dataObject.y <= 17)
-        	// {
-         //    	cubeRenderer.material.SetColor("_Color", new Color32(0xC7, 0xE9, 0xB4, 0xFF));
-        	// }
-        	// else if (dataObject.y <= 35)
-        	// {
-         //    	cubeRenderer.material.SetColor("_Color", new Color32(0x7F, 0xCD, 0xBB, 0xFF));
-        	// }
-        	// else if (dataObject.y <= 52)
-        	// {
-         //    	cubeRenderer.material.SetColor("_Color", new Color32(0x41, 0xB6, 0xC4, 0xFF));
-        	// }
-        	// else
-        	// {
-         //    	cubeRenderer.material.SetColor("_Color", new Color32(0x1D, 0x91, 0xC0, 0xFF));
-        	// }
+        	// Set Color (elevation-based)
+        	if (dataObject.y <= 2)
+        	{
+            	cubeRenderer.material.SetColor("_Color", new Color32(0xFF, 0xFF, 0xCC, 0xFF));
+        	}
+        	else if (dataObject.y <= 17)
+        	{
+            	cubeRenderer.material.SetColor("_Color", new Color32(0xC7, 0xE9, 0xB4, 0xFF));
+        	}
+        	else if (dataObject.y <= 35)
+        	{
+            	cubeRenderer.material.SetColor("_Color", new Color32(0x7F, 0xCD, 0xBB, 0xFF));
+        	}
+        	else if (dataObject.y <= 52)
+        	{
+            	cubeRenderer.material.SetColor("_Color", new Color32(0x41, 0xB6, 0xC4, 0xFF));
+        	}
+        	else
+        	{
+            	cubeRenderer.material.SetColor("_Color", new Color32(0x1D, 0x91, 0xC0, 0xFF));
+        	}
     }
 }
-
+    
     // Update is called once per frame
     void Update()
     {
 		// Loop through all cubes and toggle visibility based on the heightThreshold
         for (int i = 0; i < cubes.Count; i++)
         {
+	        // Cube filtering based on height
             if (cubeHeights[i] >= heightThresholdPercentage)
             {
                 cubes[i].SetActive(true);
@@ -91,6 +100,15 @@ public class DataImport : MonoBehaviour
             else
             {
                 cubes[i].SetActive(false);
+            }
+            
+            // Cube binning based on flood risk hazard
+            if (dataLayer == DataLayer.floodrisk)
+            {
+	            // if (cubes[i].localScale < 27.089)
+	            // {
+		           //  
+	            // }
             }
         }
     }
