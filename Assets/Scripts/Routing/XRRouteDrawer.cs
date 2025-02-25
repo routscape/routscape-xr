@@ -79,7 +79,7 @@ public class XRRouteDrawer : MonoBehaviour
         Quaternion rotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
         Vector3 direction = rotation * Vector3.forward;
 
-        Debug.DrawRay(origin, direction * 10f, Color.green, 1f);
+        Debug.DrawRay(origin, direction * 50f, Color.green, 1f);
 
         if (Physics.Raycast(origin, direction, out RaycastHit hit, 10f, mapboxLayer))
         {
