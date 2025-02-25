@@ -1876,18 +1876,6 @@ MonoBehaviour:
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnSelect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 685364399}
         m_TargetAssemblyTypeName: CenterBetweenRays, Assembly-CSharp
         m_MethodName: OnSelect
@@ -1915,18 +1903,6 @@ MonoBehaviour:
   _whenUnselect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1938663808}
-        m_TargetAssemblyTypeName: MapZoomHandler, Assembly-CSharp
-        m_MethodName: OnDeselect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 685364399}
         m_TargetAssemblyTypeName: CenterBetweenRays, Assembly-CSharp
         m_MethodName: OnDeselect
@@ -1984,7 +1960,7 @@ MonoBehaviour:
   mapManager: {fileID: 114478715947305609}
   leftFingerFeatureStateProvider: {fileID: 34863980}
   rightFingerFeatureStateProvider: {fileID: 1232036646}
-  zoomSpeed: 0.1
+  zoomSpeed: 1
 --- !u!1001 &1975594688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2859,10 +2835,10 @@ MonoBehaviour:
           visibleBuffer: 0
           disposeBuffer: 0
         rangeAroundCenterOptions:
-          west: 1
-          north: 1
-          east: 1
-          south: 1
+          west: 2
+          north: 2
+          east: 2
+          south: 2
         rangeAroundTransformOptions:
           targetTransform: {fileID: 0}
           visibleBuffer: 0
