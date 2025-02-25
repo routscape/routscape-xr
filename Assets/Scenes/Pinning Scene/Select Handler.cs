@@ -28,23 +28,12 @@ public class SelectHandler : MonoBehaviour
     {
         _pinUIRayInteractable = _pinUI.GetComponent<RayInteractable>();
         _pinUIHandGrabInteractable = _pinUI.GetComponent<HandGrabInteractable>();
-
-        _leftPinchArea = GameObject.FindWithTag("left pinch area").GetComponent<Transform>();
-        _rightPinchArea = GameObject.FindWithTag("right pinch area").GetComponent<Transform>();
-        _leftHandGrabInteractor =
-            GameObject.FindWithTag("left hand grab interactor").GetComponent<HandGrabInteractor>();
-        _rightHandGrabInteractor =
-            GameObject.FindWithTag("right hand grab interactor").GetComponent<HandGrabInteractor>();
-        _leftRayInteractor =
-            GameObject.FindWithTag("left ray interactor").GetComponent<RayInteractor>();
-        _rightRayInteractor =
-            GameObject.FindWithTag("right ray interactor").GetComponent<RayInteractor>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     
     private IEnumerator SpawnPin()

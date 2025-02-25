@@ -10,9 +10,10 @@ public class EnableGameObject : MonoBehaviour
 
     private void SpawnUI()
     {
-        var newTransform = mapLocation;
-        newTransform.position = new Vector3(newTransform.position.x, newTransform.position.y, newTransform.position.z - 0.5f);
-        Instantiate(pinUI, newTransform.position, quaternion.identity);
+        var newPosition = mapLocation.position;
+        newPosition = new Vector3(newPosition.x, newPosition.y + 0.3f, newPosition.z);
+        pinUI.SetActive(true);
+        pinUI.transform.position = newPosition;
     }
     public void OnTrigger()
     {
