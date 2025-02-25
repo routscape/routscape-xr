@@ -55,8 +55,6 @@ public class SelectHandler : MonoBehaviour
     {
         instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
         instantiatedPin.SetActive(false);
-        Debug.Log("Grab Interactor state: " + _rightHandGrabInteractor.State);
-        Debug.Log("Ray Interactor state: " + _rightRayInteractor.State);
 
         pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
         _rightRayInteractor.Disable();
