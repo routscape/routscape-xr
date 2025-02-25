@@ -1,8 +1,10 @@
+using System.Collections;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using Oculus.Interaction.Input;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SelectHandler : MonoBehaviour
 {
@@ -14,10 +16,18 @@ public class SelectHandler : MonoBehaviour
     [SerializeField] private HandGrabInteractor _rightHandGrabInteractor;
     [SerializeField] private RayInteractor _leftRayInteractor;
     [SerializeField] private RayInteractor _rightRayInteractor;
+    [SerializeField] private GameObject _pinUI;
+
+    private GameObject instantiatedPin = null;
+    private HandGrabInteractable pinGrabbable = null;
     private bool _clicked = false;
+
+    private RayInteractable _pinUIRayInteractable;
+    private HandGrabInteractable _pinUIHandGrabInteractable;
     void Start()
     {
-        
+        _pinUIRayInteractable = _pinUI.GetComponent<RayInteractable>();
+        _pinUIHandGrabInteractable = _pinUI.GetComponent<HandGrabInteractable>();
     }
 
     // Update is called once per frame
@@ -26,45 +36,51 @@ public class SelectHandler : MonoBehaviour
         
     }
 
-    private void SpawnPin()
+    private void onGrabInteractorStateChanged(InteractorStateChangeArgs args)
     {
-        var instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
-        instantiatedPin.SetActive(false);
-        Debug.Log("Interactor state: " + _rightHandGrabInteractor.State);
-        HandGrabInteractable pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
-        if (pinGrabbable == null)
+        Debug.Log("Grab old state " + args.PreviousState);
+        Debug.Log("Grab New state " + args.NewState);
+
+        if (args.NewState == InteractorState.Normal)
         {
-            Debug.Log("Hand grab interactable component missing!");
-            return;
+            TogglePinUi();
+            instantiatedPin.SetActive(true);
+            _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);
+            _rightHandGrabInteractor.WhenStateChanged -= onGrabInteractorStateChanged;
+            TogglePinUi();
         }
-        /*
-         * Problem: Interactor is disabled when I select the button for some odd reason
-         *
-         * Investigate if other interactors can affect the state of other interactors.
-         */
-       
+    }
+    
+    private IEnumerator SpawnPin()
+    {
+        instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
+        instantiatedPin.SetActive(false);
+        Debug.Log("Grab Interactor state: " + _rightHandGrabInteractor.State);
+        Debug.Log("Ray Interactor state: " + _rightRayInteractor.State);
+
+        pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
         _rightRayInteractor.Disable();
-        _rightHandGrabInteractor.Enable();
+        TogglePinUi();
+        _rightHandGrabInteractor.ForceRelease();
+        yield return new WaitUntil(() => _rightHandGrabInteractor.State == InteractorState.Normal);
         instantiatedPin.SetActive(true);
-        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);
-        
-        Debug.Log("Pin state: " + pinGrabbable.State);
+        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);;
+        TogglePinUi();
     }
 
+    public void TogglePinUi()
+    {
+        _pinUIRayInteractable.enabled = !_pinUIRayInteractable.enabled;
+        _pinUIHandGrabInteractable.enabled = !_pinUIHandGrabInteractable.enabled;
+    }
+    
     public void OnClick(PointerEvent eventData)
     {
-        if (_rightRayInteractor.State == InteractorState.Disabled)
-        {
-            return;
-        }
-        if (_clicked)
-        {
-            _clicked = false;
-            return;
-        }
-        _clicked = true;
-        HandRef handData = (HandRef)eventData.Data;
+
+        Debug.Log(eventData.Type);
+        Debug.Log(eventData.Data.GetType());
+        HandRef handData = (HandRef)eventData.Data; 
         Debug.Log(handData.Handedness);
-        SpawnPin();
+        StartCoroutine(SpawnPin());
     }
 }
