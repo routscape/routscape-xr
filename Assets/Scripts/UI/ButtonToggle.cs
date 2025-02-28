@@ -11,6 +11,7 @@ public class ButtonToggle : MonoBehaviour
     private bool isActive;
     public delegate void ItemStateChanged();
     public event ItemStateChanged OnItemStateChanged;
+    private bool _clicked = false;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,11 +34,19 @@ public class ButtonToggle : MonoBehaviour
     
     public void SetItemState(bool newState)
     {
+        if (_clicked)
+        {
+            _clicked = false;
+            return;
+        }
+
+        _clicked = true;
         isActive = newState;
 
 		// Set item image based on its state
         if (itemImage != null)
         {
+            Debug.Log("New item state...");
             itemImage.sprite = isActive ? activeImage : inactiveImage;
         }
         
