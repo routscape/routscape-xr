@@ -9647,6 +9647,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6878477909071258251, guid: 95a0bef72b8d8a240aa80e4e981199e6, type: 3}
+      propertyPath: _mapManager
+      value: 
+      objectReference: {fileID: 114478715947305609}
+    - target: {fileID: 6878477909071258251, guid: 95a0bef72b8d8a240aa80e4e981199e6, type: 3}
       propertyPath: _leftPinchArea
       value: 
       objectReference: {fileID: 1637856242}
@@ -13336,7 +13340,7 @@ GameObject:
   - component: {fileID: 114478715947305610}
   m_Layer: 0
   m_Name: Mapbox Map
-  m_TagString: Untagged
+  m_TagString: mapbox map
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13458,12 +13462,12 @@ MonoBehaviour:
         - transit_stop_label
         - water
         - waterway
-      _sourceType: -1
+      _sourceType: 2
       sourceOptions:
         isActive: 1
         layerSource:
           Name: Mapbox Terrain
-          Id: mapbox.3d-buildings,mapbox.mapbox-streets-v8
+          Id: mapbox.3d-buildings,mapbox.mapbox-streets-v7
           Modified: 
           UserName: 
       useOptimizedStyle: 0
