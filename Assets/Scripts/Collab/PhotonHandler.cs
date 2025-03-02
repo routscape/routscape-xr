@@ -52,7 +52,6 @@ namespace Collab
         public override void OnDisconnected(DisconnectCause cause)
         {
             Debug.LogWarningFormat("[PhotonHandler] Disconnected due to: {0}", cause);
-            ;
         }
     }
 }
