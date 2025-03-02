@@ -1,8 +1,10 @@
+using System.Collections;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using Oculus.Interaction.Input;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SelectHandler : MonoBehaviour
 {
@@ -14,57 +16,51 @@ public class SelectHandler : MonoBehaviour
     [SerializeField] private HandGrabInteractor _rightHandGrabInteractor;
     [SerializeField] private RayInteractor _leftRayInteractor;
     [SerializeField] private RayInteractor _rightRayInteractor;
+    [SerializeField] private GameObject _pinUI;
+
+    private GameObject instantiatedPin = null;
+    private HandGrabInteractable pinGrabbable = null;
     private bool _clicked = false;
+
+    private RayInteractable _pinUIRayInteractable;
+    private HandGrabInteractable _pinUIHandGrabInteractable;
     void Start()
     {
-        
+        _pinUIRayInteractable = _pinUI.GetComponent<RayInteractable>();
+        _pinUIHandGrabInteractable = _pinUI.GetComponent<HandGrabInteractable>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
-    private void SpawnPin()
+    }
+    
+    private IEnumerator SpawnPin()
     {
-        var instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
+        instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
         instantiatedPin.SetActive(false);
-        Debug.Log("Interactor state: " + _rightHandGrabInteractor.State);
-        HandGrabInteractable pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
-        if (pinGrabbable == null)
-        {
-            Debug.Log("Hand grab interactable component missing!");
-            return;
-        }
-        /*
-         * Problem: Interactor is disabled when I select the button for some odd reason
-         *
-         * Investigate if other interactors can affect the state of other interactors.
-         */
-       
+
+        pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
         _rightRayInteractor.Disable();
-        _rightHandGrabInteractor.Enable();
+        TogglePinUi();
+        _rightHandGrabInteractor.ForceRelease();
+        yield return new WaitUntil(() => _rightHandGrabInteractor.State == InteractorState.Normal);
         instantiatedPin.SetActive(true);
-        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);
-        
-        Debug.Log("Pin state: " + pinGrabbable.State);
+        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);;
+        TogglePinUi();
     }
 
+    public void TogglePinUi()
+    {
+        _pinUIRayInteractable.enabled = !_pinUIRayInteractable.enabled;
+        _pinUIHandGrabInteractable.enabled = !_pinUIHandGrabInteractable.enabled;
+    }
+    
     public void OnClick(PointerEvent eventData)
     {
-        if (_rightRayInteractor.State == InteractorState.Disabled)
-        {
-            return;
-        }
-        if (_clicked)
-        {
-            _clicked = false;
-            return;
-        }
-        _clicked = true;
-        HandRef handData = (HandRef)eventData.Data;
-        Debug.Log(handData.Handedness);
-        SpawnPin();
+
+        Debug.Log(eventData.Type);
+        StartCoroutine(SpawnPin());
     }
 }
