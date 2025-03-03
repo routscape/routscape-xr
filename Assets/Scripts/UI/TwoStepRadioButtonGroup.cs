@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TwoStepRadioButtonGroup : MonoBehaviour
 {
-    [SerializeField] private Button[] buttons;
+    [SerializeField] private List<Button> buttons = new List<Button>();
     private Color defaultColor = new Color(0f, 0f, 0f, 0f);
     private Color selectedColor = new Color(0f, 0f, 0f, 81f / 255f);
     private Color activeColor = new Color(10f / 255f, 132f / 255f, 1f, 180f / 255f);
@@ -20,13 +21,7 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
     private bool isClickAllowed = true;
 
     private void Start()
-    {
-        foreach (Button button in buttons)
-        {
-            button.onClick.AddListener(() => OnButtonClicked(button));
-            UpdateButtonColor(button, defaultColor);
-        }
-        
+    {        
         if (editPopupCloseButton != null)
         {
             editPopupCloseButton.onClick.AddListener(CloseEditPopup);
@@ -37,6 +32,13 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
             editPopupConfirmButton.onClick.AddListener(ConfirmEditPopup);
         }
     }
+
+	public void AddButton(Button button)
+	{
+		buttons.Add(button);
+		button.onClick.AddListener(() => OnButtonClicked(button));
+        UpdateButtonColor(button, defaultColor);
+	}
 
     private void OnButtonClicked(Button clickedButton)
     {
