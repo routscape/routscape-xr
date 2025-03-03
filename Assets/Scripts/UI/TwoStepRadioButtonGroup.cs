@@ -1,27 +1,30 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class TwoStepRadioButtonGroup : MonoBehaviour
 {
     [SerializeField] private Button[] buttons;
-    [SerializeField] private Color defaultColor;
-    [SerializeField] private Color selectedColor;
-    [SerializeField] private Color activeColor;
+    private Color defaultColor = new Color(0f, 0f, 0f, 0f);
+    private Color selectedColor = new Color(0f, 0f, 0f, 81f / 255f);
+    private Color activeColor = new Color(10f / 255f, 132f / 255f, 1f, 180f / 255f);
     
     [SerializeField] private GameObject editPopup;
     [SerializeField] private TextMeshProUGUI editPopupDisplayText;
-	[SerializeField] private string editPopupDisplayTextString;
+    [SerializeField] private string editPopupDisplayTextString;
     [SerializeField] private Button editPopupCloseButton;
     [SerializeField] private Button editPopupConfirmButton;
 
-	private Button selectedButton;
+    private Button selectedButton;
+    private bool isClickAllowed = true;
 
     private void Start()
     {
         foreach (Button button in buttons)
         {
             button.onClick.AddListener(() => OnButtonClicked(button));
+            UpdateButtonColor(button, defaultColor);
         }
         
         if (editPopupCloseButton != null)
@@ -37,66 +40,60 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
 
     private void OnButtonClicked(Button clickedButton)
     {
-        // Open EditPopup when the currently selected button (item with grayed background) is clicked again
+        if (!isClickAllowed) return;
+        isClickAllowed = false;
+        StartCoroutine(EnableClickAfterDelay(0.3f));
+
         if (clickedButton == selectedButton)
         {
+            Debug.Log("Selected button clicked");
             if (editPopup != null)
             {
                 bool isActive = !editPopup.activeSelf;
-                
-                // Show EditPopup
                 editPopup.SetActive(isActive);
 
-                // Change EditPopup window title
                 if (editPopup.activeSelf && editPopupDisplayText != null)
                 {
                     editPopupDisplayText.text = editPopupDisplayTextString;
                 }
-
-                // Update button color
-                if (isActive && clickedButton != null)
-                {
-                    UpdateButtonColor(clickedButton, activeColor);
-                }
-                else
-                {
-                    UpdateButtonColor(clickedButton, selectedColor);
-                }
+                UpdateButtonColor(clickedButton, isActive ? activeColor : selectedColor);
             }
         }
-        // Pan the map to the selected item?
         else
         {
+            Debug.Log("Selected button not clicked");
             selectedButton = clickedButton;
-
+            
             foreach (Button button in buttons)
             {
                 UpdateButtonColor(button, defaultColor);
             }
-            
-            UpdateButtonColor(selectedButton, selectedColor);
+            UpdateButtonColor(clickedButton, selectedColor);
         }
+    }
+
+    private IEnumerator EnableClickAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isClickAllowed = true;
     }
 
     private void UpdateButtonColor(Button button, Color color)
     {
         Image buttonImage = button.GetComponent<Image>();
-        
         if (buttonImage != null)
         {
+            Debug.Log($"Updating {button.name} color: {color}");
             buttonImage.color = color;
         }
     }
     
     private void CloseEditPopup()
     {
-        // Hide EditPopup
         if (editPopup != null)
         {
             editPopup.SetActive(false);
         }
-        
-        // Set button color back to "selectedColor"
         if (selectedButton != null)
         {
             UpdateButtonColor(selectedButton, selectedColor);
@@ -105,7 +102,6 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
 
     private void ConfirmEditPopup()
     {
-        // TODO: Process Changes
         CloseEditPopup();
     }
 }
