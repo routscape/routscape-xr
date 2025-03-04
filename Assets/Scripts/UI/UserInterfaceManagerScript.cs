@@ -8,6 +8,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private GameObject pinItemPrefab;
 	[SerializeField] private Transform pinListTransform;
 	
+	[SerializeField] private ParentButtonToggle parentButtonToggle;
 	[SerializeField] private TwoStepRadioButtonGroup twoStepRadioButtonGroup;
 	
 	[SerializeField] List<Pin> pinList = new List<Pin>();
@@ -69,6 +70,18 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			    {
 				    tmpText.text = pin.Barangay;
 			    }
+		    }
+
+			/* Add show/hide toggle to group */
+			Transform pinShowHideToggle = newPinUI.transform.Find("PinItemTop/ShowHideToggle");
+
+		    if (pinShowHideToggle != null)
+		    {
+                ButtonToggle pinShowHideToggleButton = pinShowHideToggle.GetComponent<ButtonToggle>();
+                if (pinShowHideToggleButton != null)
+                {
+                    parentButtonToggle.AddButtonToggle(pinShowHideToggleButton);
+                }
 		    }
 
 		    /* Add listener */
