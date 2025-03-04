@@ -31,12 +31,15 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	{
 		Transform CancelButton = editPinWindow.transform.Find("Canvas/ActionButtons/CancelButton");
 		Transform ConfirmButton = editPinWindow.transform.Find("Canvas/ActionButtons/ConfirmButton");
+		Transform DeleteButton = editPinWindow.transform.Find("Canvas/ActionButtons/DeleteButton");
 
 		Button CancelButtonComponent = CancelButton.GetComponent<Button>();
 		Button ConfirmButtonComponent = ConfirmButton.GetComponent<Button>();
+		Button DeleteButtonComponent = DeleteButton.GetComponent<Button>();
 
 		CancelButtonComponent.onClick.AddListener(CloseEditWindow);
 		ConfirmButtonComponent.onClick.AddListener(ConfirmEditWindow);
+		DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
 	}
 
     private void UpdatePinWindow()
@@ -205,6 +208,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			}
 		}
 		
+		UpdatePinWindow();
+		CloseEditWindow();
+	}
+
+	void DeleteEditWindow()
+	{
+		Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
+		string pinLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
+		Pin pin = pinList.FirstOrDefault(pin => pin.Name == pinLabel);
+		pinList.Remove(pin);
+
 		UpdatePinWindow();
 		CloseEditWindow();
 	}
