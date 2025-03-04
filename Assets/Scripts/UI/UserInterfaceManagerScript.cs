@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 
 public class UserInterfaceManagerScript : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private TwoStepRadioButtonGroup twoStepRadioButtonGroup;
 	
 	[SerializeField] List<Pin> pinList = new List<Pin>();
-	private GameObject editPinWindow;
+	[SerializeField] private GameObject editPinWindow;
 
     void Start()
     {
@@ -22,15 +23,29 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	    pinList.Add(new Pin("Pin 3",  "Barangay C", new Vector3(0, 0, 0), ColorType.Green));
 	    
 		Debug.Log("Start");
+		InitializeEditPinWindow();
 		UpdatePinWindow();
     }
 
+	private void InitializeEditPinWindow()
+	{
+		Transform CancelButton = editPinWindow.transform.Find("Canvas/ActionButtons/CancelButton");
+		Transform ConfirmButton = editPinWindow.transform.Find("Canvas/ActionButtons/ConfirmButton");
+
+		Button CancelButtonComponent = CancelButton.GetComponent<Button>();
+		Button ConfirmButtonComponent = ConfirmButton.GetComponent<Button>();
+
+		CancelButtonComponent.onClick.AddListener(CloseEditWindow);
+		ConfirmButtonComponent.onClick.AddListener(ConfirmEditWindow);
+	}
+
     private void UpdatePinWindow()
     {
-	    Debug.Log("UpdatePinWindow");
+		twoStepRadioButtonGroup.RemoveAllButton();
+		RemoveAllChildren(pinListTransform);
+		
 	    foreach (Pin pin in pinList)
 	    {
-		    Debug.Log("Pin instadsjalkds");
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
 		    
 		    /* Edit color circle */
@@ -90,24 +105,130 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		    {
 			    twoStepRadioButtonGroup.AddButton(pinButton);
 		    }
-
-		    AdjustParentHeight();
 	    }
+
+		AdjustParentHeight();
     }
-    
+
+	public void OpenEditWindow(Button button)
+	{
+		GameObject pinUI = button.gameObject;
+
+		/* Get pin label */
+		Transform pinLabel = pinUI.transform.Find("PinItemTop/PinLabel");
+		if (pinLabel != null)
+		{
+			TextMeshProUGUI pinLabelText = pinLabel.GetComponent<TextMeshProUGUI>();
+			if (pinLabelText != null)
+			{
+				/* Set edit window input hint */
+				Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder");
+				TextMeshProUGUI editWindowHintText = editWindowHint.GetComponent<TextMeshProUGUI>();
+				editWindowHintText.text = pinLabelText.text;
+			}
+		}
+		
+		/* Get pin color */
+		Transform colorCircle = pinUI.transform.Find("PinItemTop/ColorCircle");
+		if (colorCircle != null)
+		    {
+			    Image img = colorCircle.GetComponent<Image>();
+			    
+			    if (img != null)
+			    {
+					Transform editWindowColorDropdown = editPinWindow.transform.Find("Canvas/Input/ColorDropdown");
+					TMP_Dropdown dropdownComponent = editWindowColorDropdown.GetComponent<TMP_Dropdown>();
+					string colorHex = "#" + ColorUtility.ToHtmlStringRGB(img.color);
+
+					switch (colorHex)
+					{
+						case ColorHexCodes.Green:
+							dropdownComponent.value = 0;
+							break;
+						case ColorHexCodes.Blue:
+							dropdownComponent.value = 1;
+							break;
+						case ColorHexCodes.Red:
+							dropdownComponent.value = 2;
+							break;
+						default:
+							break;
+					}
+
+					dropdownComponent.RefreshShownValue();
+			    }
+		    }
+
+		editPinWindow.SetActive(true);
+	}
+
+	public void CloseEditWindow()
+	{
+		if (editPinWindow.activeSelf)
+		{
+			editPinWindow.SetActive(false);
+		}
+
+		twoStepRadioButtonGroup.SetNoActive();
+	}
+
+	void ConfirmEditWindow()
+	{
+		/* Get edit window values */
+		Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
+		Transform editWindowColorDropdown = editPinWindow.transform.Find("Canvas/Input/ColorDropdown");
+		Transform editWindowLabel = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Text");
+
+		string pinLabelOld = editWindowHint.GetComponent<TextMeshProUGUI>().text;
+		string pinLabelNew = editWindowLabel.GetComponent<TextMeshProUGUI>().text;
+		int colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
+
+		/* Update pin */
+		Pin pin = pinList.FirstOrDefault(pin => pin.Name == pinLabelOld);
+		if (pin != null)
+		{
+			pin.Rename(pinLabelNew);
+			
+			switch(colorDropdownValue)
+			{
+				case 0:
+					pin.ChangeColor(ColorType.Green);
+					break;
+				case 1:
+					pin.ChangeColor(ColorType.Blue);
+					break;
+				case 3:
+					pin.ChangeColor(ColorType.Red);
+					break;
+				default:
+					break;
+			}
+		}
+		
+		UpdatePinWindow();
+		CloseEditWindow();
+	}
+
+	public void RemoveAllChildren(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+    }
+
     void AdjustParentHeight()
     {
-	    RectTransform pinListParent = pinListTransform.parent.GetComponent<RectTransform>();
-	    
-	    float windowBarHeight = 128f;
-	    float pinItemHeight = 128f;
-	    float quadHeight = 128f;
-	    
-	    int pinCount = pinListTransform.childCount;
-
-	    float totalHeight = (pinCount * pinItemHeight) + ((pinCount - 1)) + windowBarHeight + quadHeight;
-	    
-	    pinListParent.sizeDelta = new Vector2(pinListParent.sizeDelta.x, totalHeight);
+        RectTransform pinListParent = pinListTransform.parent.GetComponent<RectTransform>();
+    
+        float windowBarHeight = 128f;
+        float pinItemHeight = 128f;
+        float quadHeight = 128f;
+    
+        int pinCount = pinList.Count;
+    
+        float totalHeight = (pinCount * pinItemHeight) + windowBarHeight + quadHeight;
+        pinListParent.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
     }
 
 }

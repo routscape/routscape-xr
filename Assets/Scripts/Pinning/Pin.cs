@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class Pin
 {
@@ -18,6 +19,16 @@ public class Pin
 
     public void Rename(string newName)
     {
-        Name = newName;
+        string cleanedName = Regex.Replace(newName, @"\p{C}+", "").Trim();
+        if (!string.IsNullOrWhiteSpace(cleanedName))  // Prevents empty names
+        {
+            Name = newName;
+        }
     }
+    
+    public void ChangeColor(ColorType newColorType)
+    {
+        PinColorType = newColorType;
+    }
+
 }
