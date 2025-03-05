@@ -9,30 +9,51 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private GameObject pinItemPrefab;
 	[SerializeField] private Transform pinListTransform;
 	
-	[SerializeField] private ParentButtonToggle parentButtonToggle;
+	[SerializeField] private GameObject routeItemPrefab;
+	[SerializeField] private Transform routeListTransform;
+	
+	[SerializeField] private ParentButtonToggle pinParentButtonToggle;
+	[SerializeField] private ParentButtonToggle routeParentButtonToggle;
+	
 	[SerializeField] private TwoStepRadioButtonGroup twoStepRadioButtonGroup;
 	
+	[SerializeField] private GameObject routeManager;
+	
 	[SerializeField] private List<Pin> pinList = new List<Pin>();
-	[SerializeField] private GameObject editPinWindow;
+	[SerializeField] private List<Route> routeList = new List<Route>();
+	[SerializeField] private GameObject editWindow;
+
+	private XRRouteDrawer xrRouteDrawer;
+	private Route currentActiveRoute;
 
     void Start()
     {
-	    // temp data
-	    AddPin("pompom", -1);
-	    pinList.Add(new Pin("Pin 1", -1, ColorType.Red));
-	    pinList.Add(new Pin("Pin 2",  -2, ColorType.Blue));
-	    pinList.Add(new Pin("Pin 3",  -3, ColorType.Green));
-	    
 		Debug.Log("Start");
-		InitializeEditPinWindow();
-		UpdatePinWindow();
+		xrRouteDrawer = routeManager.GetComponent<XRRouteDrawer>();
+		if (xrRouteDrawer)
+		{
+			Debug.Log("not null");
+		}
+
+		InitializeEditWindow();
+		
+		/* Initialize route window */
+		Transform addButton = routeListTransform.parent.transform.Find("WindowBar/ActionButtons/AddButton");
+		Button addButtonComponent = addButton.GetComponent<Button>();
+		addButtonComponent.onClick.AddListener(AddRoute);
+		
+		// temp data
+		AddPin("pompom", -1);
+		AddPin("pampam", -1);
+		AddPin("errol", -1);
+		UpdateWindows(); // delete after
     }
 
-	private void InitializeEditPinWindow()
+	private void InitializeEditWindow()
 	{
-		Transform CancelButton = editPinWindow.transform.Find("Canvas/ActionButtons/CancelButton");
-		Transform ConfirmButton = editPinWindow.transform.Find("Canvas/ActionButtons/ConfirmButton");
-		Transform DeleteButton = editPinWindow.transform.Find("Canvas/ActionButtons/DeleteButton");
+		Transform CancelButton = editWindow.transform.Find("Canvas/ActionButtons/CancelButton");
+		Transform ConfirmButton = editWindow.transform.Find("Canvas/ActionButtons/ConfirmButton");
+		Transform DeleteButton = editWindow.transform.Find("Canvas/ActionButtons/DeleteButton");
 
 		Button CancelButtonComponent = CancelButton.GetComponent<Button>();
 		Button ConfirmButtonComponent = ConfirmButton.GetComponent<Button>();
@@ -47,13 +68,79 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	{
 		/* default pin color is red */
 		pinList.Add(new Pin(pinName, mapboxPinId, ColorType.Red));
+		UpdateWindows();
 	}
 
-	private void UpdatePinWindow()
+	public void AddRoute()
+	{
+		Route route = xrRouteDrawer.CreateNewLine("Route " + routeList.Count);
+		currentActiveRoute = route;
+		routeList.Add(route);
+		Debug.Log("RouteList Count:" + routeList.Count);
+		UpdateWindows();
+	}
+
+	private void UpdateWindows()
     {
 		twoStepRadioButtonGroup.RemoveAllButton();
 		RemoveAllChildren(pinListTransform);
+		RemoveAllChildren(routeListTransform);
 		
+		/* Update route window */
+		foreach (Route route in routeList)
+		{
+			Debug.Log("insta route");
+			GameObject newRouteUI = Instantiate(routeItemPrefab, routeListTransform);
+		    
+			/* Edit color circle */
+			Transform colorCircle = newRouteUI.transform.Find("RouteItemTop/ColorCircle");
+
+			if (colorCircle != null)
+			{
+				Image img = colorCircle.GetComponent<Image>();
+			    
+				if (img != null)
+				{
+					img.color = route.Color;
+				}
+			}
+		    
+			/* Edit route label */
+			Transform routeLabel = newRouteUI.transform.Find("RouteItemTop/RouteLabel");
+
+			if (routeLabel != null)
+			{
+				TextMeshProUGUI tmpText = routeLabel.GetComponent<TextMeshProUGUI>();
+
+				if (tmpText != null)
+				{
+					tmpText.text = route.Name;
+				}
+			}
+
+			/* Add show/hide toggle to group */
+			Transform routeShowHideToggle = newRouteUI.transform.Find("PinItemTop/ShowHideToggle");
+
+			if (routeShowHideToggle != null)
+			{
+				ButtonToggle routeShowHideToggleButton = routeShowHideToggle.GetComponent<ButtonToggle>();
+				if (routeShowHideToggleButton != null)
+				{
+					pinParentButtonToggle.AddButtonToggle(routeShowHideToggleButton);
+				}
+			}
+
+			/* Add listener */
+			Button routeButton = newRouteUI.GetComponentInChildren<Button>();
+			if (routeButton != null)
+			{
+				twoStepRadioButtonGroup.AddButton(routeButton, route == currentActiveRoute);
+			}
+		}
+
+		AdjustRouteWindowHeight();
+		
+		/* Update pin window */
 	    foreach (Pin pin in pinList)
 	    {
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
@@ -105,7 +192,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
                 ButtonToggle pinShowHideToggleButton = pinShowHideToggle.GetComponent<ButtonToggle>();
                 if (pinShowHideToggleButton != null)
                 {
-                    parentButtonToggle.AddButtonToggle(pinShowHideToggleButton);
+                    pinParentButtonToggle.AddButtonToggle(pinShowHideToggleButton);
                 }
 		    }
 
@@ -113,11 +200,11 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		    Button pinButton = newPinUI.GetComponentInChildren<Button>();
 		    if (pinButton != null)
 		    {
-			    twoStepRadioButtonGroup.AddButton(pinButton);
+			    twoStepRadioButtonGroup.AddButton(pinButton, false);
 		    }
 	    }
 
-		AdjustParentHeight();
+		AdjustPinWindowHeight();
     }
 
 	public void OpenEditWindow(Button button)
@@ -132,7 +219,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			if (pinLabelText != null)
 			{
 				/* Set edit window input hint */
-				Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder");
+				Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder");
 				TextMeshProUGUI editWindowHintText = editWindowHint.GetComponent<TextMeshProUGUI>();
 				editWindowHintText.text = pinLabelText.text;
 			}
@@ -146,7 +233,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			    
 			    if (img != null)
 			    {
-					Transform editWindowColorDropdown = editPinWindow.transform.Find("Canvas/Input/ColorDropdown");
+					Transform editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
 					TMP_Dropdown dropdownComponent = editWindowColorDropdown.GetComponent<TMP_Dropdown>();
 					string colorHex = "#" + ColorUtility.ToHtmlStringRGB(img.color);
 
@@ -169,14 +256,16 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			    }
 		    }
 
-		editPinWindow.SetActive(true);
+		editWindow.SetActive(true);
 	}
+	
+	
 
 	public void CloseEditWindow()
 	{
-		if (editPinWindow.activeSelf)
+		if (editWindow.activeSelf)
 		{
-			editPinWindow.SetActive(false);
+			editWindow.SetActive(false);
 		}
 
 		twoStepRadioButtonGroup.SetNoActive();
@@ -185,9 +274,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	void ConfirmEditWindow()
 	{
 		/* Get edit window values */
-		Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
-		Transform editWindowColorDropdown = editPinWindow.transform.Find("Canvas/Input/ColorDropdown");
-		Transform editWindowLabel = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Text");
+		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
+		Transform editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
+		Transform editWindowLabel = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Text");
 
 		string pinLabelOld = editWindowHint.GetComponent<TextMeshProUGUI>().text;
 		string pinLabelNew = editWindowLabel.GetComponent<TextMeshProUGUI>().text;
@@ -215,18 +304,18 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			}
 		}
 		
-		UpdatePinWindow();
+		UpdateWindows();
 		CloseEditWindow();
 	}
 
 	void DeleteEditWindow()
 	{
-		Transform editWindowHint = editPinWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
+		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
 		string pinLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
 		Pin pin = pinList.FirstOrDefault(pin => pin.Name == pinLabel);
 		pinList.Remove(pin);
 
-		UpdatePinWindow();
+		UpdateWindows();
 		CloseEditWindow();
 	}
 
@@ -238,7 +327,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
         }
     }
 
-    void AdjustParentHeight()
+    void AdjustPinWindowHeight()
     {
         RectTransform pinListParent = pinListTransform.parent.GetComponent<RectTransform>();
     
@@ -252,4 +341,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
         pinListParent.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
     }
 
+    void AdjustRouteWindowHeight()
+    {
+	    RectTransform routeListParent = routeListTransform.parent.GetComponent<RectTransform>();
+    
+	    float windowBarHeight = 128f;
+	    float routeItemHeight = 128f;
+	    float quadHeight = 128f;
+    
+	    int routeCount = routeList.Count;
+    
+	    float totalHeight = (routeCount * routeItemHeight) + windowBarHeight + quadHeight;
+	    routeListParent.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
+    }
 }

@@ -10,17 +10,25 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
     private Color defaultColor = new Color(0f, 0f, 0f, 0f);
     private Color selectedColor = new Color(0f, 0f, 0f, 81f / 255f);
     private Color activeColor = new Color(10f / 255f, 132f / 255f, 1f, 180f / 255f);
+	private Color drawingColor = new Color(0.31f, 0.88f, 0.28f, 180f / 255f);
     
 	[SerializeField] private UserInterfaceManagerScript userInterfaceManager;
 
     private Button selectedButton;
     private bool isClickAllowed = true;
 
-	public void AddButton(Button button)
+	public void AddButton(Button button, bool isDrawing)
 	{
 		buttons.Add(button);
 		button.onClick.AddListener(() => OnButtonClicked(button));
-        UpdateButtonColor(button, defaultColor);
+
+		if (isDrawing)
+		{
+			UpdateButtonColor(button, drawingColor);
+		} else
+		{
+			UpdateButtonColor(button, defaultColor);
+		}
 	}
 
 	public void RemoveAllButton()

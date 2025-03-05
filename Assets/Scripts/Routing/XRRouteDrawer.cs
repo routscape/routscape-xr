@@ -6,40 +6,29 @@ public class XRRouteDrawer : MonoBehaviour
     [SerializeField] private LayerMask mapboxLayer;
     [SerializeField] private Color initialColor = Color.red; // Default color is red
     private List<Route> routeList = new List<Route>();
-    private List<Vector3> routePoints = new List<Vector3>();
     private bool isDrawing = false;
-    
-    void Start()
-    {
-        CreateNewLine();
-    }
+    private Route currentRoute;
 
     void Update()
     {
-        // If trigger is pressed then start/continue drawing
+        // Detect a single poke (trigger press)
         if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
-        {
-            StartDrawing();
-        }
-
-        if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch) && isDrawing)
         {
             Vector3 hitPoint;
             if (GetControllerHitPoint(out hitPoint))
             {
-                AddPoint(hitPoint);
+                AddPoint(hitPoint);  // Register a point only on trigger press
             }
         }
 
-        // If trigger is released then Stop drawing
+        // Stop drawing if the user releases the trigger
         if (OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
         {
             StopDrawing();
         }
     }
     
-    [ContextMenu("Create New Line")]
-    public void CreateNewLine()
+    public Route CreateNewLine(string name)
     {
         GameObject newLineObj = new GameObject("Route");
         newLineObj.transform.parent = transform;
@@ -51,28 +40,28 @@ public class XRRouteDrawer : MonoBehaviour
         newLineRenderer.startColor = initialColor;
         newLineRenderer.endColor = initialColor;
         
-        Route newRoute = new Route("Line " + routeList.Count, newLineRenderer, initialColor);
+        Route newRoute = new Route(name, newLineRenderer, initialColor);
         routeList.Add(newRoute);
+        SetCurrentRoute(name);
+        Debug.Log("CreateNewLine");
+        return newRoute;
     }
 
-    private void StartDrawing()
+    private void AddPoint(Vector3 newPoint)
     {
-        isDrawing = true;
-        Debug.Log("Drawing started.");
+        Debug.Log(currentRoute.Name);
+        if (routeList.Count == 0) return; // Safety check
+        currentRoute.AddPoint(newPoint);
+
+        Debug.Log($"Point added: {newPoint}");
     }
 
     private void StopDrawing()
     {
         isDrawing = false;
-        Debug.Log($"Drawing stopped. Points: {routePoints.Count}");
+        Debug.Log("Drawing stopped.");
     }
 
-    private void AddPoint(Vector3 newPoint)
-    {
-        Route currentRoute = routeList[routeList.Count - 1];
-        currentRoute.AddPoint(newPoint);
-    }
-    
     private bool GetControllerHitPoint(out Vector3 adjustedPoint)
     {
         Vector3 origin = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
@@ -83,11 +72,25 @@ public class XRRouteDrawer : MonoBehaviour
 
         if (Physics.Raycast(origin, direction, out RaycastHit hit, 10f, mapboxLayer))
         {
-            adjustedPoint = hit.point + Vector3.up * 0.01f;
+            adjustedPoint = hit.point + Vector3.up * 0.01f; // Slightly offset above the surface
             return true;
         }
 
         adjustedPoint = Vector3.zero;
         return false;
+    }
+    
+    private void SetCurrentRoute(string routeName)
+    {
+        Route foundRoute = routeList.Find(route => route.Name == routeName);
+        if (foundRoute != null)
+        {
+            currentRoute = foundRoute;
+            Debug.Log($"Current route set to: {routeName}");
+        }
+        else
+        {
+            Debug.LogWarning($"Route with name '{routeName}' not found.");
+        }
     }
 }

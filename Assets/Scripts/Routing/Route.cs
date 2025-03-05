@@ -4,14 +4,14 @@ using System.Collections.Generic;
 public class Route
 {
     public string Name { get; private set; }
-    public Color LineColor { get; set; }
+    public Color Color { get; set; }
     private LineRenderer lineRenderer;
     private List<Vector3> routePoints;
 
     public Route(string name, LineRenderer renderer, Color color)
     {
         Name = name;
-        LineColor = color;
+        Color = color;
         lineRenderer = renderer;
         routePoints = new List<Vector3>();
     }
