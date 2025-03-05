@@ -239,24 +239,33 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	public void OpenEditWindow(Button button)
 	{
-		GameObject pinUI = button.gameObject;
+		GameObject itemUI = button.gameObject;
+		Transform label;
+		Transform colorCircle;
 
-		/* Get pin label */
-		Transform pinLabel = pinUI.transform.Find("PinItemTop/PinLabel");
-		if (pinLabel != null)
+		if (itemUI.name.StartsWith("PinItem"))
 		{
-			TextMeshProUGUI pinLabelText = pinLabel.GetComponent<TextMeshProUGUI>();
-			if (pinLabelText != null)
+			label = itemUI.transform.Find("PinItemTop/PinLabel");
+			colorCircle = itemUI.transform.Find("PinItemTop/ColorCircle");
+		}
+		else
+		{
+			label = itemUI.transform.Find("RouteItemTop/RouteLabel");
+			colorCircle = itemUI.transform.Find("RouteItemTop/ColorCircle");
+		}
+
+		if (label != null)
+		{
+			TextMeshProUGUI labelText = label.GetComponent<TextMeshProUGUI>();
+			if (labelText != null)
 			{
 				/* Set edit window input hint */
 				Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder");
 				TextMeshProUGUI editWindowHintText = editWindowHint.GetComponent<TextMeshProUGUI>();
-				editWindowHintText.text = pinLabelText.text;
+				editWindowHintText.text = labelText.text;
 			}
 		}
 		
-		/* Get pin color */
-		Transform colorCircle = pinUI.transform.Find("PinItemTop/ColorCircle");
 		if (colorCircle != null)
 		    {
 			    Image img = colorCircle.GetComponent<Image>();
@@ -288,8 +297,6 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 		editWindow.SetActive(true);
 	}
-	
-	
 
 	public void CloseEditWindow()
 	{
@@ -308,17 +315,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		Transform editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
 		Transform editWindowLabel = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Text");
 
-		string pinLabelOld = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-		string pinLabelNew = editWindowLabel.GetComponent<TextMeshProUGUI>().text;
+		string labelOld = editWindowHint.GetComponent<TextMeshProUGUI>().text;
+		string labelNew = editWindowLabel.GetComponent<TextMeshProUGUI>().text;
 		int colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
 
-		/* Update pin */
-		Pin pin = pinList.FirstOrDefault(pin => pin.Name == pinLabelOld);
+		/* Update item */
+		Pin pin = pinList.FirstOrDefault(pin => pin.Name == labelOld);
 		if (pin != null)
 		{
-			pin.Rename(pinLabelNew);
-			
-			switch(colorDropdownValue)
+			pin.Rename(labelNew);
+
+			switch (colorDropdownValue)
 			{
 				case 0:
 					pin.ChangeColor(ColorType.Green);
@@ -332,8 +339,31 @@ public class UserInterfaceManagerScript : MonoBehaviour
 				default:
 					break;
 			}
+
+			return;
 		}
-		
+			
+		Route route = routeList.FirstOrDefault(route => route.Name == labelOld);
+		if (route != null)
+		{
+			route.Rename(labelNew);
+
+			switch (colorDropdownValue)
+			{
+				case 0:
+					route.ChangeColor(ColorType.Green);
+					break;
+				case 1:
+					route.ChangeColor(ColorType.Blue);
+					break;
+				case 3:
+					route.ChangeColor(ColorType.Red);
+					break;
+				default:
+					break;
+			}
+		}
+
 		UpdateWindows();
 		CloseEditWindow();
 	}
@@ -341,9 +371,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	void DeleteEditWindow()
 	{
 		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
-		string pinLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-		Pin pin = pinList.FirstOrDefault(pin => pin.Name == pinLabel);
-		pinList.Remove(pin);
+		string objectLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
+		Pin pin = pinList.FirstOrDefault(pin => pin.Name == objectLabel);
+		if (pin != null)
+		{
+			pinList.Remove(pin);
+		}
+		else
+		{
+			Route route = routeList.FirstOrDefault(route => route.Name == objectLabel);
+			routeList.Remove(route);
+		}
 
 		UpdateWindows();
 		CloseEditWindow();

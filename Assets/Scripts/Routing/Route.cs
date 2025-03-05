@@ -1,17 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class Route
 {
     public string Name { get; private set; }
-    public Color Color { get; set; }
+    public ColorType PinColorType { get; private set; }
+    public Color Color => ColorHexCodes.GetColor(PinColorType);
     private LineRenderer lineRenderer;
     private List<Vector3> routePoints;
 
     public Route(string name, LineRenderer renderer, Color color)
     {
         Name = name;
-        Color = color;
         lineRenderer = renderer;
         routePoints = new List<Vector3>();
     }
@@ -26,5 +27,19 @@ public class Route
     public int GetPointCount()
     {
         return routePoints.Count;
+    }
+    
+    public void Rename(string newName)
+    {
+        string cleanedName = Regex.Replace(newName, @"\p{C}+", "").Trim();
+        if (!string.IsNullOrWhiteSpace(cleanedName))  // Prevents empty names
+        {
+            Name = newName;
+        }
+    }
+    
+    public void ChangeColor(ColorType newColorType)
+    {
+        PinColorType = newColorType;
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class XRRouteDrawer : MonoBehaviour
 {
     [SerializeField] private LayerMask mapboxLayer;
-    [SerializeField] private Color initialColor = Color.red; // Default color is red
+    [SerializeField] private Color initialColor = new Color(79f / 255f, 171f / 255f, 224f / 255f); // Default color is blue
     private List<Route> routeList = new List<Route>();
     private bool isDrawing = false;
     private Route currentRoute;
