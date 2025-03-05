@@ -35,13 +35,17 @@ namespace Collab
         public override void OnConnectedToMaster()
         {
             Debug.Log("[PhotonHandler] Connected to Master");
-            PhotonNetwork.JoinRandomRoom();
+            PhotonNetwork.JoinRandomOrCreateRoom();
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
-            Debug.Log("[PhotonHandler] No room available, creating a new room");
-            PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayers });
+            Debug.Log("[PhotonHandler] Joining a random room failed");
+        }
+
+        public override void OnCreatedRoom()
+        {
+            Debug.Log("[PhotonHandler] Created a new room");
         }
 
         public override void OnJoinedRoom()
