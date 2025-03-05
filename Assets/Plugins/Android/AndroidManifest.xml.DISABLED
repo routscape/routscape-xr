@@ -11,14 +11,9 @@
     </activity>
     <meta-data android:name="unityplayer.SkipPermissionsDialog" android:value="false" />
     <meta-data android:name="com.samsung.android.vr.application.mode" android:value="vr_only" />
-    <meta-data android:name="com.oculus.handtracking.frequency" android:value="LOW" />
-    <meta-data android:name="com.oculus.handtracking.version" android:value="V2.0" />
-    <meta-data android:name="com.oculus.ossplash.background" android:value="passthrough-contextual" />
-    <meta-data android:name="com.oculus.telemetry.project_guid" android:value="37335f98-3c66-4c90-a636-2d1bdbcecf09" />
-    <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|quest3|quest3s" tools:replace="android:value" />
+    <meta-data android:name="com.oculus.ossplash.background" android:value="black" />
+    <meta-data android:name="com.oculus.telemetry.project_guid" android:value="04d10cc5-9fa3-407d-b9d4-139c15e9fdd7" />
+    <meta-data android:name="com.oculus.supportedDevices" android:value="quest|quest2|questpro|quest3|quest3s" tools:replace="android:value" />
   </application>
   <uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="true" />
-  <uses-feature android:name="oculus.software.handtracking" android:required="false" />
-  <uses-permission android:name="com.oculus.permission.HAND_TRACKING" />
-  <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="false" />
 </manifest>

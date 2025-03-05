@@ -33,22 +33,7 @@ public class SelectHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
-    private void onGrabInteractorStateChanged(InteractorStateChangeArgs args)
-    {
-        Debug.Log("Grab old state " + args.PreviousState);
-        Debug.Log("Grab New state " + args.NewState);
-
-        if (args.NewState == InteractorState.Normal)
-        {
-            TogglePinUi();
-            instantiatedPin.SetActive(true);
-            _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);
-            _rightHandGrabInteractor.WhenStateChanged -= onGrabInteractorStateChanged;
-            TogglePinUi();
-        }
     }
     
     private IEnumerator SpawnPin()
@@ -76,9 +61,6 @@ public class SelectHandler : MonoBehaviour
     {
 
         Debug.Log(eventData.Type);
-        Debug.Log(eventData.Data.GetType());
-        HandRef handData = (HandRef)eventData.Data; 
-        Debug.Log(handData.Handedness);
         StartCoroutine(SpawnPin());
     }
 }
