@@ -93,4 +93,9 @@ public class XRRouteDrawer : MonoBehaviour
             Debug.LogWarning($"Route with name '{routeName}' not found.");
         }
     }
+
+    public void RemoveCurrentRoute()
+    {
+        currentRoute = null;
+    }
 }

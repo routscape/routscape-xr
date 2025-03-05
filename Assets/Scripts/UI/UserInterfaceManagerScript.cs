@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 using System.Linq;
 
@@ -22,10 +23,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private List<Pin> pinList = new List<Pin>();
 	[SerializeField] private List<Route> routeList = new List<Route>();
 	[SerializeField] private GameObject editWindow;
+	
+	[SerializeField] private Sprite addSprite;
+	[SerializeField] private Sprite finishSprite;
 
 	private XRRouteDrawer xrRouteDrawer;
 	private Route currentActiveRoute;
 
+	private Transform routeAddButtonTransform;
+	private Button routeAddButton;
+	private Image routeAddButtonImage;
+	
     void Start()
     {
 		Debug.Log("Start");
@@ -38,9 +46,11 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		InitializeEditWindow();
 		
 		/* Initialize route window */
-		Transform addButton = routeListTransform.parent.transform.Find("WindowBar/ActionButtons/AddButton");
-		Button addButtonComponent = addButton.GetComponent<Button>();
-		addButtonComponent.onClick.AddListener(AddRoute);
+		routeAddButtonTransform = routeListTransform.parent.transform.Find("WindowBar/ActionButtons/AddButton");
+		routeAddButton = routeAddButtonTransform.GetComponent<Button>();
+		routeAddButtonImage = routeAddButtonTransform.GetComponent<Image>();
+		routeAddButton.onClick.RemoveAllListeners();
+		routeAddButton.onClick.AddListener(AddRoute);
 		
 		// temp data
 		AddPin("pompom", -1);
@@ -48,7 +58,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		AddPin("errol", -1);
 		UpdateWindows(); // delete after
     }
-
+    
 	private void InitializeEditWindow()
 	{
 		Transform CancelButton = editWindow.transform.Find("Canvas/ActionButtons/CancelButton");
@@ -78,6 +88,26 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		routeList.Add(route);
 		Debug.Log("RouteList Count:" + routeList.Count);
 		UpdateWindows();
+
+		routeAddButtonImage.sprite = finishSprite;
+		routeAddButton.onClick.RemoveAllListeners();
+		Debug.Log("Listeners removed. Adding FinishRoute...");
+		routeAddButton.onClick.AddListener(FinishRoute);
+		
+		StartCoroutine(ResetButton(0.1f));
+	}
+
+	private void FinishRoute()
+	{
+		currentActiveRoute = null;
+		xrRouteDrawer.RemoveCurrentRoute();
+		UpdateWindows();
+		
+		routeAddButtonImage.sprite = addSprite;
+		routeAddButton.onClick.RemoveAllListeners();
+		routeAddButton.onClick.AddListener(AddRoute);
+		
+		StartCoroutine(ResetButton(0.1f));
 	}
 
 	private void UpdateWindows()
@@ -353,5 +383,12 @@ public class UserInterfaceManagerScript : MonoBehaviour
     
 	    float totalHeight = (routeCount * routeItemHeight) + windowBarHeight + quadHeight;
 	    routeListParent.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
+    }
+    
+    private IEnumerator ResetButton(float delaySeconds)
+    {
+	    routeAddButton.interactable = false;
+	    yield return new WaitForSeconds(delaySeconds);
+	    routeAddButton.interactable = true;
     }
 }
