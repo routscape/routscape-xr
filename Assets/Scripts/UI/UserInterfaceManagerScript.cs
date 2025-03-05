@@ -12,15 +12,16 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private ParentButtonToggle parentButtonToggle;
 	[SerializeField] private TwoStepRadioButtonGroup twoStepRadioButtonGroup;
 	
-	[SerializeField] List<Pin> pinList = new List<Pin>();
+	[SerializeField] private List<Pin> pinList = new List<Pin>();
 	[SerializeField] private GameObject editPinWindow;
 
     void Start()
     {
 	    // temp data
-	    pinList.Add(new Pin("Pin 1", "Barangay A", new Vector3(0, 0, 0), ColorType.Red));
-	    pinList.Add(new Pin("Pin 2",  "Barangay B", new Vector3(0, 0, 0), ColorType.Blue));
-	    pinList.Add(new Pin("Pin 3",  "Barangay C", new Vector3(0, 0, 0), ColorType.Green));
+	    AddPin("pompom", -1);
+	    pinList.Add(new Pin("Pin 1", -1, ColorType.Red));
+	    pinList.Add(new Pin("Pin 2",  -2, ColorType.Blue));
+	    pinList.Add(new Pin("Pin 3",  -3, ColorType.Green));
 	    
 		Debug.Log("Start");
 		InitializeEditPinWindow();
@@ -42,7 +43,13 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
 	}
 
-    private void UpdatePinWindow()
+	public void AddPin(string pinName, int mapboxPinId)
+	{
+		/* default pin color is red */
+		pinList.Add(new Pin(pinName, mapboxPinId, ColorType.Red));
+	}
+
+	private void UpdatePinWindow()
     {
 		twoStepRadioButtonGroup.RemoveAllButton();
 		RemoveAllChildren(pinListTransform);
@@ -86,7 +93,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 			    if (tmpText != null)
 			    {
-				    tmpText.text = pin.Barangay;
+				    tmpText.text = "";
 			    }
 		    }
 
