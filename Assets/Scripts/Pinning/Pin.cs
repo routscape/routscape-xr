@@ -6,11 +6,11 @@ public class Pin
     public string Name { get; private set; }
 	// public string Barangay { get; private set; } // temp
     // public Vector3 Position { get; private set; }
-	public int MapboxPinId { get; private set; }
+	public string MapboxPinId { get; private set; }
     public ColorType PinColorType { get; private set; }
     public Color Color => ColorHexCodes.GetColor(PinColorType);
 
-    public Pin(string name, int mapboxId, ColorType colorType)
+    public Pin(string name, string mapboxId , ColorType colorType)
     {
         Name = name;
 		MapboxPinId = mapboxId;

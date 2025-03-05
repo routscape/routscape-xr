@@ -33,6 +33,7 @@ public class PinRaycast : MonoBehaviour
     {
         var latLong = _mapManager.WorldToGeoPosition(hitInfo.point);
         _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, callback: null, scaleDownWithWorld: true, "Pin");
+        Debug.Log(_mapManager.VectorData.GetPointsOfInterestSubLayerAtIndex(0).coordinates[0]);
         Destroy(transform.parent.parent.gameObject);
     }
 }

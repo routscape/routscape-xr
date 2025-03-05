@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	
 	[SerializeField] private GameObject routeManager;
 	
-	[SerializeField] private List<Pin> pinList = new List<Pin>();
+	[SerializeField] private List<Tuple<Pin, GameObject>> pinList = new List<Tuple<Pin, GameObject>>();
 	[SerializeField] private List<Route> routeList = new List<Route>();
 	[SerializeField] private GameObject editWindow;
 	
@@ -52,10 +53,6 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		routeAddButton.onClick.RemoveAllListeners();
 		routeAddButton.onClick.AddListener(AddRoute);
 		
-		// temp data
-		AddPin("pompom", -1);
-		AddPin("pampam", -1);
-		AddPin("errol", -1);
 		UpdateWindows(); // delete after
     }
     
@@ -74,10 +71,10 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
 	}
 
-	public void AddPin(string pinName, int mapboxPinId)
+	private void AddPin(GameObject pinObjet, string pinID)
 	{
 		/* default pin color is red */
-		pinList.Add(new Pin(pinName, mapboxPinId, ColorType.Red));
+		pinList.Add(new Tuple<Pin, GameObject>(new Pin("New Pin", pinID, ColorType.Red), pinObjet));
 		UpdateWindows();
 	}
 
@@ -171,8 +168,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		AdjustRouteWindowHeight();
 		
 		/* Update pin window */
-	    foreach (Pin pin in pinList)
+	    foreach (var tuple in pinList)
 	    {
+		    var pin = tuple.Item1;
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
 		    
 		    /* Edit color circle */
@@ -320,7 +318,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		int colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
 
 		/* Update item */
-		Pin pin = pinList.FirstOrDefault(pin => pin.Name == labelOld);
+		Pin pin = pinList.FirstOrDefault(tuple => tuple.Item1.Name == labelOld).Item1;
 		if (pin != null)
 		{
 			pin.Rename(labelNew);
@@ -372,7 +370,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	{
 		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
 		string objectLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-		Pin pin = pinList.FirstOrDefault(pin => pin.Name == objectLabel);
+		//TODO: Use pinID
+		var pin = pinList.FirstOrDefault(tuple => tuple.Item1.Name == objectLabel);
 		if (pin != null)
 		{
 			pinList.Remove(pin);
