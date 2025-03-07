@@ -50,6 +50,9 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
         isClickAllowed = false;
         StartCoroutine(EnableClickAfterDelay(0.3f));
 
+		/* disable button click if drawing route */
+		if (userInterfaceManager.currentActiveRoute != null) return;
+
         if (clickedButton == selectedButton)
         {
             Debug.Log("Selected button clicked");
