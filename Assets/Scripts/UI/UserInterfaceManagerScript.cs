@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 using System.Linq;
+using Mapbox.Unity.Map;
+using Mapbox.Utils;
 using Unity.VisualScripting;
 using ColorUtility = UnityEngine.ColorUtility;
 
@@ -36,11 +38,15 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	private Transform routeAddButtonTransform;
 	private Button routeAddButton;
 	private Image routeAddButtonImage;
+	private AbstractMap _mapManager;
+
+	public string currentPinID;
 	
     void Start()
     {
 		Debug.Log("Start");
 		xrRouteDrawer = routeManager.GetComponent<XRRouteDrawer>();
+		_mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
 		if (xrRouteDrawer)
 		{
 			Debug.Log("not null");
@@ -176,6 +182,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	    {
 		    var pin = tuple.Item1;
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
+		    newPinUI.GetComponent<PinID>().pinID = pin.MapboxPinId;
 		    
 		    /* Edit color circle */
 		    Transform colorCircle = newPinUI.transform.Find("PinItemTop/ColorCircle");
@@ -247,6 +254,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 		if (itemUI.name.StartsWith("PinItem"))
 		{
+			currentPinID = itemUI.GetComponent<PinID>().pinID;
 			label = itemUI.transform.Find("PinItemTop/PinLabel");
 			colorCircle = itemUI.transform.Find("PinItemTop/ColorCircle");
 		}
@@ -300,6 +308,21 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		editWindow.SetActive(true);
 	}
 
+	public void JumpToPin(string layerName)
+	{
+		var pins = _mapManager.VectorData.GetAllPointsOfInterestSubLayers();
+		foreach(var pin in pins)
+		{
+			Debug.Log("Pin "+ pin.prefabItemName);
+			if (pin.SubLayerNameContains(layerName))
+			{
+				var coordinates = pin.coordinates[0].Split(',');
+				Debug.Log(coordinates);
+				_mapManager.UpdateMap(new Vector2d(Double.Parse(coordinates[0]), Double.Parse(coordinates[1])));
+				return;
+			}
+		}
+	}
 	public void CloseEditWindow()
 	{
 		if (editWindow.activeSelf)
@@ -374,10 +397,13 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	{
 		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
 		string objectLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-		//TODO: Use pinID
-		var pin = pinList.FirstOrDefault(tuple => tuple.Item1.Name == objectLabel);
+		var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
 		if (pin != null)
 		{
+			PinRaycast.PinsDropped.Remove(currentPinID);
+			int index = currentPinID.IndexOf('-');
+			string layerName = currentPinID.Substring(0, index - 1);
+			_mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(layerName);
 			pinList.Remove(pin);
 		}
 		else
