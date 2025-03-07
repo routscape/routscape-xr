@@ -31,6 +31,7 @@ namespace Gestures
 
             if (++_grabCount != 1) return;
 
+            Object.RequestStateAuthority();
             _interactorId = pointerEvent.Identifier;
             _referencePosition = rayInteractor.End;
         }

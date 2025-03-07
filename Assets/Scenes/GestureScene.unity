@@ -13309,6 +13309,7 @@ GameObject:
   - component: {fileID: 114478715947305609}
   - component: {fileID: 114478715947305610}
   - component: {fileID: 114478715947305611}
+  - component: {fileID: 114478715947305612}
   m_Layer: 0
   m_Name: Mapbox Map
   m_TagString: mapbox map
@@ -13545,11 +13546,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1465206095
   ObjectInterest: 1
-  Flags: 131073
+  Flags: 524289
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 114478715947305610}
+  - {fileID: 114478715947305612}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &114478715947305612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257486771483177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b72e9ba2c21430c818f53e1079c2a93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
