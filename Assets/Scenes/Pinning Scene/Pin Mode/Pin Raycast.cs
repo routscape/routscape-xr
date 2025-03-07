@@ -48,7 +48,7 @@ public class PinRaycast : MonoBehaviour
     private void PinDropCallback(List<GameObject> items)
     {
         var pin = items.ElementAt(0);
-        string pinName = pin.transform.parent.name;
+        string pinName = "Pin " + NumPinsDropped + " - " + currCoordinates.x + " " + currCoordinates.y;
         if (PinsDropped.Contains(pinName))
         {
             return;
