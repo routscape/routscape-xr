@@ -1,3 +1,4 @@
+using Fusion;
 using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
 using Oculus.Interaction.PoseDetection;
@@ -6,7 +7,7 @@ using static Utils.HandGrabbing;
 
 namespace Gestures
 {
-    public class MapZoomHandler : MonoBehaviour
+    public class MapZoomHandler : NetworkBehaviour
     {
         [SerializeField] private AbstractMap mapManager;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
@@ -15,6 +16,10 @@ namespace Gestures
         [SerializeField] private float zoomSpeed = 1f;
         private bool _isZooming;
         private float _lastDistance;
+
+        [Networked]
+        [OnChangedRender(nameof(UpdateZoom))]
+        private float CurrentZoom { get; set; }
 
         private void Start()
         {
@@ -41,16 +46,14 @@ namespace Gestures
 
             if (!_isZooming) return;
 
-            Pose leftHandPose, rightHandPose;
-            leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
-            rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
+            leftHand.GetJointPose(HandJointId.HandPalm, out var leftHandPose);
+            rightHand.GetJointPose(HandJointId.HandPalm, out var rightHandPose);
             var leftHandPosition = leftHandPose.position;
             var rightHandPosition = rightHandPose.position;
             var distance = Vector3.Distance(leftHandPosition, rightHandPosition);
 
             var zoomAmount = zoomSpeed * (distance - _lastDistance);
-            var zoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
-            mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, zoom);
+            CurrentZoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
 
             _lastDistance = distance;
         }
@@ -64,6 +67,11 @@ namespace Gestures
             leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
             rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
             _lastDistance = Vector3.Distance(leftHandPose.position, rightHandPose.position);
+        }
+
+        private void UpdateZoom()
+        {
+            mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
         }
     }
 }
