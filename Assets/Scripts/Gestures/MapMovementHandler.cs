@@ -15,7 +15,7 @@ namespace Gestures
         private Vector3 _referencePosition;
 
         [Networked]
-        [OnChangedRender(nameof(UpdateMap))]
+        [OnChangedRender(nameof(UpdateLatLon))]
         private Vector3 CurrentLatLong { get; set; }
 
         public void OnSelect(PointerEvent pointerEvent)
@@ -73,7 +73,7 @@ namespace Gestures
             CurrentLatLong = newLatLong.ToVector3xz();
         }
 
-        private void UpdateMap()
+        private void UpdateLatLon()
         {
             mapManager.UpdateMap(CurrentLatLong.ToVector2d());
         }
