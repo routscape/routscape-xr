@@ -72,9 +72,9 @@ namespace Gestures
             CurrentLatLong = newLatLong.ToVector3xz();
         }
 
-        private void UpdateMap(Vector3 newLatLong)
+        private void UpdateMap()
         {
-            mapManager.UpdateMap(newLatLong.ToVector2d());
+            mapManager.UpdateMap(CurrentLatLong.ToVector2d());
         }
     }
 }
