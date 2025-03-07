@@ -1,15 +1,15 @@
 using System;
-using Fusion;
+using System.Linq;
 using Mapbox.Unity.Map;
-using Mapbox.Unity.Utilities;
 using Oculus.Interaction;
+using Oculus.Interaction.HandGrab;
 using UnityEngine;
 
-public class PinRaycast : NetworkBehaviour
+public class PinRaycast : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private GameObject mapPin;
-    private RaycastHit _hitInfo;
+    private RaycastHit hitInfo;
     private AbstractMap _mapManager;
 
     private void Start()
@@ -22,23 +22,17 @@ public class PinRaycast : NetworkBehaviour
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _hitInfo, 100f);
+        Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hitInfo, 100f);
         lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, _hitInfo.point);
+        lineRenderer.SetPosition(1, hitInfo.point);
     }
 
     public void OnDrop(PointerEvent eventData)
     {
-        var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
-        RpcSpawnPin(latLong.ToVector3xz());
+        var latLong = _mapManager.WorldToGeoPosition(hitInfo.point);
+        _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, callback: null, scaleDownWithWorld: true, "Pin");
         Destroy(transform.parent.parent.gameObject);
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.All)]
-    private void RpcSpawnPin(Vector3 position)
-    {
-        _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, position.ToVector2d(), null, true, "Pin");
     }
 }
