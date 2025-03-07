@@ -1,4 +1,3 @@
-using Fusion;
 using Oculus.Interaction;
 using Oculus.Interaction.PoseDetection;
 using UnityEngine;
@@ -12,8 +11,6 @@ namespace Gestures
         [SerializeField] private bool restrictToGrab;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
-
-        [SerializeField] private NetworkObject targetTransformNetworkObject;
 
         private Vector3 _position1;
         private bool _position1Set;
@@ -71,8 +68,6 @@ namespace Gestures
             // If both positions are filled, calculate the center point
             if (_position1Set && _position2Set)
             {
-                targetTransformNetworkObject.RequestStateAuthority();
-
                 var center = (_position1 + _position2) / 2;
                 transform.position = center;
                 Debug.Log("[CenterBetweenRays] Centering at " + center);
