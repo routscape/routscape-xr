@@ -58,13 +58,9 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
         }
         else
         {
-            Debug.Log("Selected button not clicked");
 			userInterfaceManager.CloseEditWindow();
             selectedButton = clickedButton;
-            var pinID = clickedButton.GetComponent<PinID>().pinID;
-            int index = pinID.IndexOf('-');
-            string layerName = pinID.Substring(0, index - 1);
-            userInterfaceManager.JumpToPin(layerName);
+            userInterfaceManager.JumpToPin(selectedButton.GetComponent<PinID>().latLong);
 
             foreach (Button button in buttons)
             {

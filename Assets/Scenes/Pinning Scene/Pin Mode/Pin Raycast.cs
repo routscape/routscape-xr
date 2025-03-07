@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mapbox.Unity.Map;
+using Mapbox.Utils;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using UnityEngine;
@@ -13,9 +14,10 @@ public class PinRaycast : MonoBehaviour
     private RaycastHit hitInfo;
     private AbstractMap _mapManager;
     
-    public static event Action<string, GameObject> OnPinDrop;
+    public static event Action<string, Vector2d, GameObject> OnPinDrop;
     public static int NumPinsDropped = 0;
     public static HashSet<string> PinsDropped = new HashSet<string>();
+    private static Vector2d currCoordinates;
 
     private void Start()
     {
@@ -37,6 +39,7 @@ public class PinRaycast : MonoBehaviour
     public void OnDrop(PointerEvent eventData)
     {
         var latLong = _mapManager.WorldToGeoPosition(hitInfo.point);
+        currCoordinates = latLong;
         _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, scaleDownWithWorld: true, "Pin " + NumPinsDropped);
         NumPinsDropped++;
         Destroy(transform.parent.parent.gameObject);
@@ -52,6 +55,6 @@ public class PinRaycast : MonoBehaviour
         }
 
         PinsDropped.Add(pinName);
-        OnPinDrop.Invoke(pinName, items.ElementAt(0));
+        OnPinDrop.Invoke(pinName, currCoordinates, items.ElementAt(0));
     }
 }
