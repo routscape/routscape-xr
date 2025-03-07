@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 using System.Linq;
+using Unity.VisualScripting;
+using ColorUtility = UnityEngine.ColorUtility;
 
 public class UserInterfaceManagerScript : MonoBehaviour
 {
@@ -52,6 +54,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		routeAddButtonImage = routeAddButtonTransform.GetComponent<Image>();
 		routeAddButton.onClick.RemoveAllListeners();
 		routeAddButton.onClick.AddListener(AddRoute);
+
+		PinRaycast.OnPinDrop += AddPin;
 		
 		UpdateWindows(); // delete after
     }
@@ -71,7 +75,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
 	}
 
-	private void AddPin(GameObject pinObjet, string pinID)
+	private void AddPin(string pinID, GameObject pinObjet)
 	{
 		/* default pin color is red */
 		pinList.Add(new Tuple<Pin, GameObject>(new Pin("New Pin", pinID, ColorType.Red), pinObjet));
