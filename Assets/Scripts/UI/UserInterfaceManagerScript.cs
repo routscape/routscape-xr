@@ -81,10 +81,10 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
 	}
 
-	private void AddPin(string pinID, GameObject pinObjet)
+	private void AddPin(string pinID, Vector2d latLong, GameObject pinObjet)
 	{
 		/* default pin color is red */
-		pinList.Add(new Tuple<Pin, GameObject>(new Pin("New Pin", pinID, ColorType.Red), pinObjet));
+		pinList.Add(new Tuple<Pin, GameObject>(new Pin("New Pin", pinID, latLong, ColorType.Red), pinObjet));
 		UpdateWindows();
 	}
 
@@ -183,6 +183,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		    var pin = tuple.Item1;
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
 		    newPinUI.GetComponent<PinID>().pinID = pin.MapboxPinId;
+		    newPinUI.GetComponent<PinID>().latLong = pin.LatLong;
 		    
 		    /* Edit color circle */
 		    Transform colorCircle = newPinUI.transform.Find("PinItemTop/ColorCircle");
@@ -308,20 +309,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		editWindow.SetActive(true);
 	}
 
-	public void JumpToPin(string layerName)
+	public void JumpToPin(Vector2d latLong)
 	{
-		var pins = _mapManager.VectorData.GetAllPointsOfInterestSubLayers();
-		foreach(var pin in pins)
-		{
-			Debug.Log("Pin "+ pin.prefabItemName);
-			if (pin.SubLayerNameContains(layerName))
-			{
-				var coordinates = pin.coordinates[0].Split(',');
-				Debug.Log(coordinates);
-				_mapManager.UpdateMap(new Vector2d(Double.Parse(coordinates[0]), Double.Parse(coordinates[1])));
-				return;
-			}
-		}
+		_mapManager.UpdateMap(latLong);
 	}
 	public void CloseEditWindow()
 	{
