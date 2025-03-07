@@ -14,6 +14,10 @@ namespace Gestures
         private int _interactorId = -1;
         private Vector3 _referencePosition;
 
+        [Networked]
+        [OnChangedRender(nameof(UpdateMap))]
+        private Vector3 CurrentLatLong { get; set; }
+
         public void OnSelect(PointerEvent pointerEvent)
         {
             var rayInteractor = pointerEvent.Data as RayInteractor;
@@ -65,11 +69,10 @@ namespace Gestures
             _referencePosition = rayInteractor.End;
 
             var newLatLong = mapManager.WorldToGeoPosition(mapManager.Root.position - delta);
-            UpdateMapRpc(newLatLong.ToVector3xz());
+            CurrentLatLong = newLatLong.ToVector3xz();
         }
 
-        [Rpc(RpcSources.All, RpcTargets.All)]
-        private void UpdateMapRpc(Vector3 newLatLong)
+        private void UpdateMap(Vector3 newLatLong)
         {
             mapManager.UpdateMap(newLatLong.ToVector2d());
         }
