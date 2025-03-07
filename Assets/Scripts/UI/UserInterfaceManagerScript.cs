@@ -394,10 +394,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		if (pin != null)
 		{
 			PinRaycast.PinsDropped.Remove(currentPinID);
-			int index = currentPinID.IndexOf('-');
-			string layerName = currentPinID.Substring(0, index - 1);
-			Debug.Log("Layer name " + layerName);
-			_mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(layerName);
+			_mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(currentPinID);
 			pinList.Remove(pin);
 		}
 		else

@@ -15,7 +15,6 @@ public class PinRaycast : MonoBehaviour
     private AbstractMap _mapManager;
     
     public static event Action<string, Vector2d, GameObject> OnPinDrop;
-    public static int NumPinsDropped = 0;
     public static HashSet<string> PinsDropped = new HashSet<string>();
     private static Vector2d currCoordinates;
 
@@ -40,15 +39,16 @@ public class PinRaycast : MonoBehaviour
     {
         var latLong = _mapManager.WorldToGeoPosition(hitInfo.point);
         currCoordinates = latLong;
-        _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, scaleDownWithWorld: true, "Pin " + NumPinsDropped);
-        NumPinsDropped++;
+        string pinName = "Pin - " + currCoordinates.x + " " + currCoordinates.y;
+        _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, scaleDownWithWorld: true, pinName);
         Destroy(transform.parent.parent.gameObject);
     }
 
     private void PinDropCallback(List<GameObject> items)
     {
         var pin = items.ElementAt(0);
-        string pinName = "Pin " + NumPinsDropped + " - " + currCoordinates.x + " " + currCoordinates.y;
+        string pinName = "Pin - " + currCoordinates.x + " " + currCoordinates.y;
+        Debug.Log("Pin ID " + pinName);
         if (PinsDropped.Contains(pinName))
         {
             return;
