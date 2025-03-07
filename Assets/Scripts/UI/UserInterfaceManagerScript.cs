@@ -349,7 +349,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 				case 1:
 					pin.ChangeColor(ColorType.Blue);
 					break;
-				case 3:
+				case 2:
 					pin.ChangeColor(ColorType.Red);
 					break;
 				default:
@@ -372,7 +372,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 				case 1:
 					route.ChangeColor(ColorType.Blue);
 					break;
-				case 3:
+				case 2:
 					route.ChangeColor(ColorType.Red);
 					break;
 				default:
