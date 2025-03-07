@@ -335,9 +335,10 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		int colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
 
 		/* Update item */
-		Pin pin = pinList.FirstOrDefault(tuple => tuple.Item1.Name == labelOld).Item1;
-		if (pin != null)
+		var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.Name == labelOld);
+		if (tuple != null)
 		{
+			Pin pin = tuple.Item1;
 			pin.Rename(labelNew);
 
 			switch (colorDropdownValue)
@@ -377,6 +378,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 				default:
 					break;
 			}
+
+			xrRouteDrawer.UpdateRoute(labelOld);
 		}
 
 		UpdateWindows();

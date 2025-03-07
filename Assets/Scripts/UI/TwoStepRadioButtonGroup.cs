@@ -60,7 +60,9 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
         {
 			userInterfaceManager.CloseEditWindow();
             selectedButton = clickedButton;
-            userInterfaceManager.JumpToPin(selectedButton.GetComponent<PinID>().latLong);
+            
+			var pinId = selectedButton.GetComponent<PinID>();
+			if (pinId != null) userInterfaceManager.JumpToPin(selectedButton.GetComponent<PinID>().latLong);
 
             foreach (Button button in buttons)
             {

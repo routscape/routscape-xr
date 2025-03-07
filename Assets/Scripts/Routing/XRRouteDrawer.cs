@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine.UI;
 
 public class XRRouteDrawer : MonoBehaviour
 {
     [SerializeField] private LayerMask mapboxLayer;
-    private Color initialColor = new Color(79f / 255f, 171f / 255f, 224f / 255f);
+    private ColorType initialColor = ColorType.Blue;
 	[SerializeField] private UserInterfaceManagerScript userInterfaceManagerScript;
 	[SerializeField] private OVRHand rightHand;
 	[SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
@@ -32,15 +34,15 @@ public class XRRouteDrawer : MonoBehaviour
 
     public Route CreateNewLine(string name)
     {
-        GameObject newLineObj = new GameObject("Route");
+        GameObject newLineObj = new GameObject(name);
         newLineObj.transform.parent = transform;
         LineRenderer newLineRenderer = newLineObj.AddComponent<LineRenderer>();
         newLineRenderer.positionCount = 0;
         newLineRenderer.startWidth = 0.01f;
         newLineRenderer.endWidth = 0.01f;
         newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        newLineRenderer.startColor = initialColor;
-        newLineRenderer.endColor = initialColor;
+        newLineRenderer.startColor = ColorHexCodes.GetColor(initialColor);
+        newLineRenderer.endColor = ColorHexCodes.GetColor(initialColor);
 
         Route newRoute = new Route(name, newLineRenderer, initialColor);
         routeList.Add(newRoute);
@@ -140,6 +142,23 @@ public class XRRouteDrawer : MonoBehaviour
             Debug.LogWarning($"Route with name '{routeName}' not found.");
         }
     }
+
+	public void UpdateRoute(string routeName)
+	{
+		int childCount = transform.childCount;
+		for (int i = 0; i < childCount; i++)
+        {
+            Transform child = transform.GetChild(i); // Get each child
+			if (child.name == routeName)
+			{
+				Route foundRoute = routeList.Find(route => route.Name == routeName);
+
+				LineRenderer lineRenderer = child.GetComponent<LineRenderer>();
+				lineRenderer.startColor = foundRoute.Color;  // Set the starting color to red
+            	lineRenderer.endColor = foundRoute.Color;
+			}
+        }
+	}
 
     public void RemoveCurrentRoute()
     {
