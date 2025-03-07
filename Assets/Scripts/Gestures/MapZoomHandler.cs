@@ -40,6 +40,7 @@ namespace Gestures
             if (!_isZooming && IsGrabbing(leftHand) && IsGrabbing(rightHand))
             {
                 _isZooming = true;
+                Object.RequestStateAuthority();
                 InitializeReferenceDistance();
                 return;
             }
