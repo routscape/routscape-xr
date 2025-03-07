@@ -1,33 +1,42 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class XRRouteDrawer : MonoBehaviour
 {
     [SerializeField] private LayerMask mapboxLayer;
-    [SerializeField] private Color initialColor = new Color(79f / 255f, 171f / 255f, 224f / 255f); // Default color is blue
+    private Color initialColor = new Color(79f / 255f, 171f / 255f, 224f / 255f);
+	[SerializeField] private UserInterfaceManagerScript userInterfaceManagerScript;
+	[SerializeField] private OVRHand rightHand;
+	[SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
     private List<Route> routeList = new List<Route>();
-    private bool isDrawing = false;
     private Route currentRoute;
+    private Vector3 lastPoint = Vector3.zero;
+    private float minDistanceBetweenPoints = 0.02f; // Minimum distance to register a new point
 
     void Update()
     {
-        // Detect a single poke (trigger press)
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
+        Vector3 hitPoint;
+        if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
         {
-            Vector3 hitPoint;
-            if (GetControllerHitPoint(out hitPoint))
+            if (currentRoute == null) // Start a new route if none exists
             {
-                AddPoint(hitPoint);  // Register a point only on trigger press
+                CreateNewLine("PokeRoute");
+            }
+    
+            if (Vector3.Distance(hitPoint, lastPoint) > minDistanceBetweenPoints
+				&& userInterfaceManagerScript.currentActiveRoute != null)
+            {
+                AddPoint(hitPoint); // Add point only if moved significantly
+                lastPoint = hitPoint;
             }
         }
-
-        // Stop drawing if the user releases the trigger
-        if (OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
+        else if (currentRoute != null) // Stop drawing if hand moves away
         {
-            StopDrawing();
+            currentRoute = null;
         }
     }
-    
+
     public Route CreateNewLine(string name)
     {
         GameObject newLineObj = new GameObject("Route");
@@ -39,7 +48,7 @@ public class XRRouteDrawer : MonoBehaviour
         newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         newLineRenderer.startColor = initialColor;
         newLineRenderer.endColor = initialColor;
-        
+
         Route newRoute = new Route(name, newLineRenderer, initialColor);
         routeList.Add(newRoute);
         SetCurrentRoute(name);
@@ -49,37 +58,82 @@ public class XRRouteDrawer : MonoBehaviour
 
     private void AddPoint(Vector3 newPoint)
     {
-        Debug.Log(currentRoute.Name);
-        if (routeList.Count == 0) return; // Safety check
+        if (currentRoute == null) return; // Safety check
         currentRoute.AddPoint(newPoint);
-
         Debug.Log($"Point added: {newPoint}");
     }
 
-    private void StopDrawing()
+	private bool GetFingerHitPoint(out Vector3 adjustedPoint)
+{
+    adjustedPoint = Vector3.zero;
+
+    if (rightHand == null)
     {
-        isDrawing = false;
-        Debug.Log("Drawing stopped.");
+        Debug.LogWarning("Right hand not assigned!");
+        return false;
     }
+
+    OVRSkeleton skeleton = rightHand.GetComponent<OVRSkeleton>();
+    if (skeleton == null || !skeleton.IsDataValid || !skeleton.IsDataHighConfidence || skeleton.Bones == null || skeleton.Bones.Count == 0)
+    {
+        Debug.LogWarning("Skeleton data is not valid or not initialized!");
+        return false;
+    }
+
+    // **Find the fingertip bone using the selectedFinger value**
+    OVRBone fingertip = skeleton.Bones.FirstOrDefault(b => b.Id == selectedFinger);
+
+    if (fingertip == null)
+    {
+        Debug.LogWarning($"Selected fingertip {selectedFinger} not found!");
+        return false;
+    }
+
+    // Use fingertip position
+    Vector3 fingerPosition = fingertip.Transform.position;
+
+    Debug.DrawRay(fingerPosition, Vector3.up * 0.05f, Color.red, 0.1f);
+    
+    // **Raycast downward to detect the map**
+    if (Physics.Raycast(fingerPosition, Vector3.down, out RaycastHit hit, 0.02f, mapboxLayer))
+    {
+        adjustedPoint = hit.point + Vector3.up * 0.01f;  // Slight offset
+        Debug.Log($"Finger hit detected at: {adjustedPoint}");
+        return true;
+    }
+
+    return false;
+}
+
 
     private bool GetControllerHitPoint(out Vector3 adjustedPoint)
     {
+        // Get the controller's position and rotation
         Vector3 origin = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
         Quaternion rotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
+    
+        // XR Simulator fallback
+        if (origin == Vector3.zero) origin = transform.position;
+        if (rotation == Quaternion.identity) rotation = transform.rotation;
+    
+        // Calculate the direction the controller is pointing
         Vector3 direction = rotation * Vector3.forward;
-
+    
+        // Debug the ray to visualize it in Scene View
         Debug.DrawRay(origin, direction * 50f, Color.green, 1f);
-
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, 10f, mapboxLayer))
+    
+        // Raycast to detect where the controller is pointing
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, 50f, mapboxLayer)) 
         {
-            adjustedPoint = hit.point + Vector3.up * 0.01f; // Slightly offset above the surface
+            adjustedPoint = hit.point + Vector3.up * 0.01f; // Slightly above surface
+            Debug.Log($"Hit detected at: {adjustedPoint}");
             return true;
         }
-
+    
         adjustedPoint = Vector3.zero;
         return false;
     }
-    
+
     private void SetCurrentRoute(string routeName)
     {
         Route foundRoute = routeList.Find(route => route.Name == routeName);

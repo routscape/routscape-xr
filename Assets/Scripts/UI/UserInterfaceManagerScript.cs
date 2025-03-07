@@ -33,7 +33,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	[SerializeField] private Sprite finishSprite;
 
 	private XRRouteDrawer xrRouteDrawer;
-	private Route currentActiveRoute;
+	public Route currentActiveRoute;
 
 	private Transform routeAddButtonTransform;
 	private Button routeAddButton;
