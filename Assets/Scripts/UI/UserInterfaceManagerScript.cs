@@ -401,6 +401,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		{
 			Route route = routeList.FirstOrDefault(route => route.Name == objectLabel);
 			routeList.Remove(route);
+			xrRouteDrawer.DeleteRoute(route.Name);
 		}
 
 		UpdateWindows();
