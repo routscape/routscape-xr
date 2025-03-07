@@ -5,15 +5,16 @@ using System.Text.RegularExpressions;
 public class Route
 {
     public string Name { get; private set; }
-    public ColorType PinColorType { get; private set; }
-    public Color Color => ColorHexCodes.GetColor(PinColorType);
+    public ColorType RouteColorType { get; private set; }
+    public Color Color => ColorHexCodes.GetColor(RouteColorType);
     private LineRenderer lineRenderer;
     private List<Vector3> routePoints;
 
-    public Route(string name, LineRenderer renderer, Color color)
+    public Route(string name, LineRenderer renderer, ColorType colorType)
     {
         Name = name;
         lineRenderer = renderer;
+		RouteColorType = colorType;
         routePoints = new List<Vector3>();
     }
 
@@ -40,6 +41,6 @@ public class Route
     
     public void ChangeColor(ColorType newColorType)
     {
-        PinColorType = newColorType;
+        RouteColorType = newColorType;
     }
 }
