@@ -19,10 +19,7 @@ public class XRRouteDrawer : MonoBehaviour
         Vector3 hitPoint;
         if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
         {
-            if (currentRoute == null) // Start a new route if none exists
-            {
-                CreateNewLine("PokeRoute");
-            }
+            if (currentRoute == null) return;
     
             if (Vector3.Distance(hitPoint, lastPoint) > minDistanceBetweenPoints
 				&& userInterfaceManagerScript.currentActiveRoute != null)
@@ -30,10 +27,6 @@ public class XRRouteDrawer : MonoBehaviour
                 AddPoint(hitPoint); // Add point only if moved significantly
                 lastPoint = hitPoint;
             }
-        }
-        else if (currentRoute != null) // Stop drawing if hand moves away
-        {
-            currentRoute = null;
         }
     }
 
@@ -64,46 +57,46 @@ public class XRRouteDrawer : MonoBehaviour
     }
 
 	private bool GetFingerHitPoint(out Vector3 adjustedPoint)
-{
-    adjustedPoint = Vector3.zero;
-
-    if (rightHand == null)
     {
-        Debug.LogWarning("Right hand not assigned!");
-        return false;
-    }
-
-    OVRSkeleton skeleton = rightHand.GetComponent<OVRSkeleton>();
-    if (skeleton == null || !skeleton.IsDataValid || !skeleton.IsDataHighConfidence || skeleton.Bones == null || skeleton.Bones.Count == 0)
-    {
-        Debug.LogWarning("Skeleton data is not valid or not initialized!");
-        return false;
-    }
-
-    // **Find the fingertip bone using the selectedFinger value**
-    OVRBone fingertip = skeleton.Bones.FirstOrDefault(b => b.Id == selectedFinger);
-
-    if (fingertip == null)
-    {
-        Debug.LogWarning($"Selected fingertip {selectedFinger} not found!");
-        return false;
-    }
-
-    // Use fingertip position
-    Vector3 fingerPosition = fingertip.Transform.position;
-
-    Debug.DrawRay(fingerPosition, Vector3.up * 0.05f, Color.red, 0.1f);
+        adjustedPoint = Vector3.zero;
     
-    // **Raycast downward to detect the map**
-    if (Physics.Raycast(fingerPosition, Vector3.down, out RaycastHit hit, 0.02f, mapboxLayer))
-    {
-        adjustedPoint = hit.point + Vector3.up * 0.01f;  // Slight offset
-        Debug.Log($"Finger hit detected at: {adjustedPoint}");
-        return true;
+        if (rightHand == null)
+        {
+            Debug.LogWarning("Right hand not assigned!");
+            return false;
+        }
+    
+        OVRSkeleton skeleton = rightHand.GetComponent<OVRSkeleton>();
+        if (skeleton == null || !skeleton.IsDataValid || !skeleton.IsDataHighConfidence || skeleton.Bones == null || skeleton.Bones.Count == 0)
+        {
+            Debug.LogWarning("Skeleton data is not valid or not initialized!");
+            return false;
+        }
+    
+        // **Find the fingertip bone using the selectedFinger value**
+        OVRBone fingertip = skeleton.Bones.FirstOrDefault(b => b.Id == selectedFinger);
+    
+        if (fingertip == null)
+        {
+            Debug.LogWarning($"Selected fingertip {selectedFinger} not found!");
+            return false;
+        }
+    
+        // Use fingertip position
+        Vector3 fingerPosition = fingertip.Transform.position;
+    
+        Debug.DrawRay(fingerPosition, Vector3.up * 0.05f, Color.red, 0.1f);
+        
+        // **Raycast downward to detect the map**
+        if (Physics.Raycast(fingerPosition, Vector3.down, out RaycastHit hit, 0.02f, mapboxLayer))
+        {
+            adjustedPoint = hit.point + Vector3.up * 0.01f;  // Slight offset
+            Debug.Log($"Finger hit detected at: {adjustedPoint}");
+            return true;
+        }
+    
+        return false;
     }
-
-    return false;
-}
 
 
     private bool GetControllerHitPoint(out Vector3 adjustedPoint)
