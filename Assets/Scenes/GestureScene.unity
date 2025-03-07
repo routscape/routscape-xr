@@ -2046,7 +2046,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 357520745}
-  - component: {fileID: 357520746}
   m_Layer: 0
   m_Name: Calibration
   m_TagString: Untagged
@@ -2071,24 +2070,6 @@ Transform:
   - {fileID: 1435601449}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &357520746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 357520744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 3868377837
-  ObjectInterest: 1
-  Flags: 524289
-  NestedObjects: []
-  NetworkedBehaviours: []
-  ForceRemoteRenderTimeframe: 0
 --- !u!1 &364844887
 GameObject:
   m_ObjectHideFlags: 0
@@ -3093,9 +3074,6 @@ GameObject:
   m_Component:
   - component: {fileID: 491427151}
   - component: {fileID: 491427166}
-  - component: {fileID: 491427167}
-  - component: {fileID: 491427168}
-  - component: {fileID: 491427169}
   m_Layer: 0
   m_Name: Map Elements
   m_TagString: Untagged
@@ -3143,55 +3121,6 @@ MonoBehaviour:
     MaxAngle:
       Constrain: 0
       Value: 0
---- !u!114 &491427167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491427150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 3068923525
-  ObjectInterest: 1
-  Flags: 524289
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 491427168}
-  - {fileID: 491427169}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &491427168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491427150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 1
---- !u!114 &491427169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 491427150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b72e9ba2c21430c818f53e1079c2a93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &500408566
 GameObject:
   m_ObjectHideFlags: 0
@@ -11395,7 +11324,6 @@ GameObject:
   - component: {fileID: 1938663804}
   - component: {fileID: 1938663808}
   - component: {fileID: 1938663807}
-  - component: {fileID: 1938663810}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -11599,19 +11527,6 @@ MonoBehaviour:
   leftFingerFeatureStateProvider: {fileID: 34863980}
   rightFingerFeatureStateProvider: {fileID: 1232036646}
   zoomSpeed: 1
---- !u!114 &1938663810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1938663801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 413bd4e9cbbc96b46ac5a1d62a4105d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UseGravity: 0
 --- !u!1 &1944220626
 GameObject:
   m_ObjectHideFlags: 0
@@ -13393,6 +13308,7 @@ GameObject:
   - component: {fileID: 4867834017222079}
   - component: {fileID: 114478715947305609}
   - component: {fileID: 114478715947305610}
+  - component: {fileID: 114478715947305611}
   m_Layer: 0
   m_Name: Mapbox Map
   m_TagString: mapbox map
@@ -13615,6 +13531,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapManager: {fileID: 114478715947305609}
+--- !u!114 &114478715947305611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257486771483177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1465206095
+  ObjectInterest: 1
+  Flags: 131073
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

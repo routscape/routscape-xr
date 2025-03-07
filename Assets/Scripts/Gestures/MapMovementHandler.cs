@@ -1,10 +1,12 @@
+using Fusion;
 using Mapbox.Unity.Map;
+using Mapbox.Unity.Utilities;
 using Oculus.Interaction;
 using UnityEngine;
 
 namespace Gestures
 {
-    public class MapMovementHandler : MonoBehaviour
+    public class MapMovementHandler : NetworkBehaviour
     {
         [SerializeField] private AbstractMap mapManager;
 
@@ -63,7 +65,13 @@ namespace Gestures
             _referencePosition = rayInteractor.End;
 
             var newLatLong = mapManager.WorldToGeoPosition(mapManager.Root.position - delta);
-            mapManager.UpdateMap(newLatLong);
+            UpdateMapRpc(newLatLong.ToVector3xz());
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.All)]
+        private void UpdateMapRpc(Vector3 newLatLong)
+        {
+            mapManager.UpdateMap(newLatLong.ToVector2d());
         }
     }
 }
