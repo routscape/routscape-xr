@@ -3098,6 +3098,7 @@ Transform:
   - {fileID: 1938663802}
   - {fileID: 685364395}
   - {fileID: 75444856}
+  - {fileID: 1716150298}
   m_Father: {fileID: 1830373434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &491427166
@@ -8252,6 +8253,8 @@ GameObject:
   - component: {fileID: 1435601450}
   - component: {fileID: 1435601452}
   - component: {fileID: 1435601453}
+  - component: {fileID: 1435601455}
+  - component: {fileID: 1435601454}
   - component: {fileID: 1435601451}
   m_Layer: 0
   m_Name: Calibration Confirm
@@ -8430,6 +8433,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1435601455}
+        m_TargetAssemblyTypeName: EnableGameObject, Assembly-CSharp
+        m_MethodName: OnTrigger
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1435601454}
+        m_TargetAssemblyTypeName: SpawnPinUI, Assembly-CSharp
+        m_MethodName: SpawnUI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _whenUnselect:
     m_PersistentCalls:
       m_Calls: []
@@ -8465,8 +8492,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1938663801}
+--- !u!114 &1435601454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435601445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ada868a21bd4645bc21edd2ac090e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   pinUI: {fileID: 290604070}
   mapLocation: {fileID: 1830373434}
+--- !u!114 &1435601455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435601445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38a5b091542bd224ca1aebc1f819445d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1716150297}
 --- !u!1 &1441333306
 GameObject:
   m_ObjectHideFlags: 0
@@ -9653,6 +9705,74 @@ Transform:
   m_Children: []
   m_Father: {fileID: 433634071}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1716150297
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1716150298}
+  - component: {fileID: 1716150300}
+  - component: {fileID: 1716150299}
+  m_Layer: 0
+  m_Name: Zoom Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1716150298
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716150297}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 491427151}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1716150299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716150297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ee9c5165a437f4f896a3e075944b42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapManager: {fileID: 114478715947305609}
+  leftFingerFeatureStateProvider: {fileID: 34863980}
+  rightFingerFeatureStateProvider: {fileID: 1232036646}
+  zoomSpeed: 1
+--- !u!114 &1716150300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716150297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 380557436
+  ObjectInterest: 1
+  Flags: 524289
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1716150299}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1746291468
 GameObject:
   m_ObjectHideFlags: 0
@@ -11322,7 +11442,6 @@ GameObject:
   - component: {fileID: 1938663806}
   - component: {fileID: 1938663805}
   - component: {fileID: 1938663804}
-  - component: {fileID: 1938663808}
   - component: {fileID: 1938663807}
   m_Layer: 0
   m_Name: Mesh
@@ -11511,22 +11630,6 @@ MonoBehaviour:
   _whenCancel:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1938663808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1938663801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30ee9c5165a437f4f896a3e075944b42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapManager: {fileID: 114478715947305609}
-  leftFingerFeatureStateProvider: {fileID: 34863980}
-  rightFingerFeatureStateProvider: {fileID: 1232036646}
-  zoomSpeed: 1
 --- !u!1 &1944220626
 GameObject:
   m_ObjectHideFlags: 0
