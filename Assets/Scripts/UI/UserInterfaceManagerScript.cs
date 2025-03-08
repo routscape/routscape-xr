@@ -315,6 +315,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	}
 	public void CloseEditWindow()
 	{
+		Transform editWindowLabel = editWindow.transform.Find("Canvas/Input/LabelInput");
+		editWindowLabel.GetComponent<TMP_InputField>().text = "";
+
 		if (editWindow.activeSelf)
 		{
 			editWindow.SetActive(false);
