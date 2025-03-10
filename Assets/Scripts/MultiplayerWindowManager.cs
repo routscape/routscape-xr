@@ -16,7 +16,7 @@ public class MultiplayerWindowManager : MonoBehaviour
 
     void JoinRoom()
     {
-        var roomId = labelInput.transform.Find("Text Area/Placeholder");
+        var roomId = labelInput.transform.Find("Text Area/Placeholder").GetComponent<TMP_InputField>().text;
         Debug.Log(roomId);
         
         // TODO
@@ -24,7 +24,7 @@ public class MultiplayerWindowManager : MonoBehaviour
 
     void CreateRoom()
     {
-        var roomId = labelInput.transform.Find("Text Area/Placeholder");
+        var roomId = labelInput.transform.Find("Text Area/Placeholder").GetComponent<TMP_InputField>().text;
         Debug.Log(roomId);
         
         // TODO
