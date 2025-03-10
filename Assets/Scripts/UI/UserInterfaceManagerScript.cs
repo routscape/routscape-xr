@@ -98,6 +98,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	public void AddRoute()
 	{
 		mode = 1;
+		xrRouteDrawer.enabled = true;
 		Route route = xrRouteDrawer.CreateNewLine();
 		currentActiveRoute = route;
 		routeList.Add(route);
@@ -118,6 +119,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
 		currentActiveRoute = null;
 		xrRouteDrawer.RemoveCurrentRoute();
+		xrRouteDrawer.enabled = false;
 		UpdateWindows();
 		
 		routeAddButtonImage.sprite = addSprite;
