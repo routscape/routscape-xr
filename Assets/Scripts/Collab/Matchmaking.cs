@@ -30,6 +30,7 @@ namespace Collab
                 }
 
                 Debug.Log($"[Matchmaking] Room created: {createResult.RoomToken}");
+                return true;
             }
 
             Debug.Log($"[Matchmaking] Room joined: {joinResult.RoomToken}");
