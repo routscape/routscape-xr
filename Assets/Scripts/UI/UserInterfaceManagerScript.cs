@@ -45,7 +45,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	public string currentPinID;
 	
 	private Transform routeManagerTransform;
-	
+
+	public int mode = 0;
     void Start()
     {
 		Debug.Log("Start");
@@ -96,6 +97,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	public void AddRoute()
 	{
+		mode = 1;
 		Route route = xrRouteDrawer.CreateNewLine();
 		currentActiveRoute = route;
 		routeList.Add(route);
@@ -112,6 +114,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	private void FinishRoute()
 	{
+		mode = 0;
+		routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
 		currentActiveRoute = null;
 		xrRouteDrawer.RemoveCurrentRoute();
 		UpdateWindows();

@@ -30,4 +30,9 @@ public class RouteManager : MonoBehaviour
     {
         _spawnedRoutes.Add(spawnedRoute);
     }
+
+    public void DeleteSpawnedRoute(Route route)
+    {
+        _spawnedRoutes.Remove(route);
+    }
 }
