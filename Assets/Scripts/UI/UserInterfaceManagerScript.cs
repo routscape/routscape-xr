@@ -6,6 +6,7 @@ using System.Collections;
 using TMPro;
 using System.Linq;
 using Mapbox.Unity.Map;
+using Mapbox.Unity.MeshGeneration.Modifiers;
 using Mapbox.Utils;
 using Unity.VisualScripting;
 using ColorUtility = UnityEngine.ColorUtility;
@@ -31,6 +32,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 	
 	[SerializeField] private Sprite addSprite;
 	[SerializeField] private Sprite finishSprite;
+	[SerializeField] private Material[] colors;
 
 	private XRRouteDrawer xrRouteDrawer;
 	public Route currentActiveRoute;
@@ -346,6 +348,16 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	void ConfirmEditWindow()
 	{
+
+		var item = _mapManager.VectorData.GetAllFeatureSubLayers().ElementAt(0);
+		var pinModifier = ScriptableObject.CreateInstance<PinModifier>();
+		var emptyMeshModifiers = new List<MeshModifier>();         // no mesh modifiers
+		var newGameObjectMods = new List<GameObjectModifier>() { pinModifier };
+
+		item.CreateCustomStyle(emptyMeshModifiers, newGameObjectMods);
+		item.HasChanged = true;
+		_mapManager.UpdateMap();
+		
 		/* Get edit window values */
 		Transform editWindowHint = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
 		Transform editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
@@ -356,28 +368,30 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		int colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
 
 		/* Update item */
-		var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.Name == labelOld);
+		var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
 		if (tuple != null)
 		{
 			Pin pin = tuple.Item1;
+			GameObject pinObject = tuple.Item2;
 			pin.Rename(labelNew);
 
 			switch (colorDropdownValue)
 			{
 				case 0:
 					pin.ChangeColor(ColorType.Green);
+					pinObject.GetComponentInChildren<MeshRenderer>().material = colors[0];
 					break;
 				case 1:
 					pin.ChangeColor(ColorType.Blue);
+					pinObject.GetComponentInChildren<MeshRenderer>().material = colors[1];
 					break;
 				case 2:
 					pin.ChangeColor(ColorType.Red);
+					pinObject.GetComponentInChildren<MeshRenderer>().material = colors[2];
 					break;
 				default:
 					break;
 			}
-
-			return;
 		}
 			
 		Route route = routeList.FirstOrDefault(route => route.Name == labelOld);
