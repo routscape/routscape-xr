@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Mapbox.Unity.Map;
-using Mapbox.Utils;
+using Mapbox.Unity.Utilities;
 using Oculus.Interaction;
-using Pins;
+using Pinning;
 using UnityEngine;
 
 public class PinRaycast : MonoBehaviour
@@ -13,10 +11,7 @@ public class PinRaycast : MonoBehaviour
     [SerializeField] private GameObject mapPin;
     private RaycastHit _hitInfo;
     private AbstractMap _mapManager;
-    
-    public static event Action<string, Vector2d, GameObject> OnPinDrop;
-    public static HashSet<string> PinsDropped = new HashSet<string>();
-    private static Vector2d currCoordinates;
+    private PersistentPinSpawnHandler _pinSpawnHandler;
 
     private void Start()
     {
@@ -33,8 +28,6 @@ public class PinRaycast : MonoBehaviour
             Debug.Log("Pin: No network persistence found!");
             throw new Exception("Pin: No network persistence found!");
         }
-
-        _pinSpawnHandler.MapPin = mapPin;
     }
 
     private void FixedUpdate()
@@ -46,24 +39,8 @@ public class PinRaycast : MonoBehaviour
 
     public void OnDrop(PointerEvent eventData)
     {
-        var latLong = _mapManager.WorldToGeoPosition(hitInfo.point);
-        currCoordinates = latLong;
-        string pinName = "Pin - " + currCoordinates.x + " " + currCoordinates.y;
-        _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, scaleDownWithWorld: true, pinName);
+        var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
+        _pinSpawnHandler.RpcSpawnPin(latLong.ToVector3xz());
         Destroy(transform.parent.parent.gameObject);
-    }
-
-    private void PinDropCallback(List<GameObject> items)
-    {
-        var pin = items.ElementAt(0);
-        string pinName = "Pin - " + currCoordinates.x + " " + currCoordinates.y;
-        Debug.Log("Pin ID " + pinName);
-        if (PinsDropped.Contains(pinName))
-        {
-            return;
-        }
-
-        PinsDropped.Add(pinName);
-        OnPinDrop.Invoke(pinName, currCoordinates, items.ElementAt(0));
     }
 }
