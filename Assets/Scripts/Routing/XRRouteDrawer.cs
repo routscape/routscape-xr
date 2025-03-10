@@ -1,21 +1,32 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Mapbox.Unity.Map;
 using TMPro;
 using UnityEngine.UI;
 
 public class XRRouteDrawer : MonoBehaviour
 {
+    public int numTotalRoutes = 0;
+    
     [SerializeField] private LayerMask mapboxLayer;
     private ColorType initialColor = ColorType.Blue;
 	[SerializeField] private UserInterfaceManagerScript userInterfaceManagerScript;
 	[SerializeField] private OVRHand rightHand;
 	[SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
+    [SerializeField] private RouteManager routeManager;
+    
     private List<Route> routeList = new List<Route>();
     private Route currentRoute;
     private Vector3 lastPoint = Vector3.zero;
-    private float minDistanceBetweenPoints = 0.02f; // Minimum distance to register a new point
+    private float minDistanceBetweenPoints = 0.06f; // Minimum distance to register a new point
 
+    private AbstractMap _mapManager;
+
+    void Start()
+    {
+        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
+    }
     void Update()
     {
         Vector3 hitPoint;
@@ -32,8 +43,9 @@ public class XRRouteDrawer : MonoBehaviour
         }
     }
 
-    public Route CreateNewLine(string name)
+    public Route CreateNewLine()
     {
+        string name = "Route - " + numTotalRoutes;
         GameObject newLineObj = new GameObject(name);
         newLineObj.transform.parent = transform;
         LineRenderer newLineRenderer = newLineObj.AddComponent<LineRenderer>();
@@ -45,16 +57,19 @@ public class XRRouteDrawer : MonoBehaviour
         newLineRenderer.endColor = ColorHexCodes.GetColor(initialColor);
 
         Route newRoute = new Route(name, newLineRenderer, initialColor);
+        newRoute.prefab = newLineObj;
         routeList.Add(newRoute);
+        routeManager.AddSpawnedRoute(newRoute);
         SetCurrentRoute(name);
         Debug.Log("CreateNewLine");
+        numTotalRoutes++;
         return newRoute;
     }
 
     private void AddPoint(Vector3 newPoint)
     {
         if (currentRoute == null) return; // Safety check
-        currentRoute.AddPoint(newPoint);
+        currentRoute.AddPoint(newPoint, _mapManager);
         Debug.Log($"Point added: {newPoint}");
     }
 
@@ -160,22 +175,22 @@ public class XRRouteDrawer : MonoBehaviour
         }
 	}
 
-	public void DeleteRoute(string routeName)
-	{
-		int childCount = transform.childCount;
-		for (int i = 0; i < childCount; i++)
+    public void DeleteRoute(string routeName)
+    {
+        int childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++)
         {
             Transform child = transform.GetChild(i); // Get each child
-			if (child.name == routeName)
-			{
-				Route foundRoute = routeList.Find(route => route.Name == routeName);
-				routeList.Remove(foundRoute);
+            if (child.name == routeName)
+            {
+                Route foundRoute = routeList.Find(route => route.Name == routeName);
+                routeList.Remove(foundRoute);
 
-				Destroy(child.gameObject);
-			}
+                Destroy(child.gameObject);
+            }
         }
-	}
-
+    }
+    
     public void RemoveCurrentRoute()
     {
         currentRoute = null;

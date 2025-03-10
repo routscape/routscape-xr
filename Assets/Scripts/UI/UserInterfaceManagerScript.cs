@@ -96,7 +96,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	public void AddRoute()
 	{
-		Route route = xrRouteDrawer.CreateNewLine("Route " + routeList.Count);
+		Route route = xrRouteDrawer.CreateNewLine();
 		currentActiveRoute = route;
 		routeList.Add(route);
 		Debug.Log("RouteList Count:" + routeList.Count);
