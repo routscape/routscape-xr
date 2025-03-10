@@ -1,5 +1,6 @@
 using System;
 using Mapbox.Unity.Map;
+using Mapbox.Unity.Utilities;
 using Oculus.Interaction;
 using Pinning;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class PinRaycast : MonoBehaviour
     public void OnDrop(PointerEvent eventData)
     {
         var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
-        _pinSpawnHandler.SpawnPinOnLocation(latLong);
+        _pinSpawnHandler.RpcSpawnPin(latLong.ToVector3xz());
         Destroy(transform.parent.parent.gameObject);
     }
 }
