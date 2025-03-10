@@ -39,9 +39,9 @@ namespace Pinning
         {
             var latLong = position.ToVector2d();
             var pinName = "Pin - " + latLong.x + " " + latLong.y;
+            _locationQueue.Enqueue(latLong);
             _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, true,
                 pinName);
-            _locationQueue.Enqueue(latLong);
         }
 
         private void PinDropCallback(List<GameObject> items)
