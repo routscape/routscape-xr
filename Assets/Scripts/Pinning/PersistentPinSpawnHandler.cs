@@ -34,8 +34,14 @@ namespace Pinning
 
         public static event Action<string, Vector2d, GameObject> OnPinDrop;
 
+        public void SpawnPinOnLocation(Vector2d location)
+        {
+            Object.RequestStateAuthority();
+            RpcSpawnPin(location.ToVector3xz());
+        }
+
         [Rpc]
-        public void RpcSpawnPin(Vector3 position)
+        private void RpcSpawnPin(Vector3 position)
         {
             var latLong = position.ToVector2d();
             var pinName = "Pin - " + latLong.x + " " + latLong.y;
