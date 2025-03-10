@@ -30,14 +30,6 @@ namespace Collab
                 }
 
                 Debug.Log($"[Matchmaking] Room created: {createResult.RoomToken}");
-
-                // Try to join again
-                joinResult = await JoinRoom();
-                if (!joinResult.IsSuccess)
-                {
-                    Debug.LogError($"[Matchmaking] Failed to join room: {createResult.RoomToken}");
-                    return false;
-                }
             }
 
             Debug.Log($"[Matchmaking] Room joined: {joinResult.RoomToken}");
