@@ -9,16 +9,16 @@ namespace Collab
         [SerializeField] private CustomMatchmaking customMatchmaking;
         [SerializeField] private string roomName = "RoutScape";
 
-        private void Start()
+        private async void Start()
         {
-            var roomJoinTask = InitializeRoomConnection();
-            if (!roomJoinTask.Result) Debug.LogError("[Matchmaking] Failed to initialize room connection");
+            var roomJoinTask = await InitializeRoomConnection();
+            if (!roomJoinTask) Debug.LogError("[Matchmaking] Failed to initialize room connection");
         }
 
         private async Task<bool> InitializeRoomConnection()
         {
             // Try to join first
-            var joinResult = await JoinRoom(roomName);
+            var joinResult = await JoinRoom();
             if (!joinResult.IsSuccess)
             {
                 // If joining fails, create a room
@@ -29,18 +29,18 @@ namespace Collab
                     return false;
                 }
 
-                Debug.Log("[Matchmaking] Room created");
+                Debug.Log($"[Matchmaking] Room created: {createResult.RoomToken}");
 
                 // Try to join again
-                joinResult = await JoinRoom(roomName);
+                joinResult = await JoinRoom();
                 if (!joinResult.IsSuccess)
                 {
-                    Debug.LogError("[Matchmaking] Failed to join room");
+                    Debug.LogError($"$[Matchmaking] Failed to join room: {createResult.RoomToken}");
                     return false;
                 }
             }
 
-            Debug.Log("[Matchmaking] Room joined");
+            Debug.Log($"$[Matchmaking] Room joined: {joinResult.RoomToken}");
             return true;
         }
 
@@ -54,7 +54,7 @@ namespace Collab
             });
         }
 
-        private async Task<CustomMatchmaking.RoomOperationResult> JoinRoom(string roomName)
+        private async Task<CustomMatchmaking.RoomOperationResult> JoinRoom()
         {
             return await customMatchmaking.JoinOpenRoom(roomName);
         }
