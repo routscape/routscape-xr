@@ -1,111 +1,94 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 
 public class TwoStepRadioButtonGroup : MonoBehaviour
 {
-    [SerializeField] private Button[] buttons;
-    [SerializeField] private Color defaultColor;
-    [SerializeField] private Color selectedColor;
-    [SerializeField] private Color activeColor;
+    [SerializeField] private List<Button> buttons = new List<Button>();
+    private Color defaultColor = new Color(0f, 0f, 0f, 0f);
+    private Color selectedColor = new Color(0f, 0f, 0f, 81f / 255f);
+    private Color activeColor = new Color(10f / 255f, 132f / 255f, 1f, 180f / 255f);
+	private Color drawingColor = new Color(0.31f, 0.88f, 0.28f, 180f / 255f);
     
-    [SerializeField] private GameObject editPopup;
-    [SerializeField] private TextMeshProUGUI editPopupDisplayText;
-	[SerializeField] private string editPopupDisplayTextString;
-    [SerializeField] private Button editPopupCloseButton;
-    [SerializeField] private Button editPopupConfirmButton;
+	[SerializeField] private UserInterfaceManagerScript userInterfaceManager;
 
-	private Button selectedButton;
+    private Button selectedButton;
+    private bool isClickAllowed = true;
 
-    private void Start()
-    {
-        foreach (Button button in buttons)
-        {
-            button.onClick.AddListener(() => OnButtonClicked(button));
-        }
-        
-        if (editPopupCloseButton != null)
-        {
-            editPopupCloseButton.onClick.AddListener(CloseEditPopup);
-        }
-        
-        if (editPopupConfirmButton != null)
-        {
-            editPopupConfirmButton.onClick.AddListener(ConfirmEditPopup);
-        }
-    }
+	public void AddButton(Button button, bool isDrawing)
+	{
+		buttons.Add(button);
+		button.onClick.AddListener(() => OnButtonClicked(button));
+
+		if (isDrawing)
+		{
+			UpdateButtonColor(button, drawingColor);
+		} else
+		{
+			UpdateButtonColor(button, defaultColor);
+		}
+	}
+
+	public void RemoveAllButton()
+	{
+		buttons.Clear();
+	}
+
+	public void SetNoActive()
+	{
+		if (selectedButton != null)
+		{
+			UpdateButtonColor(selectedButton, selectedColor);
+		}
+	}
 
     private void OnButtonClicked(Button clickedButton)
     {
-        // Open EditPopup when the currently selected button (item with grayed background) is clicked again
+        if (!isClickAllowed) return;
+        isClickAllowed = false;
+        StartCoroutine(EnableClickAfterDelay(0.3f));
+
+		/* disable button click if drawing route */
+		if (userInterfaceManager.currentActiveRoute != null) return;
+
         if (clickedButton == selectedButton)
         {
-            if (editPopup != null)
-            {
-                bool isActive = !editPopup.activeSelf;
-                
-                // Show EditPopup
-                editPopup.SetActive(isActive);
-
-                // Change EditPopup window title
-                if (editPopup.activeSelf && editPopupDisplayText != null)
-                {
-                    editPopupDisplayText.text = editPopupDisplayTextString;
-                }
-
-                // Update button color
-                if (isActive && clickedButton != null)
-                {
-                    UpdateButtonColor(clickedButton, activeColor);
-                }
-                else
-                {
-                    UpdateButtonColor(clickedButton, selectedColor);
-                }
-            }
+            Debug.Log("Selected button clicked");
+			userInterfaceManager.OpenEditWindow(clickedButton);
+            UpdateButtonColor(clickedButton, activeColor);
         }
-        // Pan the map to the selected item?
         else
         {
+			userInterfaceManager.CloseEditWindow();
             selectedButton = clickedButton;
+            
+			var pinId = selectedButton.GetComponent<PinID>();
+			if (pinId != null) userInterfaceManager.JumpToPin(selectedButton.GetComponent<PinID>().latLong);
 
             foreach (Button button in buttons)
             {
                 UpdateButtonColor(button, defaultColor);
             }
-            
-            UpdateButtonColor(selectedButton, selectedColor);
+
+            UpdateButtonColor(clickedButton, selectedColor);
         }
+    }
+
+    private IEnumerator EnableClickAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isClickAllowed = true;
     }
 
     private void UpdateButtonColor(Button button, Color color)
     {
         Image buttonImage = button.GetComponent<Image>();
-        
         if (buttonImage != null)
         {
+            Debug.Log($"Updating {button.name} color: {color}");
             buttonImage.color = color;
         }
-    }
-    
-    private void CloseEditPopup()
-    {
-        // Hide EditPopup
-        if (editPopup != null)
-        {
-            editPopup.SetActive(false);
-        }
-        
-        // Set button color back to "selectedColor"
-        if (selectedButton != null)
-        {
-            UpdateButtonColor(selectedButton, selectedColor);
-        }
-    }
-
-    private void ConfirmEditPopup()
-    {
-        // TODO: Process Changes
-        CloseEditPopup();
     }
 }

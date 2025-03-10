@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
@@ -7,8 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SelectHandler : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+{ 
     [SerializeField] private GameObject _pinObject;
     [SerializeField] private Transform _leftPinchArea;
     [SerializeField] private Transform _rightPinchArea;

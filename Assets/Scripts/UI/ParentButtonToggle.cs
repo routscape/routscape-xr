@@ -36,6 +36,12 @@ public class ParentButtonToggle : MonoBehaviour
 
         UpdateParentButtonState();
     }
+
+    public void AddButtonToggle(ButtonToggle buttonToggle)
+    {
+        childButtonToggleList.Add(buttonToggle);
+        buttonToggle.OnItemStateChanged += UpdateParentButtonState;
+    }
     
     private void OnParentButtonClick()
     {
