@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ButtonToggle : MonoBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
+	[SerializeField] private UserInterfaceManagerScript userInterfaceManager;
     
     private Button itemButton;
     private Image itemImage;
@@ -12,7 +14,8 @@ public class ButtonToggle : MonoBehaviour
     public delegate void ItemStateChanged();
     public event ItemStateChanged OnItemStateChanged;
     private bool _clicked = false;
-    
+	private string itemName;    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,8 +27,14 @@ public class ButtonToggle : MonoBehaviour
             itemButton.onClick.AddListener(OnButtonClick);
         }
 
+		itemName = GetComponent<Transform>().parent.Find("RouteLabel").GetComponent<TextMeshProUGUI>().text;
         SetItemState(true);
     }
+
+	public void SetUserInterfaceManager(UserInterfaceManagerScript userInterfaceManager)
+	{
+		this.userInterfaceManager = userInterfaceManager;
+	}
     
     private void OnButtonClick()
     {
@@ -34,13 +43,7 @@ public class ButtonToggle : MonoBehaviour
     
     public void SetItemState(bool newState)
     {
-        if (_clicked)
-        {
-            _clicked = false;
-            return;
-        }
-
-        _clicked = true;
+		userInterfaceManager.ShowRoute(itemName, !isActive);
         isActive = newState;
 
 		// Set item image based on its state

@@ -42,6 +42,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 	public string currentPinID;
 	
+	private Transform routeManagerTransform;
+	
     void Start()
     {
 		Debug.Log("Start");
@@ -51,6 +53,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		{
 			Debug.Log("not null");
 		}
+		
+		routeManagerTransform = routeManager.GetComponent<Transform>();
 
 		InitializeEditWindow();
 		
@@ -126,8 +130,15 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		/* Update route window */
 		foreach (Route route in routeList)
 		{
-			Debug.Log("insta route");
+			Debug.Log(this.gameObject.name);
 			GameObject newRouteUI = Instantiate(routeItemPrefab, routeListTransform);
+			
+			/* Set button toggle */
+			Transform showHideToggle = newRouteUI.transform.Find("RouteItemTop/ShowHideToggle");
+		    
+			ButtonToggle buttonToggle = showHideToggle.GetComponent<ButtonToggle>();
+			buttonToggle.SetUserInterfaceManager(this);
+			routeParentButtonToggle.AddButtonToggle(buttonToggle);
 		    
 			/* Edit color circle */
 			Transform colorCircle = newRouteUI.transform.Find("RouteItemTop/ColorCircle");
@@ -156,7 +167,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 			}
 
 			/* Add show/hide toggle to group */
-			Transform routeShowHideToggle = newRouteUI.transform.Find("PinItemTop/ShowHideToggle");
+			Transform routeShowHideToggle = newRouteUI.transform.Find("RouteItemTop/ShowHideToggle");
 
 			if (routeShowHideToggle != null)
 			{
@@ -184,6 +195,13 @@ public class UserInterfaceManagerScript : MonoBehaviour
 		    GameObject newPinUI = Instantiate(pinItemPrefab, pinListTransform);
 		    newPinUI.GetComponent<PinID>().pinID = pin.MapboxPinId;
 		    newPinUI.GetComponent<PinID>().latLong = pin.LatLong;
+		    
+		    /* Set button toggle */
+		    Transform showHideToggle = newPinUI.transform.Find("PinItemTop/ShowHideToggle");
+		    
+		    ButtonToggle buttonToggle = showHideToggle.GetComponent<ButtonToggle>();
+		    buttonToggle.SetUserInterfaceManager(this);
+		    pinParentButtonToggle.AddButtonToggle(buttonToggle);
 		    
 		    /* Edit color circle */
 		    Transform colorCircle = newPinUI.transform.Find("PinItemTop/ColorCircle");
@@ -409,6 +427,22 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
 		UpdateWindows();
 		CloseEditWindow();
+	}
+
+	public void ShowRoute(String name, bool show)
+	{
+		Debug.Log("Name to find: " + name);
+		
+		foreach (Transform child in routeManagerTransform)
+		{
+			Debug.Log(child.name);
+			if (child.name == name)
+			{
+				child.gameObject.SetActive(show);
+				return;
+			}
+		}
+
 	}
 
 	public void RemoveAllChildren(Transform parent)
