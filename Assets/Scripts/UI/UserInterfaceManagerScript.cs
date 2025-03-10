@@ -360,7 +360,6 @@ public class UserInterfaceManagerScript : MonoBehaviour
         var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
         if (pin != null)
         {
-            PersistentPinSpawnHandler.PinsDropped.Remove(currentPinID);
             _mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(currentPinID);
             pinList.Remove(pin);
         }
