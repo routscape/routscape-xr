@@ -13,12 +13,8 @@ namespace Pinning
     {
         public static HashSet<string> PinsDropped = new();
         [SerializeField] private GameObject mapPin;
-
+        private readonly Queue<Vector2d> _locationQueue = new();
         private AbstractMap _mapManager;
-
-        [Networked]
-        [OnChangedRender(nameof(SpawnPin))]
-        private Vector3 Location { get; set; }
 
         private void Start()
         {
@@ -36,32 +32,28 @@ namespace Pinning
             }
         }
 
-        public void SpawnPinOnLocation(Vector2d location)
-        {
-            Object.RequestStateAuthority();
-            Location = location.ToVector3xz();
-        }
-
         public static event Action<string, Vector2d, GameObject> OnPinDrop;
 
-        private void SpawnPin()
+        [Rpc]
+        public void RpcSpawnPin(Vector3 position)
         {
-            var latLong = Location.ToVector2d();
+            var latLong = position.ToVector2d();
             var pinName = "Pin - " + latLong.x + " " + latLong.y;
+            _locationQueue.Enqueue(latLong);
             _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, PinDropCallback, true,
                 pinName);
         }
 
         private void PinDropCallback(List<GameObject> items)
         {
-            var location = Location.ToVector2d();
             var pin = items.ElementAt(0);
+            var location = _locationQueue.Dequeue();
             var pinName = "Pin - " + location.x + " " + location.y;
             Debug.Log("Pin ID " + pinName);
             if (PinsDropped.Contains(pinName)) return;
 
             PinsDropped.Add(pinName);
-            OnPinDrop?.Invoke(pinName, location, items.ElementAt(0));
+            OnPinDrop.Invoke(pinName, location, items.ElementAt(0));
         }
     }
 }
