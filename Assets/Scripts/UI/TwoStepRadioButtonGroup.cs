@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,6 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
     private readonly Color drawingColor = new(0.31f, 0.88f, 0.28f, 180f / 255f);
     private readonly Color selectedColor = new(0f, 0f, 0f, 81f / 255f);
     private Button activeButton;
-    private Button clickedButton;
     private bool isClickAllowed = true;
 
     private Button selectedButton;
@@ -47,13 +47,14 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
 
     private void OnButtonClicked(Button clickedButtonFromEvent)
     {
-        clickedButton = clickedButtonFromEvent;
-        RpcToggleMode();
+        var index = buttons.FindIndex(button => button == clickedButtonFromEvent);
+        RpcToggleMode(index);
     }
 
     [Rpc]
-    private void RpcToggleMode()
+    private void RpcToggleMode(int index)
     {
+        var clickedButton = buttons.ElementAt(index);
         if (!isClickAllowed) return;
         isClickAllowed = false;
         StartCoroutine(EnableClickAfterDelay(0.3f));
