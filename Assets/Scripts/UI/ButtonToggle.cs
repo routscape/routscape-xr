@@ -27,7 +27,7 @@ public class ButtonToggle : MonoBehaviour
             itemButton.onClick.AddListener(OnButtonClick);
         }
 
-		itemName = GetComponent<Transform>().parent.Find("RouteLabel").GetComponent<TextMeshProUGUI>().text;
+		itemName = GetComponent<Transform>().parent.Find("ItemLabel").GetComponent<TextMeshProUGUI>().text;
         SetItemState(true);
     }
 

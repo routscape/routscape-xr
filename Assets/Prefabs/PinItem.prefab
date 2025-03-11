@@ -353,6 +353,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeImage: {fileID: 21300000, guid: a0b9d84b39c734fdfa8df313d7655cc0, type: 3}
   inactiveImage: {fileID: 21300000, guid: 1b86a00b68a58428588ada4f65f22291, type: 3}
+  userInterfaceManager: {fileID: 0}
 --- !u!1 &5355348994930525358
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +367,7 @@ GameObject:
   - component: {fileID: 3433301416432313247}
   - component: {fileID: 6096886844273988149}
   m_Layer: 5
-  m_Name: PinLabel
+  m_Name: ItemLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1036,6 +1037,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 979f291a255096046bae6764eb01fc1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemID: 
+  latLong:
+    x: 0
+    y: 0
 --- !u!1 &6586061861820340546
 GameObject:
   m_ObjectHideFlags: 0

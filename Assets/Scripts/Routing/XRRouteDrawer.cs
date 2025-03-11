@@ -59,7 +59,7 @@ public class XRRouteDrawer : MonoBehaviour
         newLineRenderer.startColor = ColorHexCodes.GetColor(initialColor);
         newLineRenderer.endColor = ColorHexCodes.GetColor(initialColor);
 
-        Route newRoute = new Route(name, newLineRenderer, initialColor);
+        Route newRoute = new Route(name, name, newLineRenderer, initialColor);
         newRoute.prefab = newLineObj;
         routeList.Add(newRoute);
         SetCurrentRoute(name);
@@ -175,15 +175,15 @@ public class XRRouteDrawer : MonoBehaviour
         }
 	}
 
-    public void DeleteRoute(string routeName)
+    public void DeleteRoute(string routeId)
     {
         int childCount = transform.childCount;
         for (int i = 0; i < childCount; i++)
         {
             Transform child = transform.GetChild(i); // Get each child
-            if (child.name == routeName)
+            if (child.name == routeId)
             {
-                Route foundRoute = routeList.Find(route => route.Name == routeName);
+                Route foundRoute = routeList.Find(route => route.Id == routeId);
                 routeList.Remove(foundRoute);
                 routeManager.DeleteSpawnedRoute(foundRoute);
                 Destroy(child.gameObject);

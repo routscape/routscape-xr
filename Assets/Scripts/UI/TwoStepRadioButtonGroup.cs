@@ -81,8 +81,8 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
 			userInterfaceManager.CloseEditWindow();
             selectedButton = clickedButton;
             
-			var pinId = selectedButton.GetComponent<PinID>();
-			if (pinId != null) userInterfaceManager.JumpToPin(selectedButton.GetComponent<PinID>().latLong);
+			var geoData = selectedButton.GetComponent<UIGeodata>();
+			if (geoData != null) userInterfaceManager.JumpTo(geoData.latLong);
 
             foreach (Button button in buttons)
             {
