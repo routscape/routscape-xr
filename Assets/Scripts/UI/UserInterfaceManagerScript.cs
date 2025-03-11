@@ -30,6 +30,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
     [SerializeField] private Sprite finishSprite;
     [SerializeField] private Material[] colors;
 
+    public string currentRouteID;
     public string currentPinID;
     public int mode;
 
@@ -254,6 +255,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
         }
         else
         {
+            currentRouteID = itemUI.GetComponent<UIGeodata>().itemID;
             label = itemUI.transform.Find("RouteItemTop/RouteLabel");
             colorCircle = itemUI.transform.Find("RouteItemTop/ColorCircle");
         }
@@ -386,9 +388,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
         }
         else
         {
-            var route = routeList.FirstOrDefault(route => route.Id == currentActiveRoute.Id);
-            routeList.Remove(route);
+            var route = routeList.FirstOrDefault(route => route.Id == currentRouteID);
             xrRouteDrawer.DeleteRoute(route.Name);
+            routeList.Remove(route);
         }
 
         UpdateWindows();
