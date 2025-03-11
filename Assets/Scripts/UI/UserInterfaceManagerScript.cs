@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Fusion;
 using Mapbox.Unity.Map;
 using Mapbox.Utils;
 using Pinning;
@@ -10,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ColorUtility = UnityEngine.ColorUtility;
 
-public class UserInterfaceManagerScript : MonoBehaviour
+public class UserInterfaceManagerScript : NetworkBehaviour
 {
     [SerializeField] private GameObject pinItemPrefab;
     [SerializeField] private Transform pinListTransform;
@@ -378,22 +379,33 @@ public class UserInterfaceManagerScript : MonoBehaviour
         CloseEditWindow();
     }
 
-    private void DeleteEditWindow()
+    [Rpc]
+    private void RpcDeleteItem(string itemID, string type)
     {
-        var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
-        if (pin != null)
+        if (type == "pin")
         {
-            _mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(currentPinID);
+            var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == itemID);
+            _mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(itemID);
             pinList.Remove(pin);
         }
-        else
+        else if (type == "route")
         {
-            var route = routeList.FirstOrDefault(route => route.Id == currentRouteID);
+            var route = routeList.FirstOrDefault(route => route.Id == itemID);
             xrRouteDrawer.DeleteRoute(route.Name);
             routeList.Remove(route);
         }
 
         UpdateWindows();
+    }
+
+    private void DeleteEditWindow()
+    {
+        var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
+        if (pin != null)
+            RpcDeleteItem(currentPinID, "pin");
+        else
+            RpcDeleteItem(currentRouteID, "route");
+
         CloseEditWindow();
     }
 
