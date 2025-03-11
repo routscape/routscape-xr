@@ -396,6 +396,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         }
 
         UpdateWindows();
+        CloseEditWindow();
     }
 
     private void DeleteEditWindow()
@@ -405,8 +406,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
             RpcDeleteItem(currentPinID, "pin");
         else
             RpcDeleteItem(currentRouteID, "route");
-
-        CloseEditWindow();
     }
 
     public void ShowRoute(string name, bool show)
