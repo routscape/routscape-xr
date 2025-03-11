@@ -1,30 +1,44 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Mapbox.Unity.Map;
 using TMPro;
 using UnityEngine.UI;
 
 public class XRRouteDrawer : MonoBehaviour
 {
+    public int numTotalRoutes = 0;
+    
     [SerializeField] private LayerMask mapboxLayer;
     private ColorType initialColor = ColorType.Blue;
 	[SerializeField] private UserInterfaceManagerScript userInterfaceManagerScript;
 	[SerializeField] private OVRHand rightHand;
 	[SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
+    [SerializeField] private RouteManager routeManager;
+    
     private List<Route> routeList = new List<Route>();
     private Route currentRoute;
     private Vector3 lastPoint = Vector3.zero;
-    private float minDistanceBetweenPoints = 0.02f; // Minimum distance to register a new point
+    public float minDistanceBetweenPoints = 0.003f * 10000f; // Minimum distance to register a new point
+    public float rayDistance = 0.05f;
 
-    void Update()
+    private AbstractMap _mapManager;
+
+    void Start()
+    {
+        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
+        minDistanceBetweenPoints = 0.003f * 10000f;
+    }
+    void FixedUpdate()
     {
         Vector3 hitPoint;
         if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
         {
-            if (currentRoute == null) return;
-    
-            if (Vector3.Distance(hitPoint, lastPoint) > minDistanceBetweenPoints
-				&& userInterfaceManagerScript.currentActiveRoute != null)
+            var distance = Vector3.Distance(hitPoint, lastPoint);
+            distance *= 10000; // floating comparison sucks
+            Debug.Log("Distance " + distance + " vs " + minDistanceBetweenPoints + " " + (distance > minDistanceBetweenPoints));
+            if (distance > minDistanceBetweenPoints
+                && userInterfaceManagerScript.mode == 1)
             {
                 AddPoint(hitPoint); // Add point only if moved significantly
                 lastPoint = hitPoint;
@@ -32,30 +46,32 @@ public class XRRouteDrawer : MonoBehaviour
         }
     }
 
-    public Route CreateNewLine(string name)
+    public Route CreateNewLine()
     {
+        string name = "Route - " + numTotalRoutes;
         GameObject newLineObj = new GameObject(name);
         newLineObj.transform.parent = transform;
         LineRenderer newLineRenderer = newLineObj.AddComponent<LineRenderer>();
         newLineRenderer.positionCount = 0;
-        newLineRenderer.startWidth = 0.01f;
-        newLineRenderer.endWidth = 0.01f;
+        newLineRenderer.startWidth = 0.008f;
+        newLineRenderer.endWidth = 0.008f;
         newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         newLineRenderer.startColor = ColorHexCodes.GetColor(initialColor);
         newLineRenderer.endColor = ColorHexCodes.GetColor(initialColor);
 
         Route newRoute = new Route(name, newLineRenderer, initialColor);
+        newRoute.prefab = newLineObj;
         routeList.Add(newRoute);
         SetCurrentRoute(name);
         Debug.Log("CreateNewLine");
+        numTotalRoutes++;
         return newRoute;
     }
 
     private void AddPoint(Vector3 newPoint)
     {
-        if (currentRoute == null) return; // Safety check
-        currentRoute.AddPoint(newPoint);
-        Debug.Log($"Point added: {newPoint}");
+        if (userInterfaceManagerScript.mode != 1) return; // Safety check
+        currentRoute.AddPoint(newPoint, _mapManager);
     }
 
 	private bool GetFingerHitPoint(out Vector3 adjustedPoint)
@@ -90,7 +106,7 @@ public class XRRouteDrawer : MonoBehaviour
         Debug.DrawRay(fingerPosition, Vector3.up * 0.05f, Color.red, 0.1f);
         
         // **Raycast downward to detect the map**
-        if (Physics.Raycast(fingerPosition, Vector3.down, out RaycastHit hit, 0.02f, mapboxLayer))
+        if (Physics.Raycast(fingerPosition, Vector3.down, out RaycastHit hit, rayDistance, mapboxLayer))
         {
             adjustedPoint = hit.point + Vector3.up * 0.01f;  // Slight offset
             Debug.Log($"Finger hit detected at: {adjustedPoint}");
@@ -99,8 +115,7 @@ public class XRRouteDrawer : MonoBehaviour
     
         return false;
     }
-
-
+    
     private bool GetControllerHitPoint(out Vector3 adjustedPoint)
     {
         // Get the controller's position and rotation
@@ -160,22 +175,22 @@ public class XRRouteDrawer : MonoBehaviour
         }
 	}
 
-	public void DeleteRoute(string routeName)
-	{
-		int childCount = transform.childCount;
-		for (int i = 0; i < childCount; i++)
+    public void DeleteRoute(string routeName)
+    {
+        int childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++)
         {
             Transform child = transform.GetChild(i); // Get each child
-			if (child.name == routeName)
-			{
-				Route foundRoute = routeList.Find(route => route.Name == routeName);
-				routeList.Remove(foundRoute);
-
-				Destroy(child.gameObject);
-			}
+            if (child.name == routeName)
+            {
+                Route foundRoute = routeList.Find(route => route.Name == routeName);
+                routeList.Remove(foundRoute);
+                routeManager.DeleteSpawnedRoute(foundRoute);
+                Destroy(child.gameObject);
+            }
         }
-	}
-
+    }
+    
     public void RemoveCurrentRoute()
     {
         currentRoute = null;

@@ -28,6 +28,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
     [SerializeField] private Sprite addSprite;
     [SerializeField] private Sprite finishSprite;
+	[SerializeField] private Material[] colors;
 
     public string currentPinID;
 
@@ -37,17 +38,21 @@ public class UserInterfaceManagerScript : MonoBehaviour
     public Route currentActiveRoute;
     private Button routeAddButton;
     private Image routeAddButtonImage;
-
     private Transform routeAddButtonTransform;
+    private Transform routeManagerTransform;
 
     private XRRouteDrawer xrRouteDrawer;
-
-    private void Start()
+    public int mode = 0;
+	
+    void Start()
     {
-        Debug.Log("Start");
-        xrRouteDrawer = routeManager.GetComponent<XRRouteDrawer>();
-        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
-        if (xrRouteDrawer) Debug.Log("not null");
+		Debug.Log("Start");
+		xrRouteDrawer = routeManager.GetComponent<XRRouteDrawer>();
+		_mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
+		if (xrRouteDrawer)
+		{
+			Debug.Log("not null");
+		}
 
         InitializeEditWindow();
 
@@ -85,13 +90,15 @@ public class UserInterfaceManagerScript : MonoBehaviour
         UpdateWindows();
     }
 
-    public void AddRoute()
+	public void AddRoute()
     {
-        var route = xrRouteDrawer.CreateNewLine("Route " + routeList.Count);
-        currentActiveRoute = route;
-        routeList.Add(route);
-        Debug.Log("RouteList Count:" + routeList.Count);
-        UpdateWindows();
+        mode = 1;
+        xrRouteDrawer.enabled = true;
+		Route route = xrRouteDrawer.CreateNewLine();
+		currentActiveRoute = route;
+		routeList.Add(route);
+		Debug.Log("RouteList Count:" + routeList.Count);
+		UpdateWindows();
 
         routeAddButtonImage.sprite = finishSprite;
         routeAddButton.onClick.RemoveAllListeners();
@@ -103,8 +110,9 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
     private void FinishRoute()
     {
-        currentActiveRoute = null;
-        xrRouteDrawer.RemoveCurrentRoute();
+        mode = 0;
+		routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);currentActiveRoute = null;
+        xrRouteDrawer.RemoveCurrentRoute();xrRouteDrawer.enabled = false;
         UpdateWindows();
 
         routeAddButtonImage.sprite = addSprite;
@@ -123,8 +131,15 @@ public class UserInterfaceManagerScript : MonoBehaviour
         /* Update route window */
         foreach (var route in routeList)
         {
-            Debug.Log("insta route");
+            Debug.Log(this.gameObject.name);
             var newRouteUI = Instantiate(routeItemPrefab, routeListTransform);
+			
+			/* Set button toggle */
+			Transform showHideToggle = newRouteUI.transform.Find("RouteItemTop/ShowHideToggle");
+		    
+			ButtonToggle buttonToggle = showHideToggle.GetComponent<ButtonToggle>();
+			buttonToggle.SetUserInterfaceManager(this);
+			routeParentButtonToggle.AddButtonToggle(buttonToggle);
 
             /* Edit color circle */
             var colorCircle = newRouteUI.transform.Find("RouteItemTop/ColorCircle");
@@ -147,7 +162,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
             }
 
             /* Add show/hide toggle to group */
-            var routeShowHideToggle = newRouteUI.transform.Find("PinItemTop/ShowHideToggle");
+            var routeShowHideToggle = newRouteUI.transform.Find("RouteItemTop/ShowHideToggle");
 
             if (routeShowHideToggle != null)
             {
@@ -170,7 +185,14 @@ public class UserInterfaceManagerScript : MonoBehaviour
             newPinUI.GetComponent<PinID>().pinID = pin.MapboxPinId;
             newPinUI.GetComponent<PinID>().latLong = pin.LatLong;
 
-            /* Edit color circle */
+            /* Set button toggle */
+		    Transform showHideToggle = newPinUI.transform.Find("PinItemTop/ShowHideToggle");
+		    
+		    ButtonToggle buttonToggle = showHideToggle.GetComponent<ButtonToggle>();
+		    buttonToggle.SetUserInterfaceManager(this);
+		    pinParentButtonToggle.AddButtonToggle(buttonToggle);
+		    
+		    /* Edit color circle */
             var colorCircle = newPinUI.transform.Find("PinItemTop/ColorCircle");
 
             if (colorCircle != null)
@@ -294,7 +316,6 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
     private void ConfirmEditWindow()
     {
-        /* Get edit window values */
         var editWindowHint =
             editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
         var editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
@@ -305,26 +326,27 @@ public class UserInterfaceManagerScript : MonoBehaviour
         var colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
 
         /* Update item */
-        var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.Name == labelOld);
+        var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
         if (tuple != null)
         {
             var pin = tuple.Item1;
+			GameObject pinObject = tuple.Item2;
             pin.Rename(labelNew);
 
             switch (colorDropdownValue)
             {
                 case 0:
                     pin.ChangeColor(ColorType.Green);
-                    break;
+                    pinObject.GetComponentInChildren<MeshRenderer>().material = colors[0];break;
                 case 1:
-                    pin.ChangeColor(ColorType.Blue);
+                    pin.ChangeColor(ColorType.Blue);pinObject.GetComponentInChildren<MeshRenderer>().material = colors[1];
                     break;
                 case 2:
                     pin.ChangeColor(ColorType.Red);
-                    break;
+                    pinObject.GetComponentInChildren<MeshRenderer>().material = colors[2];break;
             }
 
-            return;
+            
         }
 
         var route = routeList.FirstOrDefault(route => route.Name == labelOld);
@@ -374,7 +396,23 @@ public class UserInterfaceManagerScript : MonoBehaviour
         CloseEditWindow();
     }
 
-    public void RemoveAllChildren(Transform parent)
+    public void ShowRoute(String name, bool show)
+	{
+		Debug.Log("Name to find: " + name);
+		
+		foreach (Transform child in routeManagerTransform)
+		{
+			Debug.Log(child.name);
+			if (child.name == name)
+			{
+				child.gameObject.SetActive(show);
+				return;
+			}
+		}
+
+	}
+
+	public void RemoveAllChildren(Transform parent)
     {
         foreach (Transform child in parent) Destroy(child.gameObject);
     }

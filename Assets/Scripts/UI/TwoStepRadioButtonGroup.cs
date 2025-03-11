@@ -15,6 +15,7 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
 	[SerializeField] private UserInterfaceManagerScript userInterfaceManager;
 
     private Button selectedButton;
+	private Button activeButton;
     private bool isClickAllowed = true;
 
 	public void AddButton(Button button, bool isDrawing)
@@ -40,8 +41,16 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
 	{
 		if (selectedButton != null)
 		{
-			UpdateButtonColor(selectedButton, selectedColor);
+			UpdateButtonColor(selectedButton, defaultColor);
 		}
+
+		if (activeButton != null)
+		{
+			UpdateButtonColor(activeButton, defaultColor);
+		}
+
+		selectedButton = null;
+		activeButton = null;
 	}
 
     private void OnButtonClicked(Button clickedButton)
@@ -56,9 +65,17 @@ public class TwoStepRadioButtonGroup : MonoBehaviour
         if (clickedButton == selectedButton)
         {
             Debug.Log("Selected button clicked");
+			selectedButton = null;
+			activeButton = clickedButton;
 			userInterfaceManager.OpenEditWindow(clickedButton);
             UpdateButtonColor(clickedButton, activeColor);
         }
+		else if (clickedButton == activeButton) 
+		{
+			Debug.Log("Active button clicked");
+			activeButton = null;
+			UpdateButtonColor(clickedButton, defaultColor);
+		}
         else
         {
 			userInterfaceManager.CloseEditWindow();
