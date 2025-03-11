@@ -48,6 +48,7 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
     private void OnButtonClicked(Button clickedButtonFromEvent)
     {
         clickedButton = clickedButtonFromEvent;
+        RpcToggleMode();
     }
 
     [Rpc]
