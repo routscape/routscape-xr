@@ -16,17 +16,31 @@ public class MultiplayerWindowManager : MonoBehaviour
 
     void JoinRoom()
     {
-        var roomId = labelInput.transform.Find("Text Area/Placeholder").GetComponent<TMP_InputField>().text;
-        Debug.Log(roomId);
+        var roomId = labelInput.GetComponent<TMP_InputField>().text;
+        Debug.Log("RoomID: " + roomId);
         
         // TODO
+        SetRoomId(roomId);
+        DisableInput();
     }
 
     void CreateRoom()
     {
-        var roomId = labelInput.transform.Find("Text Area/Placeholder").GetComponent<TMP_InputField>().text;
-        Debug.Log(roomId);
+        var roomId = labelInput.GetComponent<TMP_InputField>().text;
+        Debug.Log("RoomID: " + roomId);
         
         // TODO
+        SetRoomId(roomId);
+        DisableInput();
+    }
+
+    void SetRoomId(string roomId)
+    {
+        labelInput.GetComponent<TMP_InputField>().text = roomId;
+    }
+
+    void DisableInput()
+    {
+        labelInput.GetComponent<TMP_InputField>().interactable = false;
     }
 }
