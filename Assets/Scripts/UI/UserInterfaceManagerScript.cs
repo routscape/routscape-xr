@@ -124,16 +124,17 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
     private void UpdateWindows()
     {
-        twoStepRadioButtonGroup.RemoveAllButton();
-        RemoveAllChildren(pinListTransform);
-        RemoveAllChildren(routeListTransform);
-
-        /* Update route window */
-        foreach (var route in routeList)
-        {
-            Debug.Log(this.gameObject.name);
-            var newRouteUI = Instantiate(routeItemPrefab, routeListTransform);
-			
+		twoStepRadioButtonGroup.RemoveAllButton();
+		RemoveAllChildren(pinListTransform);
+		RemoveAllChildren(routeListTransform);
+		
+		/* Update route window */
+		foreach (var route in routeList)
+		{
+			Debug.Log(this.gameObject.name);
+			var newRouteUI = Instantiate(routeItemPrefab, routeListTransform);
+            newRouteUI.GetComponent<UIGeodata>().itemID = route.Id;
+            newRouteUI.GetComponent<UIGeodata>().latLong = route.GetLocation();
 			/* Set button toggle */
 			Transform showHideToggle = newRouteUI.transform.Find("RouteItemTop/ShowHideToggle");
 		    
@@ -152,7 +153,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
             }
 
             /* Edit route label */
-            var routeLabel = newRouteUI.transform.Find("RouteItemTop/RouteLabel");
+            var routeLabel = newRouteUI.transform.Find("RouteItemTop/ItemLabel");
 
             if (routeLabel != null)
             {
@@ -182,8 +183,8 @@ public class UserInterfaceManagerScript : MonoBehaviour
         {
             var pin = tuple.Item1;
             var newPinUI = Instantiate(pinItemPrefab, pinListTransform);
-            newPinUI.GetComponent<PinID>().pinID = pin.MapboxPinId;
-            newPinUI.GetComponent<PinID>().latLong = pin.LatLong;
+            newPinUI.GetComponent<UIGeodata>().itemID = pin.MapboxPinId;
+            newPinUI.GetComponent<UIGeodata>().latLong = pin.LatLong;
 
             /* Set button toggle */
 		    Transform showHideToggle = newPinUI.transform.Find("PinItemTop/ShowHideToggle");
@@ -203,7 +204,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
             }
 
             /* Edit pin label */
-            var pinLabel = newPinUI.transform.Find("PinItemTop/PinLabel");
+            var pinLabel = newPinUI.transform.Find("PinItemTop/ItemLabel");
 
             if (pinLabel != null)
             {
@@ -247,7 +248,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
 
         if (itemUI.name.StartsWith("PinItem"))
         {
-            currentPinID = itemUI.GetComponent<PinID>().pinID;
+            currentPinID = itemUI.GetComponent<UIGeodata>().itemID;
             label = itemUI.transform.Find("PinItemTop/PinLabel");
             colorCircle = itemUI.transform.Find("PinItemTop/ColorCircle");
         }
@@ -299,7 +300,7 @@ public class UserInterfaceManagerScript : MonoBehaviour
         editWindow.SetActive(true);
     }
 
-    public void JumpToPin(Vector2d latLong)
+    public void JumpTo(Vector2d latLong)
     {
         _mapManager.UpdateMap(latLong);
     }
@@ -374,23 +375,20 @@ public class UserInterfaceManagerScript : MonoBehaviour
         CloseEditWindow();
     }
 
-    private void DeleteEditWindow()
-    {
-        var editWindowHint =
-            editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification		
-        var objectLabel = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-        var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
-        if (pin != null)
-        {
-            _mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(currentPinID);
-            pinList.Remove(pin);
-        }
-        else
-        {
-            var route = routeList.FirstOrDefault(route => route.Name == objectLabel);
-            routeList.Remove(route);
-            xrRouteDrawer.DeleteRoute(route.Name);
-        }
+	void DeleteEditWindow()
+	{
+		var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
+		if (pin != null)
+		{
+			_mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(currentPinID);
+			pinList.Remove(pin);
+		}
+		else
+		{
+			Route route = routeList.FirstOrDefault(route => route.Id == currentActiveRoute.Id);
+			routeList.Remove(route);
+			xrRouteDrawer.DeleteRoute(route.Name);
+		}
 
         UpdateWindows();
         CloseEditWindow();
