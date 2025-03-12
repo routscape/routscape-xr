@@ -24,6 +24,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
     [SerializeField] private TwoStepRadioButtonGroup twoStepRadioButtonGroup;
 
+    [SerializeField] private NetworkObject routeOwnershipObject;
     [SerializeField] private GameObject routeManager;
     [SerializeField] private GameObject editWindow;
 
@@ -92,6 +93,13 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
     public void AddRoute()
     {
+        routeOwnershipObject.RequestStateAuthority();
+        if (!routeOwnershipObject.HasStateAuthority)
+        {
+            Debug.Log("Not route owner");
+            return;
+        }
+
         mode = 1;
         xrRouteDrawer.enabled = true;
         var route = xrRouteDrawer.CreateNewLine();
@@ -122,6 +130,8 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeAddButton.onClick.AddListener(AddRoute);
 
         StartCoroutine(ResetButton(0.1f));
+
+        routeOwnershipObject.ReleaseStateAuthority();
     }
 
     private void UpdateWindows()
