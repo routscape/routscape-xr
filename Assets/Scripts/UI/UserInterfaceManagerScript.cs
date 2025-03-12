@@ -104,7 +104,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RpcAddRoute()
+    private void RpcAddRoute()
     {
         Debug.Log("Adding Route...");
         mode = 1;
