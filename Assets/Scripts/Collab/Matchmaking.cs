@@ -15,10 +15,11 @@ namespace Collab
 
         public void OnFusionServerConnected(NetworkRunner networkRunner)
         {
-            networkRunner.StartGame(new StartGameArgs
-            {
-                SessionName = "MultiplayerSession"
-            });
+            if (networkRunner.GetComponent<INetworkSceneManager>() == null)
+                networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+
+            if (networkRunner.GetComponent<INetworkObjectProvider>() == null)
+                networkRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
         }
     }
 }
