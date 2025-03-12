@@ -62,7 +62,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeAddButton = routeAddButtonTransform.GetComponent<Button>();
         routeAddButtonImage = routeAddButtonTransform.GetComponent<Image>();
         routeAddButton.onClick.RemoveAllListeners();
-        routeAddButton.onClick.AddListener(AddRoute);
+        routeAddButton.onClick.AddListener(InitializeAddRoute);
 
         PersistentPinSpawnHandler.OnPinDrop += AddPin;
 
@@ -91,7 +91,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         UpdateWindows();
     }
 
-    public void AddRoute()
+    private void InitializeAddRoute()
     {
         routeOwnershipObject.RequestStateAuthority();
         if (!routeOwnershipObject.HasStateAuthority)
@@ -100,6 +100,12 @@ public class UserInterfaceManagerScript : NetworkBehaviour
             return;
         }
 
+        RpcAddRoute();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RpcAddRoute()
+    {
         Debug.Log("Adding Route...");
         mode = 1;
         xrRouteDrawer.enabled = true;
@@ -112,12 +118,19 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeAddButtonImage.sprite = finishSprite;
         routeAddButton.onClick.RemoveAllListeners();
         Debug.Log("Listeners removed. Adding FinishRoute...");
-        routeAddButton.onClick.AddListener(FinishRoute);
+        routeAddButton.onClick.AddListener(CleanupRouteCreation);
 
         StartCoroutine(ResetButton(0.1f));
     }
 
-    private void FinishRoute()
+    private void CleanupRouteCreation()
+    {
+        RpcFinishRoute();
+        routeOwnershipObject.ReleaseStateAuthority();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RpcFinishRoute()
     {
         mode = 0;
         routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
@@ -128,11 +141,9 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
         routeAddButtonImage.sprite = addSprite;
         routeAddButton.onClick.RemoveAllListeners();
-        routeAddButton.onClick.AddListener(AddRoute);
+        routeAddButton.onClick.AddListener(InitializeAddRoute);
 
         StartCoroutine(ResetButton(0.1f));
-
-        routeOwnershipObject.ReleaseStateAuthority();
     }
 
     private void UpdateWindows()
