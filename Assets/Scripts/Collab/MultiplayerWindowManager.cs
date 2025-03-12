@@ -20,50 +20,59 @@ namespace Collab
             createButton.onClick.AddListener(CreateRoom);
         }
 
-        private async void JoinRoom()
+        private void JoinRoom()
         {
             var roomId = labelInput.GetComponent<TMP_InputField>().text;
-            Debug.Log("RoomID: " + roomId);
+            Debug.Log("[Matchmaking] RoomID: " + roomId);
 
             DisableInput();
             SetInputTextField("Joining room...");
 
-            var joinResult = await customMatchmaking.JoinRoom(roomId, _roomPassword);
-            if (joinResult.IsSuccess)
+            customMatchmaking.JoinRoom(roomId, _roomPassword);
+        }
+
+        public void OnJoinRoom(CustomMatchmaking.RoomOperationResult result)
+        {
+            if (result.IsSuccess)
             {
-                SetInputTextField(roomId);
+                SetInputTextField(result.RoomToken);
+                Debug.Log("[Matchmaking] Room joined successfully. Connected to: " +
+                          customMatchmaking.ConnectedRoomToken);
             }
             else
             {
-                Debug.LogError("Failed to join room");
-                SetInputTextField("Failed to join room");
+                Debug.LogError("[Matchmaking] Failed to join room.");
+                SetInputTextField($"Failed to join room {result.RoomToken}");
                 EnableInput();
             }
         }
 
-        private async void CreateRoom()
+        private void CreateRoom()
         {
             DisableInput();
             SetInputTextField("Creating room...");
 
-            var createResult = await customMatchmaking.CreateRoom(new CustomMatchmaking.RoomCreationOptions
+            customMatchmaking.CreateRoom(new CustomMatchmaking.RoomCreationOptions
             {
                 IsPrivate = false,
-                LobbyName = "MultiplayerSession",
+                LobbyName = "GlobalLobby",
                 MaxPlayersPerRoom = 2,
                 RoomPassword = _roomPassword
             });
+        }
 
-            if (createResult.IsSuccess)
+        public void OnCreateRoom(CustomMatchmaking.RoomOperationResult result)
+        {
+            if (result.IsSuccess)
             {
-                var roomId = createResult.RoomToken;
-                Debug.Log("RoomID: " + roomId);
-                SetInputTextField(roomId);
+                SetInputTextField(result.RoomToken);
+                Debug.Log(
+                    "[Matchmaking] Room created successfully. Connected to: " + customMatchmaking.ConnectedRoomToken);
             }
             else
             {
-                Debug.LogError("Failed to create room");
-                SetInputTextField("Failed to create room");
+                Debug.LogError("[Matchmaking] Failed to create room.");
+                SetInputTextField("Failed to create room.");
                 EnableInput();
             }
         }
