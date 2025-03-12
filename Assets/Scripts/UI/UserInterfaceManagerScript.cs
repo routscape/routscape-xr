@@ -94,12 +94,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     private void InitializeAddRoute()
     {
         routeOwnershipObject.RequestStateAuthority();
-        if (!routeOwnershipObject.HasStateAuthority)
-        {
-            Debug.Log("Not route owner");
-            return;
-        }
-
         RpcAddRoute();
     }
 
