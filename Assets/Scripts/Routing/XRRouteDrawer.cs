@@ -18,6 +18,7 @@ public class XRRouteDrawer : NetworkBehaviour
     private readonly ColorType initialColor = ColorType.Blue;
 
     private readonly List<Route> routeList = new();
+    private bool _isSpawned;
 
     private AbstractMap _mapManager;
     private Route currentRoute;
@@ -51,6 +52,11 @@ public class XRRouteDrawer : NetworkBehaviour
         }
     }
 
+    public override void Spawned()
+    {
+        _isSpawned = true;
+    }
+
     public Route CreateNewLine()
     {
         var name = "Route - " + numTotalRoutes;
@@ -75,6 +81,7 @@ public class XRRouteDrawer : NetworkBehaviour
 
     private void AddPoint()
     {
+        if (!_isSpawned) return;
         if (userInterfaceManagerScript.mode != 1) return; // Safety check
         currentRoute.AddPoint(PointToAdd, _mapManager);
     }

@@ -100,6 +100,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
             return;
         }
 
+        Debug.Log("Adding Route...");
         mode = 1;
         xrRouteDrawer.enabled = true;
         var route = xrRouteDrawer.CreateNewLine();
