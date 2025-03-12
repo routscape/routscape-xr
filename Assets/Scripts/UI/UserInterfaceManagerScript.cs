@@ -112,9 +112,14 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
         routeAddButtonImage.sprite = finishSprite;
         Debug.Log("Listeners removed. Adding FinishRoute...");
-        routeAddButton.onClick.AddListener(RpcFinishRoute);
+        routeAddButton.onClick.AddListener(BeginFinishRoute);
 
         StartCoroutine(ResetButton(0.1f));
+    }
+
+    private void BeginFinishRoute()
+    {
+        if (routeOwnershipObject.HasStateAuthority) RpcFinishRoute();
     }
 
     [Rpc]
@@ -129,7 +134,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         UpdateWindows();
         routeAddButtonImage.sprite = addSprite;
 
-        if (routeOwnershipObject.HasStateAuthority) routeOwnershipObject.ReleaseStateAuthority();
+        routeOwnershipObject.ReleaseStateAuthority();
         routeAddButton.onClick.AddListener(InitializeAddRoute);
 
         StartCoroutine(ResetButton(0.1f));
