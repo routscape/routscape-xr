@@ -1,25 +1,16 @@
-﻿using Fusion;
-using Meta.XR.MultiplayerBlocks.Shared;
+﻿using Meta.XR.MultiplayerBlocks.Shared;
 using UnityEngine;
+using Behaviour = Fusion.Behaviour;
 
 namespace Collab
 {
-    public class Matchmaking : MonoBehaviour
+    public class Matchmaking : Behaviour
     {
         [SerializeField] private CustomMatchmaking customMatchmaking;
 
         private void OnApplicationQuit()
         {
             customMatchmaking.LeaveRoom();
-        }
-
-        public void OnFusionServerConnected(NetworkRunner networkRunner)
-        {
-            if (networkRunner.GetComponent<INetworkSceneManager>() == null)
-                networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
-            if (networkRunner.GetComponent<INetworkObjectProvider>() == null)
-                networkRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
         }
     }
 }

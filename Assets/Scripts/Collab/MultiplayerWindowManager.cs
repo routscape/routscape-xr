@@ -12,7 +12,7 @@ namespace Collab
         [SerializeField] private Button createButton;
         [SerializeField] private CustomMatchmaking customMatchmaking;
 
-        private readonly string _roomPassword = "r0utsc4p3";
+        private readonly string _lobbyName = "GlobalLobby";
 
         private void Start()
         {
@@ -22,13 +22,8 @@ namespace Collab
 
         private void JoinRoom()
         {
-            var roomId = labelInput.GetComponent<TMP_InputField>().text;
-            Debug.Log("[Matchmaking] RoomID: " + roomId);
-
-            DisableInput();
             SetInputTextField("Joining room...");
-
-            customMatchmaking.JoinRoom(roomId, _roomPassword);
+            customMatchmaking.JoinOpenRoom(_lobbyName);
         }
 
         public void OnJoinRoom(CustomMatchmaking.RoomOperationResult result)
@@ -43,21 +38,18 @@ namespace Collab
             {
                 Debug.LogError("[Matchmaking] Failed to join room.");
                 SetInputTextField($"Failed to join room {result.RoomToken}");
-                EnableInput();
             }
         }
 
         private void CreateRoom()
         {
-            DisableInput();
             SetInputTextField("Creating room...");
 
             customMatchmaking.CreateRoom(new CustomMatchmaking.RoomCreationOptions
             {
                 IsPrivate = false,
-                LobbyName = "GlobalLobby",
-                MaxPlayersPerRoom = 2,
-                RoomPassword = _roomPassword
+                LobbyName = _lobbyName,
+                MaxPlayersPerRoom = 2
             });
         }
 
@@ -73,23 +65,12 @@ namespace Collab
             {
                 Debug.LogError("[Matchmaking] Failed to create room.");
                 SetInputTextField("Failed to create room.");
-                EnableInput();
             }
         }
 
         private void SetInputTextField(string textValue)
         {
             labelInput.GetComponent<TMP_InputField>().text = textValue;
-        }
-
-        private void DisableInput()
-        {
-            labelInput.GetComponent<TMP_InputField>().interactable = false;
-        }
-
-        private void EnableInput()
-        {
-            labelInput.GetComponent<TMP_InputField>().interactable = true;
         }
     }
 }
