@@ -103,11 +103,13 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         RpcAddRoute();
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    [Rpc]
     private void RpcAddRoute()
     {
-        Debug.Log("Adding Route...");
         mode = 1;
+        routeAddButton.onClick.RemoveAllListeners();
+
+        Debug.Log("Adding Route...");
         var route = xrRouteDrawer.CreateNewLine();
         currentActiveRoute = route;
         routeList.Add(route);
@@ -115,30 +117,25 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         UpdateWindows();
 
         routeAddButtonImage.sprite = finishSprite;
-        routeAddButton.onClick.RemoveAllListeners();
         Debug.Log("Listeners removed. Adding FinishRoute...");
-        routeAddButton.onClick.AddListener(CleanupRouteCreation);
+        routeAddButton.onClick.AddListener(RpcFinishRoute);
 
         StartCoroutine(ResetButton(0.1f));
     }
 
-    private void CleanupRouteCreation()
-    {
-        RpcFinishRoute();
-        routeOwnershipObject.ReleaseStateAuthority();
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    [Rpc]
     private void RpcFinishRoute()
     {
         mode = 0;
+        routeAddButton.onClick.RemoveAllListeners();
+
         routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
         currentActiveRoute = null;
         xrRouteDrawer.RemoveCurrentRoute();
         UpdateWindows();
-
         routeAddButtonImage.sprite = addSprite;
-        routeAddButton.onClick.RemoveAllListeners();
+
+        if (routeOwnershipObject.HasStateAuthority) routeOwnershipObject.ReleaseStateAuthority();
         routeAddButton.onClick.AddListener(InitializeAddRoute);
 
         StartCoroutine(ResetButton(0.1f));
