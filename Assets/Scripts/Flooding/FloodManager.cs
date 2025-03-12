@@ -43,11 +43,17 @@ public class FloodManager : MonoBehaviour
     {
         float newHeight = initialScale.y + (floodStep * floodLevel);
 
-        // Set new scale
-        floodPlane.transform.localScale = new Vector3(initialScale.x, newHeight, initialScale.z);
+        // Scale the cube
+        floodPlane.transform.localScale = 
+            new Vector3(initialScale.x, newHeight, initialScale.z);
 
-        // Adjust position to keep the bottom edge fixed
+        // Move it up so the bottom stays put
         float heightDifference = (newHeight - initialScale.y) * 0.5f;
-        floodPlane.transform.position = new Vector3(initialPosition.x, initialPosition.y + heightDifference, initialPosition.z);
+        floodPlane.transform.position = new Vector3(
+            initialPosition.x,
+            initialPosition.y + heightDifference,
+            initialPosition.z
+        );
     }
+
 }

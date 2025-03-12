@@ -1,3 +1,4 @@
+using System.Linq;
 using Fusion;
 using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
@@ -12,6 +13,7 @@ namespace Gestures
         [SerializeField] private AbstractMap mapManager;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
+        [SerializeField] private GameObject floodCube;
 
         [SerializeField] private float zoomSpeed = 1f;
         private bool _isZooming;
