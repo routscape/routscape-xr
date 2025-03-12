@@ -108,7 +108,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     {
         Debug.Log("Adding Route...");
         mode = 1;
-        xrRouteDrawer.enabled = true;
         var route = xrRouteDrawer.CreateNewLine();
         currentActiveRoute = route;
         routeList.Add(route);
@@ -136,7 +135,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
         currentActiveRoute = null;
         xrRouteDrawer.RemoveCurrentRoute();
-        xrRouteDrawer.enabled = false;
         UpdateWindows();
 
         routeAddButtonImage.sprite = addSprite;
