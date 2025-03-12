@@ -36,7 +36,7 @@ public class XRRouteDrawer : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!Object.HasStateAuthority) return;
+        if (!_isSpawned || !Object.HasStateAuthority) return;
 
         Vector3 hitPoint;
         if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
