@@ -112,7 +112,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
         routeAddButtonImage.sprite = finishSprite;
         Debug.Log("Listeners removed. Adding FinishRoute...");
-        routeAddButton.onClick.AddListener(BeginFinishRoute);
+        routeAddButton.onClick.AddListener(RpcFinishRoute);
 
         StartCoroutine(ResetButton(0.1f));
     }
