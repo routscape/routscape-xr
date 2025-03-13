@@ -79,8 +79,8 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         var ConfirmButtonComponent = ConfirmButton.GetComponent<Button>();
         var DeleteButtonComponent = DeleteButton.GetComponent<Button>();
 
-        CancelButtonComponent.onClick.AddListener(CloseEditWindow);
-        ConfirmButtonComponent.onClick.AddListener(ConfirmEditWindow);
+        CancelButtonComponent.onClick.AddListener(RpcConfirmEditWindow);
+        ConfirmButtonComponent.onClick.AddListener(RpcConfirmEditWindow);
         DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
     }
 
@@ -334,64 +334,10 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         twoStepRadioButtonGroup.SetNoActive();
     }
 
-    private void ConfirmEditWindow()
+    [Rpc]
+    private void RpcConfirmEditWindow()
     {
-        var editWindowHint =
-            editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Placeholder"); // For pin identification
-        var editWindowColorDropdown = editWindow.transform.Find("Canvas/Input/ColorDropdown");
-        var editWindowLabel = editWindow.transform.Find("Canvas/Input/LabelInput/Text Area/Text");
-
-        var labelOld = editWindowHint.GetComponent<TextMeshProUGUI>().text;
-        var labelNew = editWindowLabel.GetComponent<TextMeshProUGUI>().text;
-        var colorDropdownValue = editWindowColorDropdown.GetComponent<TMP_Dropdown>().value;
-
-        /* Update item */
-        var tuple = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
-        if (tuple != null)
-        {
-            var pin = tuple.Item1;
-            var pinObject = tuple.Item2;
-            pin.Rename(labelNew);
-
-            switch (colorDropdownValue)
-            {
-                case 0:
-                    pin.ChangeColor(ColorType.Green);
-                    pinObject.GetComponentInChildren<MeshRenderer>().material = colors[0];
-                    break;
-                case 1:
-                    pin.ChangeColor(ColorType.Blue);
-                    pinObject.GetComponentInChildren<MeshRenderer>().material = colors[1];
-                    break;
-                case 2:
-                    pin.ChangeColor(ColorType.Red);
-                    pinObject.GetComponentInChildren<MeshRenderer>().material = colors[2];
-                    break;
-            }
-        }
-
-        var route = routeList.FirstOrDefault(route => route.Name == labelOld);
-        if (route != null)
-        {
-            route.Rename(labelNew);
-
-            switch (colorDropdownValue)
-            {
-                case 0:
-                    route.ChangeColor(ColorType.Green);
-                    break;
-                case 1:
-                    route.ChangeColor(ColorType.Blue);
-                    break;
-                case 2:
-                    route.ChangeColor(ColorType.Red);
-                    break;
-            }
-
-            xrRouteDrawer.UpdateRoute(labelOld);
-        }
-
-        UpdateWindows();
+        // UpdateWindows();
         CloseEditWindow();
     }
 
