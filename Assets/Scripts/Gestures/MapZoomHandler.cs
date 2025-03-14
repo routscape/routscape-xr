@@ -31,13 +31,13 @@ namespace Gestures
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            if (_isZooming && (!IsGrabbing(leftHand) || !IsGrabbing(rightHand)))
+            if (_isZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
             {
                 _isZooming = false;
                 return;
             }
 
-            if (!_isZooming && IsGrabbing(leftHand) && IsGrabbing(rightHand))
+            if (!_isZooming && IsPinching(leftHand) && IsPinching(rightHand))
             {
                 _isZooming = true;
                 Object.RequestStateAuthority();
