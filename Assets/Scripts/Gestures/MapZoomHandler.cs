@@ -64,9 +64,8 @@ namespace Gestures
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            Pose leftHandPose, rightHandPose;
-            leftHand.GetJointPose(HandJointId.HandPalm, out leftHandPose);
-            rightHand.GetJointPose(HandJointId.HandPalm, out rightHandPose);
+            leftHand.GetJointPose(HandJointId.HandPalm, out var leftHandPose);
+            rightHand.GetJointPose(HandJointId.HandPalm, out var rightHandPose);
             _lastDistance = Vector3.Distance(leftHandPose.position, rightHandPose.position);
         }
 
