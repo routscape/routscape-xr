@@ -134,7 +134,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         UpdateWindows();
         routeAddButtonImage.sprite = addSprite;
 
-        if (routeOwnershipObject.HasStateAuthority) routeOwnershipObject.ReleaseStateAuthority();
+        // if (routeOwnershipObject.HasStateAuthority) routeOwnershipObject.ReleaseStateAuthority();
         routeAddButton.onClick.AddListener(InitializeAddRoute);
 
         StartCoroutine(ResetButton(0.1f));
