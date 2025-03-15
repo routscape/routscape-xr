@@ -101,6 +101,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     private void RpcAddRoute()
     {
         mode = 1;
+        xrRouteDrawer.enabled = true;
         routeAddButton.onClick.RemoveAllListeners();
 
         Debug.Log("Adding Route...");
@@ -131,6 +132,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeManager.GetComponent<RouteManager>().AddSpawnedRoute(currentActiveRoute);
         currentActiveRoute = null;
         xrRouteDrawer.RemoveCurrentRoute();
+        xrRouteDrawer.enabled = false;
         UpdateWindows();
         routeAddButtonImage.sprite = addSprite;
 
