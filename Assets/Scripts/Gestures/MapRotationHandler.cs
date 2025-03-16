@@ -1,25 +1,58 @@
+using Fusion;
 using Oculus.Interaction;
-using Oculus.Interaction.PoseDetection;
 using UnityEngine;
-using static Utils.HandGrabbing;
 
 namespace Gestures
 {
-    public class MapRotationHandler : MonoBehaviour
+    public class MapRotationHandler : NetworkBehaviour
     {
-        [SerializeField] private bool restrictToPinch;
-        [SerializeField] private bool restrictToGrab;
-        [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
-        [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
-
         [SerializeField] private RayInteractor leftRayInteractor;
         [SerializeField] private RayInteractor rightRayInteractor;
+        [SerializeField] private Transform monitoredTransform;
+
+        private bool _isSpawned;
 
         private Vector3 _leftPosition;
         private bool _leftPositionSet;
 
         private Vector3 _rightPosition;
         private bool _rightPositionSet;
+
+        [Networked]
+        [OnChangedRender(nameof(UpdateRotation))]
+        private Quaternion CurrentRotation { get; set; }
+
+        [Networked]
+        [OnChangedRender(nameof(UpdatePosition))]
+        private Vector3 CurrentPosition { get; set; }
+
+        private void FixedUpdate()
+        {
+            if (!_isSpawned) return;
+
+            if (!monitoredTransform.rotation.Equals(CurrentRotation))
+                CurrentRotation = monitoredTransform.rotation;
+
+            if (!monitoredTransform.position.Equals(CurrentPosition))
+                CurrentPosition = monitoredTransform.position;
+        }
+
+        public override void Spawned()
+        {
+            _isSpawned = true;
+        }
+
+        private void UpdateRotation()
+        {
+            Debug.Log("[MapRotationHandler] Updating rotation to " + CurrentRotation);
+            if (!Object.HasStateAuthority) monitoredTransform.rotation = CurrentRotation;
+        }
+
+        private void UpdatePosition()
+        {
+            Debug.Log("[MapRotationHandler] Updating position to " + CurrentPosition);
+            if (!Object.HasStateAuthority) monitoredTransform.position = CurrentPosition;
+        }
 
         public void OnSelect(PointerEvent pointerEvent)
         {
@@ -34,20 +67,6 @@ namespace Gestures
             {
                 Debug.LogError("[MapRotationHandler] Unexpected pointer event data type: " +
                                pointerEvent.Data.GetType());
-                return;
-            }
-
-            if (restrictToPinch && (!IsPinching(leftFingerFeatureStateProvider.Hand) ||
-                                    !IsPinching(rightFingerFeatureStateProvider.Hand)))
-            {
-                Debug.Log("[MapRotationHandler] Not pinching with both hands");
-                return;
-            }
-
-            if (restrictToGrab && (!IsGrabbing(leftFingerFeatureStateProvider.Hand) ||
-                                   !IsGrabbing(rightFingerFeatureStateProvider.Hand)))
-            {
-                Debug.Log("[MapRotationHandler] Not grabbing with both hands");
                 return;
             }
 
@@ -69,6 +88,8 @@ namespace Gestures
             // If both positions are filled, calculate the center point
             if (_leftPositionSet && _rightPositionSet)
             {
+                Object.RequestStateAuthority();
+
                 var center = (_leftPosition + _rightPosition) / 2;
                 transform.position = center;
                 Debug.Log("[MapRotationHandler] Centering at " + center);
