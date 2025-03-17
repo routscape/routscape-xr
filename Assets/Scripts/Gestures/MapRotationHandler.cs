@@ -22,19 +22,12 @@ namespace Gestures
         [OnChangedRender(nameof(UpdateRotation))]
         private Quaternion CurrentRotation { get; set; }
 
-        [Networked]
-        [OnChangedRender(nameof(UpdatePosition))]
-        private Vector3 CurrentPosition { get; set; }
-
         private void FixedUpdate()
         {
             if (!_isSpawned) return;
 
             if (!monitoredTransform.rotation.Equals(CurrentRotation))
                 CurrentRotation = monitoredTransform.rotation;
-
-            if (!monitoredTransform.position.Equals(CurrentPosition))
-                CurrentPosition = monitoredTransform.position;
         }
 
         public override void Spawned()
@@ -44,14 +37,11 @@ namespace Gestures
 
         private void UpdateRotation()
         {
-            Debug.Log("[MapRotationHandler] Updating rotation to " + CurrentRotation);
-            if (!Object.HasStateAuthority) monitoredTransform.rotation = CurrentRotation;
-        }
-
-        private void UpdatePosition()
-        {
-            Debug.Log("[MapRotationHandler] Updating position to " + CurrentPosition);
-            if (!Object.HasStateAuthority) monitoredTransform.position = CurrentPosition;
+            if (!Object.HasStateAuthority)
+            {
+                Debug.Log("[MapRotationHandler] Updating rotation to " + CurrentRotation);
+                monitoredTransform.rotation = CurrentRotation;
+            }
         }
 
         public void OnSelect(PointerEvent pointerEvent)
