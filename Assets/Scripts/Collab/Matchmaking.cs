@@ -1,6 +1,7 @@
 ﻿using Fusion;
 using Meta.XR.MultiplayerBlocks.Shared;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Collab
 {
@@ -13,13 +14,10 @@ namespace Collab
             customMatchmaking.LeaveRoom();
         }
 
-        public void OnFusionServerConnected(NetworkRunner networkRunner)
+        public void LoadActiveScene(NetworkRunner networkRunner)
         {
-            if (networkRunner.GetComponent<INetworkSceneManager>() == null)
-                networkRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
-            if (networkRunner.GetComponent<INetworkObjectProvider>() == null)
-                networkRunner.gameObject.AddComponent<NetworkObjectProviderDefault>();
+            var scene = SceneManager.GetActiveScene();
+            networkRunner.LoadScene(scene.name);
         }
     }
 }

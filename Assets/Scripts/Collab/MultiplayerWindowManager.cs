@@ -12,8 +12,6 @@ namespace Collab
         [SerializeField] private Button createButton;
         [SerializeField] private CustomMatchmaking customMatchmaking;
 
-        private readonly string _roomPassword = "r0utsc4p3";
-
         private void Start()
         {
             joinButton.onClick.AddListener(JoinRoom);
@@ -28,7 +26,7 @@ namespace Collab
             DisableInput();
             SetInputTextField("Joining room...");
 
-            customMatchmaking.JoinRoom(roomId, _roomPassword);
+            customMatchmaking.JoinRoom(roomId, "");
         }
 
         public void OnJoinRoom(CustomMatchmaking.RoomOperationResult result)
@@ -56,8 +54,7 @@ namespace Collab
             {
                 IsPrivate = false,
                 LobbyName = "GlobalLobby",
-                MaxPlayersPerRoom = 2,
-                RoomPassword = _roomPassword
+                MaxPlayersPerRoom = 2
             });
         }
 
