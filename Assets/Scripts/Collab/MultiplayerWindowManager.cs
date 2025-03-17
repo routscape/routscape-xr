@@ -21,10 +21,10 @@ namespace Collab
         private void JoinRoom()
         {
             var roomId = labelInput.GetComponent<TMP_InputField>().text;
-            Debug.Log("[Matchmaking] RoomID: " + roomId);
+            Debug.Log("[Matchmaking] Session ID: " + roomId);
 
             DisableInput();
-            SetInputTextField("Joining room...");
+            SetInputTextField("Joining session...");
 
             customMatchmaking.JoinRoom(roomId, "");
         }
@@ -34,13 +34,13 @@ namespace Collab
             if (result.IsSuccess)
             {
                 SetInputTextField(result.RoomToken);
-                Debug.Log("[Matchmaking] Room joined successfully. Connected to: " +
+                Debug.Log("[Matchmaking] Session joined successfully. Connected to: " +
                           customMatchmaking.ConnectedRoomToken);
             }
             else
             {
-                Debug.LogError("[Matchmaking] Failed to join room.");
-                SetInputTextField($"Failed to join room {result.RoomToken}");
+                Debug.LogError("[Matchmaking] Failed to join session");
+                SetInputTextField($"Failed to join session {result.RoomToken}");
                 EnableInput();
             }
         }
@@ -48,7 +48,7 @@ namespace Collab
         private void CreateRoom()
         {
             DisableInput();
-            SetInputTextField("Creating room...");
+            SetInputTextField("Creating session...");
 
             customMatchmaking.CreateRoom(new CustomMatchmaking.RoomCreationOptions
             {
@@ -64,12 +64,13 @@ namespace Collab
             {
                 SetInputTextField(result.RoomToken);
                 Debug.Log(
-                    "[Matchmaking] Room created successfully. Connected to: " + customMatchmaking.ConnectedRoomToken);
+                    "[Matchmaking] Session created successfully. Connected to: " +
+                    customMatchmaking.ConnectedRoomToken);
             }
             else
             {
-                Debug.LogError("[Matchmaking] Failed to create room.");
-                SetInputTextField("Failed to create room.");
+                Debug.LogError("[Matchmaking] Failed to create session.");
+                SetInputTextField("Failed to create session");
                 EnableInput();
             }
         }
