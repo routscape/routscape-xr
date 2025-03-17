@@ -14,6 +14,7 @@ namespace Gestures
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
 
         [SerializeField] private float zoomSpeed = 1f;
+        private bool _isSpawned;
         private bool _isZooming;
         private float _lastDistance;
 
@@ -28,6 +29,8 @@ namespace Gestures
 
         private void LateUpdate()
         {
+            if (!_isSpawned) return;
+
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
@@ -57,6 +60,11 @@ namespace Gestures
             CurrentZoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
 
             _lastDistance = distance;
+        }
+
+        public override void Spawned()
+        {
+            _isSpawned = true;
         }
 
         private void InitializeReferenceDistance()
