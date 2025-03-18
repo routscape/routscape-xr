@@ -874,7 +874,7 @@ Transform:
   m_GameObject: {fileID: 62661802}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.542, y: 0.111, z: 0.167}
+  m_LocalPosition: {x: -0.803, y: 0.111, z: 0.167}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2727,7 +2727,7 @@ Transform:
   m_GameObject: {fileID: 264260773}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.391, y: -0.305, z: 1.4}
+  m_LocalPosition: {x: -1.391, y: -0.044, z: 1.4}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9977,7 +9977,7 @@ Transform:
   m_GameObject: {fileID: 967209090}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -2.319, y: -0.229, z: 0.221}
+  m_LocalPosition: {x: -2.135, y: -0.229, z: 0.221}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11161,7 +11161,7 @@ Transform:
   m_GameObject: {fileID: 1043960221}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.542, y: -0.24000002, z: 0.167}
+  m_LocalPosition: {x: -0.80300003, y: -0.24000002, z: 0.167}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14760,6 +14760,18 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1435601455}
+        m_TargetAssemblyTypeName: EnableGameObject, Assembly-CSharp
+        m_MethodName: OnTrigger
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1435601456}
         m_TargetAssemblyTypeName: EnableGameObject, Assembly-CSharp
         m_MethodName: OnTrigger
         m_Mode: 1
