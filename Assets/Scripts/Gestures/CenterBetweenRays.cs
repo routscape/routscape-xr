@@ -11,6 +11,8 @@ namespace Gestures
         [SerializeField] private bool restrictToGrab;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
+        [SerializeField] private FloodManager floodManager;
+
 
         private Vector3 _position1;
         private bool _position1Set;
