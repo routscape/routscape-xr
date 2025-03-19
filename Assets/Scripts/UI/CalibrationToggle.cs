@@ -1,45 +1,42 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class CalibrationToggle : MonoBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
-    [SerializeField] private GameObject mesh;
-    [SerializeField] private GameObject zoomHolder;
-    
-    private Button itemButton;
-    private Image itemImage;
+    [SerializeField] private SpawnPinUI spawnPinUI;
+    [SerializeField] private GameObject[] gameObjects;
     private bool isActive;
 
+    private Button itemButton;
+    private Image itemImage;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         itemButton = GetComponent<Button>();
         itemImage = GetComponent<Image>();
-        
-        if (itemButton != null)
-        {
-            itemButton.onClick.AddListener(OnButtonClick);
-        }
-        
+
+        if (itemButton != null) itemButton.onClick.AddListener(OnButtonClick);
+
         SetItemState(true);
     }
-    
+
     private void OnButtonClick()
     {
-        mesh.SetActive(isActive);
-        zoomHolder.SetActive(isActive);
-        
+        foreach (var go in gameObjects) go.SetActive(!go.activeSelf);
+        if (isActive) spawnPinUI.SpawnUI();
+        else spawnPinUI.HideUI();
+
         SetItemState(!isActive);
     }
-    
-    public void SetItemState(bool newState)
+
+    private void SetItemState(bool newState)
     {
         isActive = newState;
 
-		// Set item image based on its state
+        // Set item image based on its state
         if (itemImage != null)
         {
             Debug.Log("New item state...");

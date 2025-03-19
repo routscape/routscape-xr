@@ -12,4 +12,9 @@ public class SpawnPinUI : MonoBehaviour
         pinUI.SetActive(true);
         pinUI.transform.position = newPosition;
     }
+
+    public void HideUI()
+    {
+        pinUI.SetActive(false);
+    }
 }
