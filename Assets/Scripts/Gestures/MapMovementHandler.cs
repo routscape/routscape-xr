@@ -20,9 +20,14 @@ namespace Gestures
 
         public void OnSelect(PointerEvent pointerEvent)
         {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var gameObject = pointerEvent.Data as GameObject;
 
-            if (rayInteractor == null)
+            if (gameObject == null)
+            {
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
+                return;
+            }
+            if (!gameObject.tag.Contains("ray interactor"))
             {
                 Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
                     pointerEvent.Data.GetType().Name);
@@ -31,6 +36,7 @@ namespace Gestures
 
             if (++_grabCount != 1) return;
 
+            var rayInteractor = gameObject.GetComponent<RayInteractor>();
             Object.RequestStateAuthority();
             _interactorId = pointerEvent.Identifier;
             _referencePosition = rayInteractor.End;
@@ -38,9 +44,14 @@ namespace Gestures
 
         public void OnDeselect(PointerEvent pointerEvent)
         {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var gameObject = pointerEvent.Data as GameObject;
 
-            if (rayInteractor == null)
+            if (gameObject == null)
+            {
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
+                return;
+            }
+            if (!gameObject.tag.Contains("ray interactor"))
             {
                 Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
                     pointerEvent.Data.GetType().Name);
@@ -53,14 +64,20 @@ namespace Gestures
 
         public void OnMove(PointerEvent pointerEvent)
         {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var gameObject = pointerEvent.Data as GameObject;
 
-            if (rayInteractor == null)
+            if (gameObject == null)
+            {
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
+                return;
+            }
+            if (!gameObject.tag.Contains("ray interactor"))
             {
                 Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
                     pointerEvent.Data.GetType().Name);
                 return;
             }
+            var rayInteractor = gameObject.GetComponent<RayInteractor>();
 
             if (pointerEvent.Identifier != _interactorId) return;
             if (_grabCount != 1) return;

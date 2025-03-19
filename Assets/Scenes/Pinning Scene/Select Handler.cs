@@ -18,6 +18,9 @@ public class SelectHandler : MonoBehaviour
     [SerializeField] private RayInteractor _rightRayInteractor;
     [SerializeField] private GameObject _pinUI;
 
+    private Vector3 _pinchArea;
+    private HandGrabInteractor _handGrabInteractor;
+    private RayInteractor _rayInteractor;
     private GameObject instantiatedPin = null;
     private HandGrabInteractable pinGrabbable = null;
     private bool _clicked = false;
@@ -38,16 +41,16 @@ public class SelectHandler : MonoBehaviour
     
     private IEnumerator SpawnPin()
     {
-        instantiatedPin = Instantiate(_pinObject, _rightPinchArea.position, quaternion.identity);
+        instantiatedPin = Instantiate(_pinObject, _pinchArea, quaternion.identity);
         instantiatedPin.SetActive(false);
 
         pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
-        _rightRayInteractor.Disable();
+        _rayInteractor.Disable();
         TogglePinUi();
-        _rightHandGrabInteractor.ForceRelease();
-        yield return new WaitUntil(() => _rightHandGrabInteractor.State == InteractorState.Normal);
+        _handGrabInteractor.ForceRelease();
+        yield return new WaitUntil(() => _handGrabInteractor.State == InteractorState.Normal);
         instantiatedPin.SetActive(true);
-        _rightHandGrabInteractor.ForceSelect(pinGrabbable, true);;
+        _handGrabInteractor.ForceSelect(pinGrabbable, true);;
         TogglePinUi();
     }
 
@@ -59,8 +62,26 @@ public class SelectHandler : MonoBehaviour
     
     public void OnClick(PointerEvent eventData)
     {
+        var gameObject = eventData.Data as GameObject;
+        if (gameObject == null)
+        {
+            Debug.LogError("[FLOOD CUBE] interactor expected in Data property of hand!");
+            return;
+        }
 
-        Debug.Log(eventData.Type);
+        if (gameObject.tag.Contains("left"))
+        {
+            _pinchArea = _leftPinchArea.position;
+            _handGrabInteractor = _leftHandGrabInteractor;
+            _rayInteractor = _leftRayInteractor;
+        }
+        else
+        {
+            _pinchArea = _rightPinchArea.position;
+            _handGrabInteractor = _rightHandGrabInteractor;
+            _rayInteractor = _leftRayInteractor;
+        }
+        
         StartCoroutine(SpawnPin());
     }
 }

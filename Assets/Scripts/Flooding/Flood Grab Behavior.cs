@@ -13,18 +13,23 @@ public class FloodGrabBehavior : MonoBehaviour
     private bool _hasLastPinchPos = false; // because you only have a valid "previous" after one frame
     private int _grabCount = 0;
     private float _currentHeight = 1;
-    
+    private BoxCollider _boxCollider;
+    void Start()
+    {
+        _boxCollider = transform.parent.GetComponent<BoxCollider>();
+    }
     public void OnSelect(PointerEvent pointerEvent)
     {
         var gameObject = (pointerEvent.Data as GameObject);
 
         if (gameObject == null)
         {
-            Debug.LogError("[FLOOD CUBE] pinchArea expected in Data property of hand");
+            Debug.LogError("[FLOOD CUBE] interactor expected in Data property of hand!");
             return;
         }
 
-        var pinchArea = gameObject.transform.position;
+        var pinchArea = GetPinchArea(gameObject);
+        
         if (++_grabCount != 1) return;
 
         // Initialize last pinch pos so we can compare next frame
@@ -43,7 +48,7 @@ public class FloodGrabBehavior : MonoBehaviour
     {
         if (_grabCount != 1) return;
         var gameObject = (pointerEvent.Data as GameObject);
-        var pinchArea = gameObject.transform.position;
+        var pinchArea = GetPinchArea(gameObject);
         
         var newPinchPos = pinchArea;
         float deltaY = newPinchPos.y - _lastPinchPos.y;
@@ -57,8 +62,22 @@ public class FloodGrabBehavior : MonoBehaviour
         _currentHeight = newHeight;
 
         Debug.Log("NEW HEIGHT " + newHeight);
-        floodCube.GetComponent<MeshFilter>()
-            .mesh.RecalculateMeshByBounds(new Vector3(1, 1, newHeight));
+        
+        var meshFilter = floodCube.GetComponent<MeshFilter>();
+        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, newHeight));
+        Bounds meshBounds = meshFilter.mesh.bounds;
+        _boxCollider.center = meshBounds.center;
+        _boxCollider.size   = meshBounds.size;
         _lastPinchPos = newPinchPos;
+    }
+
+    private Vector3 GetPinchArea(GameObject gameObject)
+    {
+        if (gameObject.tag.Contains("left"))
+        {
+            return GameObject.FindWithTag("left pinch area").transform.position;
+        }
+
+        return GameObject.FindWithTag("right pinch area").transform.position;
     }
 }

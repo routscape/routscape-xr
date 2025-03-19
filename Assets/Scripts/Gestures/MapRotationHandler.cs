@@ -49,13 +49,20 @@ namespace Gestures
                 return;
             }
 
-            var rayInteractor = pointerEvent.Data as RayInteractor;
-            if (rayInteractor == null)
+            var gameObject = pointerEvent.Data as GameObject;
+
+            if (gameObject == null)
             {
-                Debug.LogWarning("[MapRotationHandler] Ignoring due to unexpected pointer event data type: " +
-                                 pointerEvent.Data.GetType());
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
                 return;
             }
+            if (!gameObject.tag.Contains("ray interactor"))
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+            var rayInteractor = gameObject.GetComponent<RayInteractor>();
 
             if (rayInteractor == leftRayInteractor) _leftPositionSet = true;
             if (rayInteractor == rightRayInteractor) _rightPositionSet = true;
@@ -72,13 +79,20 @@ namespace Gestures
                 return;
             }
 
-            var rayInteractor = pointerEvent.Data as RayInteractor;
-            if (rayInteractor == null)
+            var gameObject = pointerEvent.Data as GameObject;
+
+            if (gameObject == null)
             {
-                Debug.LogWarning("[MapRotationHandler] Ignoring due to unexpected pointer event data type: " +
-                                 pointerEvent.Data.GetType());
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
                 return;
             }
+            if (!gameObject.tag.Contains("ray interactor"))
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+            var rayInteractor = gameObject.GetComponent<RayInteractor>();
 
             if (rayInteractor == leftRayInteractor) _leftPositionSet = false;
             if (rayInteractor == rightRayInteractor) _rightPositionSet = false;

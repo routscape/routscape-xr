@@ -52,6 +52,7 @@ namespace Gestures
 
             if (!_isZooming) return;
 
+            Debug.Log("[MAP ZOOM HANDLER] Zooming");
             leftHand.GetJointPose(HandJointId.HandPalm, out var leftHandPose);
             rightHand.GetJointPose(HandJointId.HandPalm, out var rightHandPose);
             var leftHandPosition = leftHandPose.position;

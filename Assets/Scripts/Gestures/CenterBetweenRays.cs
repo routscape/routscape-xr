@@ -26,14 +26,20 @@ namespace Gestures
                 return;
             }
 
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var gameObject = pointerEvent.Data as GameObject;
 
-            if (rayInteractor == null)
+            if (gameObject == null)
             {
-                Debug.LogError("[CenterBetweenRays] Unexpected pointer event data type: " +
-                               pointerEvent.Data.GetType());
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
                 return;
             }
+            if (!gameObject.tag.Contains("ray interactor"))
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
+                return;
+            }
+            var rayInteractor = gameObject.GetComponent<RayInteractor>();
 
             if (restrictToPinch && (!IsPinching(leftFingerFeatureStateProvider.Hand) ||
                                     !IsPinching(rightFingerFeatureStateProvider.Hand)))
@@ -80,12 +86,17 @@ namespace Gestures
 
         public void OnDeselect(PointerEvent pointerEvent)
         {
-            var rayInteractor = pointerEvent.Data as RayInteractor;
+            var gameObject = pointerEvent.Data as GameObject;
 
-            if (rayInteractor == null)
+            if (gameObject == null)
             {
-                Debug.LogError("[CenterBetweenRays] Unexpected pointer event data type: " +
-                               pointerEvent.Data.GetType());
+                Debug.LogError("[MapMovementHandler] Need to assign interactor game object to data!");
+                return;
+            }
+            if (!gameObject.tag.Contains("ray interactor"))
+            {
+                Debug.LogErrorFormat("[MapMovementHandler] Expected RayInteractor but got {0}",
+                    pointerEvent.Data.GetType().Name);
                 return;
             }
 
