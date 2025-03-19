@@ -26,7 +26,7 @@ namespace Gestures
 
         private void Start()
         {
-            InitializeReferenceDistance();
+            mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, mapManager.Zoom);
         }
 
         private void LateUpdate()
@@ -48,7 +48,6 @@ namespace Gestures
                 _isZooming = true;
                 Object.RequestStateAuthority();
                 InitializeReferenceDistance();
-                return;
             }
 
             if (!_isZooming) return;
