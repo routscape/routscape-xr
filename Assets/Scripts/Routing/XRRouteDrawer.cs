@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusion;
 using Mapbox.Unity.Map;
+using Mapbox.Unity.Utilities;
 using UnityEngine;
 
 public class XRRouteDrawer : NetworkBehaviour
@@ -48,7 +49,9 @@ public class XRRouteDrawer : NetworkBehaviour
             if (distance > minDistanceBetweenPoints
                 && userInterfaceManagerScript.mode == 1)
             {
-                PointToAdd = hitPoint; // Add point only if moved significantly
+                var pointLatLong = _mapManager.WorldToGeoPosition(hitPoint);
+                PointToAdd = pointLatLong.ToVector3xz(); // Add point only if moved significantly
+
                 lastPoint = hitPoint;
             }
         }
@@ -85,7 +88,11 @@ public class XRRouteDrawer : NetworkBehaviour
     {
         if (!_isSpawned) return;
         if (userInterfaceManagerScript.mode != 1) return; // Safety check
-        currentRoute.AddPoint(PointToAdd, _mapManager);
+
+        var pointLatLong = PointToAdd.ToVector2d();
+        var point = _mapManager.GeoToWorldPosition(pointLatLong);
+
+        currentRoute.AddPoint(point, _mapManager);
     }
 
     private bool GetFingerHitPoint(out Vector3 adjustedPoint)
@@ -131,34 +138,6 @@ public class XRRouteDrawer : NetworkBehaviour
         return false;
     }
 
-    private bool GetControllerHitPoint(out Vector3 adjustedPoint)
-    {
-        // Get the controller's position and rotation
-        var origin = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
-        var rotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
-
-        // XR Simulator fallback
-        if (origin == Vector3.zero) origin = transform.position;
-        if (rotation == Quaternion.identity) rotation = transform.rotation;
-
-        // Calculate the direction the controller is pointing
-        var direction = rotation * Vector3.forward;
-
-        // Debug the ray to visualize it in Scene View
-        Debug.DrawRay(origin, direction * 50f, Color.green, 1f);
-
-        // Raycast to detect where the controller is pointing
-        if (Physics.Raycast(origin, direction, out var hit, 50f, mapboxLayer))
-        {
-            adjustedPoint = hit.point + Vector3.up * 0.01f; // Slightly above surface
-            Debug.Log($"Hit detected at: {adjustedPoint}");
-            return true;
-        }
-
-        adjustedPoint = Vector3.zero;
-        return false;
-    }
-
     private void SetCurrentRoute(string routeName)
     {
         var foundRoute = routeList.Find(route => route.Name == routeName);
@@ -170,23 +149,6 @@ public class XRRouteDrawer : NetworkBehaviour
         else
         {
             Debug.LogWarning($"Route with name '{routeName}' not found.");
-        }
-    }
-
-    public void UpdateRoute(string routeName)
-    {
-        var childCount = transform.childCount;
-        for (var i = 0; i < childCount; i++)
-        {
-            var child = transform.GetChild(i); // Get each child
-            if (child.name == routeName)
-            {
-                var foundRoute = routeList.Find(route => route.Name == routeName);
-
-                var lineRenderer = child.GetComponent<LineRenderer>();
-                lineRenderer.startColor = foundRoute.Color; // Set the starting color to red
-                lineRenderer.endColor = foundRoute.Color;
-            }
         }
     }
 
