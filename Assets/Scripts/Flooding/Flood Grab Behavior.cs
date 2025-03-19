@@ -1,26 +1,30 @@
 using Flooding;
+using Fusion;
 using Oculus.Interaction;
-using Oculus.Interaction.Input;
-using Oculus.Interaction.Input.Compatibility.OVR;
 using UnityEngine;
-using Handedness = Oculus.Interaction.Input.Handedness;
 
-public class FloodGrabBehavior : MonoBehaviour
+public class FloodGrabBehavior : NetworkBehaviour
 {
     [SerializeField] private GameObject floodCube;
     public float floodStepMultiplier = 0.05f;
-    private Vector3 _lastPinchPos;      // <- keep track of last pinch position
-    private bool _hasLastPinchPos = false; // because you only have a valid "previous" after one frame
-    private int _grabCount = 0;
-    private float _currentHeight = 1;
     private BoxCollider _boxCollider;
-    void Start()
+
+    private int _grabCount;
+    private bool _hasLastPinchPos; // because you only have a valid "previous" after one frame
+    private Vector3 _lastPinchPos; // <- keep track of last pinch position
+
+    [Networked]
+    [OnChangedRender(nameof(MoveFlood))]
+    private float CurrentHeight { get; set; } = 1;
+
+    private void Start()
     {
         _boxCollider = transform.parent.GetComponent<BoxCollider>();
     }
+
     public void OnSelect(PointerEvent pointerEvent)
     {
-        var gameObject = (pointerEvent.Data as GameObject);
+        var gameObject = pointerEvent.Data as GameObject;
 
         if (gameObject == null)
         {
@@ -28,8 +32,10 @@ public class FloodGrabBehavior : MonoBehaviour
             return;
         }
 
+        Object.RequestStateAuthority();
+
         var pinchArea = GetPinchArea(gameObject);
-        
+
         if (++_grabCount != 1) return;
 
         // Initialize last pinch pos so we can compare next frame
@@ -44,40 +50,41 @@ public class FloodGrabBehavior : MonoBehaviour
         --_grabCount;
         Debug.Log("Flood Deselected");
     }
+
     public void OnMove(PointerEvent pointerEvent)
     {
-        if (_grabCount != 1) return;
-        var gameObject = (pointerEvent.Data as GameObject);
-        var pinchArea = GetPinchArea(gameObject);
-        
-        var newPinchPos = pinchArea;
-        float deltaY = newPinchPos.y - _lastPinchPos.y;
-        if (Mathf.Abs(deltaY) < 0.0001f)
-        {
-            return;
-        }
+        if (!Object.HasStateAuthority) return;
 
-        float currentDelta = deltaY * floodStepMultiplier;
-        float newHeight = _currentHeight + currentDelta;
-        _currentHeight = newHeight;
+        if (_grabCount != 1) return;
+        var gameObject = pointerEvent.Data as GameObject;
+        var pinchArea = GetPinchArea(gameObject);
+
+        var newPinchPos = pinchArea;
+        var deltaY = newPinchPos.y - _lastPinchPos.y;
+        if (Mathf.Abs(deltaY) < 0.0001f) return;
+
+        var currentDelta = deltaY * floodStepMultiplier;
+        var newHeight = CurrentHeight + currentDelta;
+        CurrentHeight = newHeight;
 
         Debug.Log("NEW HEIGHT " + newHeight);
-        
-        var meshFilter = floodCube.GetComponent<MeshFilter>();
-        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, newHeight));
-        Bounds meshBounds = meshFilter.mesh.bounds;
-        _boxCollider.center = meshBounds.center;
-        _boxCollider.size   = meshBounds.size;
+
         _lastPinchPos = newPinchPos;
     }
 
     private Vector3 GetPinchArea(GameObject gameObject)
     {
-        if (gameObject.tag.Contains("left"))
-        {
-            return GameObject.FindWithTag("left pinch area").transform.position;
-        }
+        if (gameObject.tag.Contains("left")) return GameObject.FindWithTag("left pinch area").transform.position;
 
         return GameObject.FindWithTag("right pinch area").transform.position;
+    }
+
+    private void MoveFlood()
+    {
+        var meshFilter = floodCube.GetComponent<MeshFilter>();
+        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, CurrentHeight));
+        var meshBounds = meshFilter.mesh.bounds;
+        _boxCollider.center = meshBounds.center;
+        _boxCollider.size = meshBounds.size;
     }
 }
