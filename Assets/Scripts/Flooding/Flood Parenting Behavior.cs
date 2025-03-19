@@ -6,6 +6,7 @@ public class FloodParentingBehavior : MonoBehaviour
     [SerializeField] private GameObject floodCube;
     [SerializeField] private GameObject mapParent;
     [SerializeField] private GameObject defaultParent;
+    [SerializeField] private FloodButtonToggle floodButtonToggle;
     
     private Vector3 initialScale;
     private Vector3 maxScale;
@@ -33,6 +34,16 @@ public class FloodParentingBehavior : MonoBehaviour
             floodCube.transform.localScale = maxScale;
         }
 
+
+        if (currentZoomWhole == 15)
+        {
+            floodButtonToggle.ToggleFlood(true);
+        }
+        else
+        {
+            floodButtonToggle.ToggleFlood(false);
+
+        }
         floodCube.transform.SetParent(mapParent.transform, true);
         previousZoomWhole = currentZoomWhole;
     }
