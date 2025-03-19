@@ -1,4 +1,3 @@
-using System.Linq;
 using Fusion;
 using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
@@ -19,6 +18,7 @@ namespace Gestures
         private bool _isSpawned;
         private bool _isZooming;
         private float _lastDistance;
+        public bool CanZoom { private get; set; } = true;
 
         [Networked]
         [OnChangedRender(nameof(UpdateZoom))]
@@ -31,6 +31,7 @@ namespace Gestures
 
         private void LateUpdate()
         {
+            if (!CanZoom) return;
             if (!_isSpawned) return;
 
             var leftHand = leftFingerFeatureStateProvider.Hand;

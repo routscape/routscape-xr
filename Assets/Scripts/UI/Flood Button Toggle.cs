@@ -1,4 +1,5 @@
 using Fusion;
+using Gestures;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class FloodButtonToggle : NetworkBehaviour
     [SerializeField] private Sprite inactiveImage;
     [SerializeField] private GameObject floodCube;
     [SerializeField] private GameObject mapMesh;
+    [SerializeField] private MapZoomHandler mapZoomHandler;
     private bool isActive;
     private Button itemButton;
     private Image itemImage;
@@ -30,17 +32,12 @@ public class FloodButtonToggle : NetworkBehaviour
         floodCube.GetComponent<MeshRenderer>().enabled = isActive;
         floodCube.GetComponent<BoxCollider>().enabled = isActive;
         mapMesh.SetActive(!isActive);
+        mapZoomHandler.CanZoom = !isActive;
     }
 
     [Rpc]
     public void RpcToggleFlood(bool state)
     {
-        //Avoid overriding existing user settings
-        //If flood is hidden and state is true (try to override), return
-        if (!isActive && state) return;
-        floodCube.GetComponent<MeshRenderer>().enabled = state;
-        floodCube.GetComponent<BoxCollider>().enabled = state;
-        mapMesh.SetActive(!state);
         GetComponent<Button>().interactable = state;
     }
 
