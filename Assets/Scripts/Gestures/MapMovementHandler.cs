@@ -9,7 +9,6 @@ namespace Gestures
     public class MapMovementHandler : NetworkBehaviour
     {
         [SerializeField] private AbstractMap mapManager;
-        [SerializeField] private FloodManager floodManager;
 
         private int _grabCount;
         private int _interactorId = -1;
