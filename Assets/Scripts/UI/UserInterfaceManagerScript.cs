@@ -40,6 +40,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     private readonly List<Route> routeList = new();
     private AbstractMap _mapManager;
     public Route currentActiveRoute;
+    private int pinCounter;
     private Button routeAddButton;
     private Image routeAddButtonImage;
     private Transform routeAddButtonTransform;
@@ -84,10 +85,12 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         DeleteButtonComponent.onClick.AddListener(DeleteEditWindow);
     }
 
-    private void AddPin(string pinID, Vector2d latLong, GameObject pinObjet)
+    private void AddPin(string pinID, Vector2d latLong, GameObject pinObject)
     {
         /* default pin color is red */
-        pinList.Add(new Tuple<Pin, GameObject>(new Pin("New Pin", pinID, latLong, ColorType.Red), pinObjet));
+        pinList.Add(new Tuple<Pin, GameObject>(new Pin("Pin - " + pinCounter, pinID, latLong, ColorType.Red),
+            pinObject));
+        pinCounter++;
         UpdateWindows();
     }
 
