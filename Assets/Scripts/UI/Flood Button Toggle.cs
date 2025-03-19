@@ -1,31 +1,29 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
-public class FloodButtonToggle : MonoBehaviour
+public class FloodButtonToggle : NetworkBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
     [SerializeField] private GameObject floodCube;
     [SerializeField] private GameObject mapMesh;
+    private bool isActive;
     private Button itemButton;
     private Image itemImage;
-    private bool isActive;
 
-    void Start()
+    private void Start()
     {
         itemButton = GetComponent<Button>();
         itemImage = GetComponent<Image>();
-        
-        if (itemButton != null)
-        {
-            itemButton.onClick.AddListener(OnButtonClick);
-        }
+
+        if (itemButton != null) itemButton.onClick.AddListener(RpcOnButtonClick);
 
         SetItemState(false);
     }
-    
-    private void OnButtonClick()
+
+    [Rpc]
+    private void RpcOnButtonClick()
     {
         Debug.Log("[Flood Button] Toggle Flood");
         SetItemState(!isActive);
@@ -34,20 +32,18 @@ public class FloodButtonToggle : MonoBehaviour
         mapMesh.SetActive(!isActive);
     }
 
-    public void ToggleFlood(bool state)
+    [Rpc]
+    public void RpcToggleFlood(bool state)
     {
         //Avoid overriding existing user settings
         //If flood is hidden and state is true (try to override), return
-        if (!isActive && state)
-        {
-            return;
-        }
+        if (!isActive && state) return;
         floodCube.GetComponent<MeshRenderer>().enabled = state;
         floodCube.GetComponent<BoxCollider>().enabled = state;
         mapMesh.SetActive(!state);
         GetComponent<Button>().interactable = state;
     }
-    
+
     public void SetItemState(bool newState)
     {
         isActive = newState;
