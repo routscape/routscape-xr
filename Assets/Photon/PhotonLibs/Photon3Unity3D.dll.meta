@@ -1,5 +1,10 @@
 fileFormatVersion: 2
-guid: 04bb5f307f2e48b4fbaa6da865fd4091
+guid: aadb37a20a33632429047acaef43658a
+labels:
+- ExitGames
+- PUN
+- Photon
+- Networking
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -12,9 +17,9 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      Any: 
+      '': Any
     second:
-      enabled: 0
+      enabled: 1
       settings: {}
   - first:
       Editor: Editor
@@ -23,10 +28,11 @@ PluginImporter:
       settings:
         DefaultValueInitialized: true
   - first:
-      WebGL: WebGL
+      Windows Store Apps: WindowsStoreApps
     second:
-      enabled: 1
-      settings: {}
+      enabled: 0
+      settings:
+        CPU: AnyCPU
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -35,5 +41,5 @@ AssetOrigin:
   productId: 119922
   packageName: PUN 2 - FREE
   packageVersion: 2.50
-  assetPath: Assets/Photon/PhotonLibs/WebSocket/WebSocket.jslib
+  assetPath: Assets/Photon/PhotonLibs/Photon3Unity3D.dll
   uploadId: 743446
