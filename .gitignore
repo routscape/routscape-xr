@@ -4,6 +4,17 @@ Assets/Resources/Mapbox/MapboxConfiguration.txt.meta
 .idea/
 ######################
 
+######## Odin ########
+# Ignore the auto-generated AOT compatibility dll.
+/Assets/Plugins/Sirenix/Assemblies/AOT/*
+
+# Ignore all unpacked demos.
+/Assets/Plugins/Sirenix/Demos/*
+
+# But keep the demo packages themselves.
+!/Assets/Plugins/Sirenix/Demos/*.unitypackage 
+######################
+
 # Created by https://www.toptal.com/developers/gitignore/api/unity
 # Edit at https://www.toptal.com/developers/gitignore?templates=unity
 
