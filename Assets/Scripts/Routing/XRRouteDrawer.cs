@@ -14,6 +14,8 @@ public class XRRouteDrawer : NetworkBehaviour
     [SerializeField] private OVRHand rightHand;
     [SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
     [SerializeField] private RouteManager routeManager;
+	[SerializeField] private GameObject roadsMesh;
+    
     public float minDistanceBetweenPoints = 0.003f * 10000f; // Minimum distance to register a new point
     public float rayDistance = 0.05f;
     private readonly ColorType initialColor = ColorType.Blue;
@@ -130,6 +132,14 @@ public class XRRouteDrawer : NetworkBehaviour
         // **Raycast downward to detect the map**
         if (Physics.Raycast(fingerPosition, Vector3.down, out var hit, rayDistance, mapboxLayer))
         {
+			var hitObject = hit.collider.gameObject;
+
+            if (hit.collider is not MeshCollider || !HasDescendantWithNamePrefix(hitObject.transform, "Untitled -"))
+            {
+                Debug.Log("Invalid mesh target.");
+                return false;
+            }
+
             adjustedPoint = hit.point + Vector3.up * 0.01f; // Slight offset
             Debug.Log($"Finger hit detected at: {adjustedPoint}");
             return true;
@@ -171,5 +181,15 @@ public class XRRouteDrawer : NetworkBehaviour
     public void RemoveCurrentRoute()
     {
         currentRoute = null;
+    }
+
+    private bool HasDescendantWithNamePrefix(Transform parent, string prefix)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name.StartsWith(prefix)) return true;
+            if (HasDescendantWithNamePrefix(child, prefix)) return true;
+        }
+        return false;
     }
 }
