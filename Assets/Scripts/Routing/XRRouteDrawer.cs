@@ -25,36 +25,30 @@ public class XRRouteDrawer : NetworkBehaviour
 
     private AbstractMap _mapManager;
     private Route currentRoute;
-    private Vector3 lastPoint = Vector3.zero;
 
     [Networked]
     [OnChangedRender(nameof(AddPoint))]
-    private Vector3 PointToAdd { get; set; }
+    private Vector3 PointToAdd { get; set; } = Vector3.negativeInfinity;
 
     private void Start()
     {
         _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
-        minDistanceBetweenPoints = 0.003f * 10000f;
+        minDistanceBetweenPoints = 0.003f;
     }
 
     private void FixedUpdate()
     {
         if (!_isSpawned || !Object.HasStateAuthority) return;
-
-        Vector3 hitPoint;
-        if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
+        if (userInterfaceManagerScript.mode != 1) return;
+    
+        if (GetFingerHitPoint(out Vector3 hitPoint))
         {
-            var distance = Vector3.Distance(hitPoint, lastPoint);
-            distance *= 10000; // floating comparison sucks
-            Debug.Log("Distance " + distance + " vs " + minDistanceBetweenPoints + " " +
-                      (distance > minDistanceBetweenPoints));
-            if (distance > minDistanceBetweenPoints
-                && userInterfaceManagerScript.mode == 1)
+            hitPoint += Vector3.up * 0.01f; // Slightly above the mesh
+    
+            if (Vector3.Distance(hitPoint, PointToAdd) > minDistanceBetweenPoints)
             {
-                var pointLatLong = _mapManager.WorldToGeoPosition(hitPoint);
-                PointToAdd = pointLatLong.ToVector3xz(); // Add point only if moved significantly
-
-                lastPoint = hitPoint;
+				Debug.Log($"Setting new PointToAdd from {PointToAdd} to {hitPoint}");
+                PointToAdd = hitPoint;
             }
         }
     }
@@ -91,10 +85,7 @@ public class XRRouteDrawer : NetworkBehaviour
         if (!_isSpawned) return;
         if (userInterfaceManagerScript.mode != 1) return; // Safety check
 
-        var pointLatLong = PointToAdd.ToVector2d();
-        var point = _mapManager.GeoToWorldPosition(pointLatLong);
-
-        currentRoute.AddPoint(point, _mapManager);
+        currentRoute.AddPoint(PointToAdd, _mapManager);
     }
 
     private bool GetFingerHitPoint(out Vector3 adjustedPoint)
@@ -132,17 +123,32 @@ public class XRRouteDrawer : NetworkBehaviour
         // **Raycast downward to detect the map**
         if (Physics.Raycast(fingerPosition, Vector3.down, out var hit, rayDistance, mapboxLayer))
         {
-			var hitObject = hit.collider.gameObject;
-
-            if (hit.collider is not MeshCollider || !HasDescendantWithNamePrefix(hitObject.transform, "Untitled -"))
+            var hitObject = hit.collider.gameObject;
+            Debug.Log($"Ray hit: {hitObject.name}, tag: {hitObject.tag}, layer: {LayerMask.LayerToName(hitObject.layer)}");
+    
+            // All road object names start with "Untitled - "
+            if (hitObject.name.StartsWith("Untitled - "))
             {
-                Debug.Log("Invalid mesh target.");
-                return false;
+                adjustedPoint = hit.point + Vector3.up * 0.01f; // Slight offset
+                Debug.Log($"Finger hit detected on: {hitObject.name}");
+                return true;
             }
-
-            adjustedPoint = hit.point + Vector3.up * 0.01f; // Slight offset
-            Debug.Log($"Finger hit detected at: {adjustedPoint}");
-            return true;
+            else
+            {
+                // If a map tile is hit, then the road hit is in the hitObject's children
+                foreach (Transform child in hitObject.transform)
+                {
+                    if (child.name.StartsWith("Untitled - "))
+                    {
+                        adjustedPoint = child.position + Vector3.up * 0.01f;
+                        Debug.Log($"Finger hit detected on child: {child.name}");
+                        return true;
+                    }
+                }
+            }
+    
+            Debug.Log("No valid GameObject found with the name starting with 'Untitled - '.");
+            return false;
         }
 
         return false;
