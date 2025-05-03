@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Clipping
 {
-    [ExecuteAlways]
     public class MapClipShaderModifier : MonoBehaviour
     {
         [SerializeField] private AbstractMap map;
@@ -16,18 +15,18 @@ namespace Clipping
 
         private readonly Dictionary<string, Material> _materialCache = new();
 
-        private void Start()
+        private void OnEnable()
         {
             if (map == null) map = GetComponent<AbstractMap>();
 
-            map.OnTileFinished += OnTileFinished;
+            map.OnTileFinished += ModifyTileShader;
             map.OnEditorPreviewDisabled += ClearCache;
         }
 
         private void OnDestroy()
         {
             if (map != null)
-                map.OnTileFinished -= OnTileFinished;
+                map.OnTileFinished -= ModifyTileShader;
 
             ClearCache();
         }
@@ -40,7 +39,7 @@ namespace Clipping
             _materialCache.Clear();
         }
 
-        private void OnTileFinished(UnityTile tile)
+        private void ModifyTileShader(UnityTile tile)
         {
             if (tile == null || newShader == null) return;
             Debug.Log("[MapClipShaderModifier] Applying new shader to material of tile: " + tile.name);
