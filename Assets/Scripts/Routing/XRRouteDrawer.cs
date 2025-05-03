@@ -86,6 +86,7 @@ public class XRRouteDrawer : NetworkBehaviour
         if (userInterfaceManagerScript.mode != 1) return; // Safety check
 
         currentRoute.AddPoint(PointToAdd, _mapManager);
+		currentRoute.ApplySmoothing();
     }
 
     private bool GetFingerHitPoint(out Vector3 adjustedPoint)
