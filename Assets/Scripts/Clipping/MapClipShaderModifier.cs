@@ -49,7 +49,7 @@ namespace Clipping
 
             var originalMat = meshRenderer.sharedMaterial;
 
-            var cacheKey = originalMat.name + newShader.name;
+            var cacheKey = tile.name;
             if (!_materialCache.TryGetValue(cacheKey, out var newMat))
             {
                 newMat = new Material(originalMat);
