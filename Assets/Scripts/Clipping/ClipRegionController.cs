@@ -6,7 +6,7 @@ namespace Clipping
     {
         [SerializeField] private Vector4 clipRegion;
 
-        private void Start()
+        private void OnEnable()
         {
             Shader.SetGlobalVector("_ClipRegion", clipRegion);
         }
