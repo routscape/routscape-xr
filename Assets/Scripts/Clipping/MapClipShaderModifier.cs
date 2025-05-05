@@ -10,9 +10,6 @@ namespace Clipping
         [SerializeField] private AbstractMap map;
         [SerializeField] private Shader newShader;
 
-        [Header("Shader Properties")] [SerializeField]
-        private Vector4 clipRegion = Vector4.zero;
-
         private readonly Dictionary<string, Material> _materialCache = new();
 
         private void OnEnable()
@@ -55,9 +52,6 @@ namespace Clipping
                 newMat.shader = newShader;
                 _materialCache[cacheKey] = newMat;
             }
-
-            if (newMat.HasProperty("_ClipRegion"))
-                newMat.SetVector("_ClipRegion", clipRegion);
 
             if (newMat.HasProperty("_BaseMap"))
                 newMat.SetTexture("_BaseMap", originalMat.GetTexture("_BaseMap"));

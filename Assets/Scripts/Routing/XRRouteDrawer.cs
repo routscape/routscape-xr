@@ -14,6 +14,9 @@ public class XRRouteDrawer : NetworkBehaviour
     [SerializeField] private OVRHand rightHand;
     [SerializeField] private OVRSkeleton.BoneId selectedFinger = OVRSkeleton.BoneId.Hand_IndexTip;
     [SerializeField] private RouteManager routeManager;
+    [SerializeField] private Color customColor;
+    [SerializeField] private Shader customShader;
+
     public float minDistanceBetweenPoints = 0.003f * 10000f; // Minimum distance to register a new point
     public float rayDistance = 0.05f;
     private readonly ColorType initialColor = ColorType.Blue;
@@ -71,9 +74,8 @@ public class XRRouteDrawer : NetworkBehaviour
         newLineRenderer.positionCount = 0;
         newLineRenderer.startWidth = 0.008f;
         newLineRenderer.endWidth = 0.008f;
-        newLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        newLineRenderer.startColor = ColorHexCodes.GetColor(initialColor);
-        newLineRenderer.endColor = ColorHexCodes.GetColor(initialColor);
+        newLineRenderer.material = new Material(customShader);
+        newLineRenderer.material.color = customColor;
 
         var newRoute = new Route(name, name, newLineRenderer, initialColor);
         newRoute.prefab = newLineObj;
