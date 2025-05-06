@@ -12,7 +12,6 @@ namespace Gestures
         [SerializeField] private AbstractMap mapManager;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
-        [SerializeField] private FloodParentingBehavior floodBehavior;
 
         [SerializeField] private float zoomSpeed = 1f;
         private bool _isSpawned;
@@ -81,7 +80,7 @@ namespace Gestures
 
         private void UpdateZoom()
         {
-            floodBehavior.ChangeStateToZoom((int)CurrentZoom);
+            Debug.Log("[MapZoomHandler] Update Zoom");
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
         }
     }
