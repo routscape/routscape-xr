@@ -10,30 +10,17 @@ namespace Clipping
         [SerializeField] private AbstractMap map;
         [SerializeField] private Shader newShader;
 
-        private readonly Dictionary<string, Material> _materialCache = new();
-
         private void OnEnable()
         {
             if (map == null) map = GetComponent<AbstractMap>();
 
             map.OnTileFinished += ModifyTileShader;
-            map.OnEditorPreviewDisabled += ClearCache;
         }
 
         private void OnDestroy()
         {
             if (map != null)
                 map.OnTileFinished -= ModifyTileShader;
-
-            ClearCache();
-        }
-
-        private void ClearCache()
-        {
-            foreach (var material in _materialCache.Values)
-                if (material != null)
-                    DestroyImmediate(material);
-            _materialCache.Clear();
         }
 
         private void ModifyTileShader(UnityTile tile)
@@ -45,13 +32,8 @@ namespace Clipping
 
             var originalMat = meshRenderer.sharedMaterial;
 
-            var cacheKey = tile.name;
-            if (!_materialCache.TryGetValue(cacheKey, out var newMat))
-            {
-                newMat = new Material(originalMat);
-                newMat.shader = newShader;
-                _materialCache[cacheKey] = newMat;
-            }
+            var newMat = new Material(originalMat);
+            newMat.shader = newShader;
 
             if (newMat.HasProperty("_BaseMap"))
                 newMat.SetTexture("_BaseMap", originalMat.GetTexture("_BaseMap"));
