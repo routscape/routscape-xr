@@ -88,8 +88,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     private void AddPin(string pinID, Vector2d latLong, GameObject pinObject)
     {
         /* default pin color is red */
-        pinList.Add(new Tuple<Pin, GameObject>(new Pin("Pin - " + pinCounter, pinID, latLong, ColorType.Red),
-            pinObject));
         pinCounter++;
         UpdateWindows();
     }
@@ -206,15 +204,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         {
             var pin = tuple.Item1;
             var newPinUI = Instantiate(pinItemPrefab, pinListTransform);
-            newPinUI.GetComponent<UIGeodata>().itemID = pin.MapboxPinId;
             newPinUI.GetComponent<UIGeodata>().latLong = pin.LatLong;
-
-            /* Set button toggle */
-            var showHideToggle = newPinUI.transform.Find("PinItemTop/ShowHideToggle");
-
-            var buttonToggle = showHideToggle.GetComponent<ButtonToggle>();
-            buttonToggle.SetUserInterfaceManager(this);
-            pinParentButtonToggle.AddButtonToggle(buttonToggle);
 
             /* Edit color circle */
             var colorCircle = newPinUI.transform.Find("PinItemTop/ColorCircle");
@@ -351,7 +341,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     {
         if (type == "pin")
         {
-            var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == itemID);
+            var pin = pinList.FirstOrDefault(tuple => tuple.Item1.ID == 1);
             _mapManager.VectorData.RemovePointsOfInterestSubLayerWithName(itemID);
             pinList.Remove(pin);
         }
@@ -368,7 +358,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
 
     private void DeleteEditWindow()
     {
-        var pin = pinList.FirstOrDefault(tuple => tuple.Item1.MapboxPinId == currentPinID);
+        var pin = pinList.FirstOrDefault(tuple => tuple.Item1.ID == 1);
         if (pin != null)
             RpcDeleteItem(currentPinID, "pin");
         else

@@ -40,7 +40,7 @@ public class PinRaycast : MonoBehaviour
     public void OnDrop(PointerEvent eventData)
     {
         var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
-        _pinSpawnHandler.RpcSpawnPin(latLong.ToVector3xz());
+        NetworkEventDispatcherSingleton.GetInstance().RPC_DropPin("Pin", latLong.x, latLong.y, (int)ColorType.Red);
         Destroy(transform.parent.parent.gameObject);
     }
 }

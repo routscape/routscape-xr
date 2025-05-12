@@ -2,9 +2,9 @@ using UnityEngine;
 
 public enum ColorType
 {
-    Red,
-    Green,
-    Blue
+    Red = 0,
+    Green = 1,
+    Blue = 2
 }
 
 public static class ColorHexCodes
