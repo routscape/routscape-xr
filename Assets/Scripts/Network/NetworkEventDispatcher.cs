@@ -1,28 +1,23 @@
 using System;
 using Fusion;
-using Mapbox.Utils;
-using UnityEngine;
 
-public class NetworkEventDispatcherSingleton : NetworkBehaviour
+public class NetworkEventDispatcherSingleton
 {
     private static NetworkEventDispatcher _networkEventDispatcher;
 
     public static NetworkEventDispatcher GetInstance()
     {
-        if (_networkEventDispatcher == null)
-        { 
-            _networkEventDispatcher = new NetworkEventDispatcher();
-        }
+        if (_networkEventDispatcher == null) _networkEventDispatcher = new NetworkEventDispatcher();
 
         return _networkEventDispatcher;
     }
 }
 
-public class NetworkEventDispatcher
+public class NetworkEventDispatcher : NetworkBehaviour
 {
     public static event Action<string, double, double, int> OnPinDrop;
     public static event Action OnRouteBegin;
-    
+
     [Rpc]
     public void RPC_DropPin(string pinName, double x, double y, int colorType)
     {
@@ -32,7 +27,6 @@ public class NetworkEventDispatcher
     [Rpc]
     public void RPC_BeginRouteCreation()
     {
-        OnRouteBegin?.Invoke(); 
+        OnRouteBegin?.Invoke();
     }
-    
 }
