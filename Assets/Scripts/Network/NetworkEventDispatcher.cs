@@ -1,18 +1,6 @@
 using System;
 using Fusion;
 
-public class NetworkEventDispatcherSingleton
-{
-    private static NetworkEventDispatcher _networkEventDispatcher;
-
-    public static NetworkEventDispatcher GetInstance()
-    {
-        if (_networkEventDispatcher == null) _networkEventDispatcher = new NetworkEventDispatcher();
-
-        return _networkEventDispatcher;
-    }
-}
-
 public class NetworkEventDispatcher : NetworkBehaviour
 {
     public static event Action<string, double, double, int> OnPinDrop;

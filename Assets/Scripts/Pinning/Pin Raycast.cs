@@ -11,7 +11,7 @@ public class PinRaycast : MonoBehaviour
     [SerializeField] private GameObject mapPin;
     private RaycastHit _hitInfo;
     private AbstractMap _mapManager;
-    private PersistentPinSpawnHandler _pinSpawnHandler;
+    private NetworkEventDispatcher _networkEventDispatcher;
 
     private void Start()
     {
@@ -22,8 +22,8 @@ public class PinRaycast : MonoBehaviour
             throw new Exception("Pin: No map found!");
         }
 
-        _pinSpawnHandler = GameObject.FindWithTag("network persistence").GetComponent<PersistentPinSpawnHandler>();
-        if (_pinSpawnHandler == null)
+        _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        if (_networkEventDispatcher== null)
         {
             Debug.Log("Pin: No network persistence found!");
             throw new Exception("Pin: No network persistence found!");
@@ -40,7 +40,7 @@ public class PinRaycast : MonoBehaviour
     public void OnDrop(PointerEvent eventData)
     {
         var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
-        NetworkEventDispatcherSingleton.GetInstance().RPC_DropPin("Pin", latLong.x, latLong.y, (int)ColorType.Red);
+        _networkEventDispatcher.RPC_DropPin("Pin", latLong.x, latLong.y, (int)ColorType.Red);
         Destroy(transform.parent.parent.gameObject);
     }
 }
