@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 public class ItemPickupHandler: MonoBehaviour
 { 
-    [SerializeField] private GameObject pinPlacementPrefab;
+    [SerializeField] private GameObject itemPrefab;
     [SerializeField] private Transform leftPinchArea;
     [SerializeField] private Transform rightPinchArea;
     [SerializeField] private HandGrabInteractor leftHandGrabInteractor;
@@ -19,11 +19,11 @@ public class ItemPickupHandler: MonoBehaviour
     private Vector3 _pinchArea;
     private HandGrabInteractor _handGrabInteractor;
     
-    private void SpawnPin()
+    private void SpawnItem()
     {
-        var instantiatedPin = Instantiate(pinPlacementPrefab, _pinchArea, quaternion.identity);
-        var pinGrabbable = instantiatedPin.GetComponentInChildren<HandGrabInteractable>();
-        StartCoroutine(SelectNextFrame(pinGrabbable));
+        var instantiatedObject= Instantiate(itemPrefab, _pinchArea, quaternion.identity);
+        var objectGrabbable = instantiatedObject.GetComponentInChildren<HandGrabInteractable>();
+        StartCoroutine(SelectNextFrame(objectGrabbable));
     }
     
     private IEnumerator SelectNextFrame(HandGrabInteractable target)
@@ -36,15 +36,14 @@ public class ItemPickupHandler: MonoBehaviour
 
     public void OnSelect(PointerEvent eventData)
     {
-        Debug.Log("[ItemPickupHandler] OnClick");
-        var gameObject = eventData.Data as GameObject;
-        if (gameObject == null)
+        var interactorGameObject = eventData.Data as GameObject;
+        if (interactorGameObject == null)
         {
             Debug.LogError("[ItemPickupHandler] Expected the gameobject (e.g., HandGrabInteractor) itself as a property of data within the interactor!");
             return;
         }
 
-        if (gameObject.tag.Contains("left"))
+        if (interactorGameObject.tag.Contains("left"))
         {
             _pinchArea = leftPinchArea.position;
             _handGrabInteractor = leftHandGrabInteractor;
@@ -55,6 +54,6 @@ public class ItemPickupHandler: MonoBehaviour
             _handGrabInteractor = rightHandGrabInteractor;
         }
 
-        SpawnPin();
+        SpawnItem();
     }
 }
