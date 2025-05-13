@@ -5,7 +5,6 @@ public class CalibrationToggle : MonoBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
-    [SerializeField] private SpawnPinUI spawnPinUI;
     [SerializeField] private GameObject[] gameObjects;
     private bool isActive;
 
@@ -26,9 +25,6 @@ public class CalibrationToggle : MonoBehaviour
     private void OnButtonClick()
     {
         foreach (var go in gameObjects) go.SetActive(!go.activeSelf);
-        if (isActive) spawnPinUI.SpawnUI();
-        else spawnPinUI.HideUI();
-
         SetItemState(!isActive);
     }
 
