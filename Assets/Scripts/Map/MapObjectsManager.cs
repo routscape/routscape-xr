@@ -10,7 +10,7 @@ public class MapObjectsHandler: MonoBehaviour
     [SerializeField] private GameObject mapPinPrefab;
     
     private List<Route> _spawnedRoutes = new List<Route>();
-    private List<Pin> _spawnedPins = new List<Pin>();
+    private List<PinData> _spawnedPins = new List<PinData>();
     private AbstractMap _mapManager;
     void Start()
     {
@@ -33,15 +33,19 @@ public class MapObjectsHandler: MonoBehaviour
         }
     }
 
-    void AddPin(string pinName, double x, double y, int colorType)
+    void AddPin(string pinName, Vector3 hitInfo, int colorType)
     {
-        var instantiatedPin = Instantiate(mapPinPrefab, gameObject.transform);
-        var pinNewScale = GetPinScale(_mapManager.Zoom);
-        instantiatedPin.transform.localScale = new Vector3(pinNewScale, pinNewScale, pinNewScale);
-        instantiatedPin.transform.position = _mapManager.GeoToWorldPosition(new Vector2d(x, y));
+        var latLong = _mapManager.WorldToGeoPosition(hitInfo);
+        var x = latLong.x;
+        var y = latLong.y;
+        var scale= GetPinScale(_mapManager.Zoom);
+        var worldPosition = _mapManager.GeoToWorldPosition(new Vector2d(x, y));
         
-        var pin = new Pin(instantiatedPin, pinName, new Vector2d(x, y), (ColorType)colorType);
-        _spawnedPins.Add(pin);
+        var instantiatedPin = Instantiate(mapPinPrefab, gameObject.transform);
+        var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
+        var pinData = new PinData(pinName, new Vector2d(x, y), worldPosition, scale, (ColorType)colorType);
+        pinBehavior.Init(pinData);
+        _spawnedPins.Add(pinData);
     }
     
     public static float GetPinScale(float zoom)

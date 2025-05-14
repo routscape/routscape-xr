@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 9068044004923028345}
   - component: {fileID: 3926110375631084199}
   - component: {fileID: 7447282090269134307}
-  - component: {fileID: 5572270775203781263}
+  - component: {fileID: 6702255612096044282}
   m_Layer: 0
   m_Name: Grabbable
   m_TagString: Untagged
@@ -257,14 +257,14 @@ MonoBehaviour:
     _pinkyRequirement: 0
     _unselectMode: 0
   _palmGrabRules:
-    _thumbRequirement: 1
-    _indexRequirement: 2
-    _middleRequirement: 2
-    _ringRequirement: 2
-    _pinkyRequirement: 1
+    _thumbRequirement: 0
+    _indexRequirement: 0
+    _middleRequirement: 0
+    _ringRequirement: 0
+    _pinkyRequirement: 0
     _unselectMode: 0
   _movementProvider: {fileID: 0}
-  _handAligment: 1
+  _handAligment: 0
   _handGrabPoses: []
 --- !u!114 &7447282090269134307
 MonoBehaviour:
@@ -291,9 +291,9 @@ MonoBehaviour:
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5572270775203781263}
-        m_TargetAssemblyTypeName: PinOnPinch, Assembly-CSharp
-        m_MethodName: OnClick
+      - m_Target: {fileID: 6702255612096044282}
+        m_TargetAssemblyTypeName: ItemPickupHandler, Assembly-CSharp
+        m_MethodName: OnSelect
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -312,7 +312,7 @@ MonoBehaviour:
   _whenCancel:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5572270775203781263
+--- !u!114 &6702255612096044282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -321,10 +321,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6654026219080749425}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f818ee61377a294d8bc085f87f89f0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2bb135dcb9036504986899090a93fda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 8478618658482240049}
+  itemPrefab: {fileID: 8478618658482240049, guid: 843721a1a0dd154479f9d2d1436a6211, type: 3}
 --- !u!1 &8478618658482240049
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,6 +334,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5785391759718116921}
+  - component: {fileID: 6872053963817715389}
   m_Layer: 0
   m_Name: PinMapObject
   m_TagString: Untagged
@@ -358,3 +359,17 @@ Transform:
   - {fileID: 7492438345900950464}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6872053963817715389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478618658482240049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b517cc7c5a83864aaff246fc0a78e06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPickupHandler: {fileID: 6702255612096044282}
+  meshRenderer: {fileID: 2018734242421439200}

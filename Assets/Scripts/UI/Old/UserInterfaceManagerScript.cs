@@ -5,7 +5,6 @@ using System.Linq;
 using Fusion;
 using Mapbox.Unity.Map;
 using Mapbox.Utils;
-using Pinning;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +35,7 @@ public class UserInterfaceManagerScript : NetworkBehaviour
     public string currentPinID;
     public int mode;
 
-    private readonly List<Tuple<Pin, GameObject>> pinList = new();
+    private readonly List<Tuple<PinData, GameObject>> pinList = new();
     private readonly List<Route> routeList = new();
     private AbstractMap _mapManager;
     public Route currentActiveRoute;
@@ -64,8 +63,6 @@ public class UserInterfaceManagerScript : NetworkBehaviour
         routeAddButtonImage = routeAddButtonTransform.GetComponent<Image>();
         routeAddButton.onClick.RemoveAllListeners();
         routeAddButton.onClick.AddListener(InitializeAddRoute);
-
-        PersistentPinSpawnHandler.OnPinDrop += AddPin;
 
         UpdateWindows(); // delete after
     }

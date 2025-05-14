@@ -10,51 +10,55 @@ using UnityEngine.UI;
 
 public class ItemPickupHandler: MonoBehaviour
 { 
-    [SerializeField] private GameObject itemPrefab;
-    [SerializeField] private Transform leftPinchArea;
-    [SerializeField] private Transform rightPinchArea;
-    [SerializeField] private HandGrabInteractor leftHandGrabInteractor;
-    [SerializeField] private HandGrabInteractor rightHandGrabInteractor;
-
-    private Vector3 _pinchArea;
+    public GameObject itemPrefab;
+    private Transform _leftPinchArea;
+    private Transform _rightPinchArea;
+    private HandGrabInteractor _leftHandGrabInteractor;
+    private HandGrabInteractor _rightHandGrabInteractor;
+    
+    public Action<GameObject> OnInstantiateObject;
+    
+    private Transform _pinchArea;
     private HandGrabInteractor _handGrabInteractor;
-
     void Start()
     {
         if (itemPrefab == null)
         {
             Debug.LogError("[ItemPickupHandler] Missing item prefab!");
         }
-        if (leftPinchArea == null)
+
+        _leftPinchArea = GameObject.FindWithTag("left pinch area").GetComponent<Transform>();
+        if (_leftPinchArea == null)
         {
             Debug.LogError("[ItemPickupHandler] Missing left pinch area!");
         }
-        if (rightPinchArea== null)
+        _rightPinchArea = GameObject.FindWithTag("right pinch area").GetComponent<Transform>();
+        if (_rightPinchArea== null)
         {
             Debug.LogError("[ItemPickupHandler] Missing right pinch area!");
         }
-        if (leftHandGrabInteractor == null)
+        _leftHandGrabInteractor = GameObject.FindWithTag("left hand grab interactor").GetComponent<HandGrabInteractor>();
+        if (_leftHandGrabInteractor == null)
         {
             Debug.LogError("[ItemPickupHandler] Missing left hand grab interactor!");
         }
-        if (rightHandGrabInteractor == null)
+        _rightHandGrabInteractor = GameObject.FindWithTag("right hand grab interactor").GetComponent<HandGrabInteractor>();
+        if (_rightHandGrabInteractor == null)
         {
             Debug.LogError("[ItemPickupHandler] Missing right hand grab interactor!");
         }
-        if (!(leftHandGrabInteractor.gameObject.tag.Contains("left") || leftHandGrabInteractor.gameObject.tag.Contains("right")))
-        {
-            Debug.LogError("[ItemPickupHandler] Expected the left hand grab interactor game object to have a tag!");
-        }
-        if (!(rightHandGrabInteractor.gameObject.tag.Contains("left") || rightHandGrabInteractor.gameObject.tag.Contains("right")))
-        {
-            Debug.LogError("[ItemPickupHandler] Expected the right hand grab interactor game object to have a tag!");
-        }
+    }
+    public void SetItemPrefab(GameObject go)
+    {
+        itemPrefab = go;
     }
     private void SpawnItem()
     {
-        var instantiatedObject= Instantiate(itemPrefab, _pinchArea, quaternion.identity);
+        var instantiatedObject= Instantiate(itemPrefab, _pinchArea.position, quaternion.identity);
         var objectGrabbable = instantiatedObject.GetComponentInChildren<HandGrabInteractable>();
         StartCoroutine(SelectNextFrame(objectGrabbable));
+        Debug.Log("[ItemPickupHandler] " + instantiatedObject);
+        OnInstantiateObject?.Invoke(instantiatedObject);
     }
     
     private IEnumerator SelectNextFrame(HandGrabInteractable target)
@@ -77,13 +81,13 @@ public class ItemPickupHandler: MonoBehaviour
 
         if (interactorGameObject.tag.Contains("left"))
         {
-            _pinchArea = leftPinchArea.position;
-            _handGrabInteractor = leftHandGrabInteractor;
+            _pinchArea = _leftPinchArea;
+            _handGrabInteractor = _leftHandGrabInteractor;
         }
         else
         {
-            _pinchArea = rightPinchArea.position;
-            _handGrabInteractor = rightHandGrabInteractor;
+            _pinchArea = _rightPinchArea;
+            _handGrabInteractor = _rightHandGrabInteractor;
         }
 
         SpawnItem();

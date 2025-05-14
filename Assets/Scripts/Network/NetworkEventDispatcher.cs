@@ -1,15 +1,16 @@
 using System;
 using Fusion;
+using UnityEngine;
 
 public class NetworkEventDispatcher : NetworkBehaviour
 {
-    public static event Action<string, double, double, int> OnPinDrop;
+    public static event Action<string, Vector3, int> OnPinDrop;
     public static event Action OnRouteBegin;
 
     [Rpc]
-    public void RPC_DropPin(string pinName, double x, double y, int colorType)
+    public void RPC_DropPin(string pinName, Vector3 hitInfo, int colorType)
     {
-        OnPinDrop?.Invoke(pinName, x, y, colorType);
+        OnPinDrop?.Invoke(pinName, hitInfo, colorType);
     }
 
     [Rpc]
