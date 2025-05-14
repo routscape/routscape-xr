@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
@@ -19,6 +20,7 @@ namespace Gestures
         private bool _isZooming;
         private float _lastDistance;
         public bool CanZoom { private get; set; } = true;
+        public Action OnMapZoom; 
 
         [Networked]
         [OnChangedRender(nameof(UpdateZoom))]
@@ -81,8 +83,8 @@ namespace Gestures
 
         private void UpdateZoom()
         {
-            floodBehavior.ChangeStateToZoom((int)CurrentZoom);
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
+            OnMapZoom?.Invoke();
         }
     }
 }

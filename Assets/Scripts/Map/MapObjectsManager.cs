@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gestures;
 using Mapbox.Unity.Map;
 using Mapbox.Utils;
 using Unity.Mathematics;
@@ -8,6 +9,10 @@ using UnityEngine;
 public class MapObjectsHandler: MonoBehaviour
 {
     [SerializeField] private GameObject mapPinPrefab;
+    //Hacky Solution for Updating Pin Zoom
+    [SerializeField] private MapZoomHandler mapZoomHandler;
+    //Hacky Solution for Updating Object Locations 
+    [SerializeField] private MapMovementHandler mapMovementHandler;
     
     private List<Route> _spawnedRoutes = new List<Route>();
     private List<PinData> _spawnedPins = new List<PinData>();
@@ -21,9 +26,12 @@ public class MapObjectsHandler: MonoBehaviour
         }
         
         NetworkEventDispatcher.OnPinDrop += AddPin;
+        //Should be the network event dispatcher, but not a necessary refactor as of now
+        mapZoomHandler.OnMapZoom += UpdateObjects;
+        mapMovementHandler.OnMapMove += UpdateObjects;
     }
 
-    private void FixedUpdate()
+    private void UpdateObjects()
     {
         foreach (var pin in _spawnedPins)
         {
@@ -45,6 +53,7 @@ public class MapObjectsHandler: MonoBehaviour
         var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
         var pinData = new PinData(pinName, new Vector2d(x, y), worldPosition, scale, (ColorType)colorType);
         pinBehavior.Init(pinData);
+        pinBehavior.PinData = pinData;
         _spawnedPins.Add(pinData);
     }
     

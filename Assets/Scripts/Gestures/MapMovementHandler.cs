@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
@@ -9,7 +10,8 @@ namespace Gestures
     public class MapMovementHandler : NetworkBehaviour
     {
         [SerializeField] private AbstractMap mapManager;
-
+        public Action OnMapMove;
+        
         private int _grabCount;
         private int _interactorId = -1;
         private Vector3 _referencePosition;
@@ -17,7 +19,6 @@ namespace Gestures
         [Networked]
         [OnChangedRender(nameof(UpdateLatLon))]
         private Vector3 CurrentLatLong { get; set; }
-
         public void OnSelect(PointerEvent pointerEvent)
         {
             var gameObject = pointerEvent.Data as GameObject;
@@ -93,6 +94,7 @@ namespace Gestures
         private void UpdateLatLon()
         {
             mapManager.UpdateMap(CurrentLatLong.ToVector2d());
+            OnMapMove?.Invoke();
         }
     }
 }
