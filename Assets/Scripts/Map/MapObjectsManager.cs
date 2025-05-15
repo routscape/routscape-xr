@@ -9,10 +9,6 @@ using UnityEngine;
 public class MapObjectsHandler: MonoBehaviour
 {
     [SerializeField] private GameObject mapPinPrefab;
-    //Hacky Solution for Updating Pin Zoom
-    [SerializeField] private MapZoomHandler mapZoomHandler;
-    //Hacky Solution for Updating Object Locations 
-    [SerializeField] private MapMovementHandler mapMovementHandler;
     
     private List<Route> _spawnedRoutes = new List<Route>();
     private List<PinData> _spawnedPins = new List<PinData>();
@@ -26,9 +22,7 @@ public class MapObjectsHandler: MonoBehaviour
         }
         
         NetworkEventDispatcher.OnPinDrop += AddPin;
-        //Should be the network event dispatcher, but not a necessary refactor as of now
-        mapZoomHandler.OnMapZoom += UpdateObjects;
-        mapMovementHandler.OnMapMove += UpdateObjects;
+        _mapManager.OnUpdated += UpdateObjects;
     }
 
     private void UpdateObjects()
