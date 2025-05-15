@@ -4,6 +4,6 @@ public class IDGenerator
 
     public static int GenerateID()
     {
-        return _counter++;
+        return ++_counter;
     }
 }
