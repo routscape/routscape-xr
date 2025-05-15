@@ -6,7 +6,6 @@ public class ButtonToggle : MonoBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
-	[SerializeField] private UserInterfaceManagerScript userInterfaceManager;
     
     private Button itemButton;
     private Image itemImage;
@@ -30,11 +29,7 @@ public class ButtonToggle : MonoBehaviour
 		itemName = GetComponent<Transform>().parent.Find("ItemLabel").GetComponent<TextMeshProUGUI>().text;
         SetItemState(true);
     }
-
-	public void SetUserInterfaceManager(UserInterfaceManagerScript userInterfaceManager)
-	{
-		this.userInterfaceManager = userInterfaceManager;
-	}
+    
     
     private void OnButtonClick()
     {
@@ -43,7 +38,6 @@ public class ButtonToggle : MonoBehaviour
     
     public void SetItemState(bool newState)
     {
-		userInterfaceManager.ShowRoute(itemName, !isActive);
         isActive = newState;
 
 		// Set item image based on its state

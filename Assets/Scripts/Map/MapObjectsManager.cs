@@ -6,51 +6,77 @@ using Mapbox.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class MapObjectsHandler: MonoBehaviour
+public class MapObjectsManager: MonoBehaviour
 {
     [SerializeField] private GameObject mapPinPrefab;
+    [SerializeField] private GameObject mapRoutePrefab;
+    [SerializeField] private AbstractMap mapManager;
+    [SerializeField] private RouteDrawer routeDrawer;
     
-    private List<Route> _spawnedRoutes = new List<Route>();
+    private List<RouteData> _spawnedRoutes = new List<RouteData>();
     private List<PinData> _spawnedPins = new List<PinData>();
-    private AbstractMap _mapManager;
+    private NetworkEventDispatcher _networkEventDispatcher;
+    
     void Start()
     {
-        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
-        if (_mapManager == null)
+        if (mapManager == null)
         {
-            Debug.LogError("[MapObjectsHandler] Missing mapbox map with tag 'mapbox map'");
+            Debug.LogError("[MapObjectsHandler] Missing mapbox map in inspector!");
+        }
+        if (routeDrawer == null)
+        {
+            Debug.LogError("[MapObjectsHandler] Missing routeDrawer in inspector!");
         }
         
-        NetworkEventDispatcher.OnPinDrop += AddPin;
-        _mapManager.OnUpdated += UpdateObjects;
+        _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        if (_networkEventDispatcher== null)
+        {
+            Debug.Log("[PinDropper] No network event dispatcher found!");
+            throw new Exception("[PinDropper] No network event dispatcher found!");
+        }
+        
+        _networkEventDispatcher.OnPinDrop += AddPin;
+        routeDrawer.OnPencilHit += AddPointToRoute;
+        mapManager.OnUpdated += UpdateObjects;
     }
 
     private void UpdateObjects()
     {
         foreach (var pin in _spawnedPins)
         {
-            var worldPosition = _mapManager.GeoToWorldPosition(pin.LatLong);
+            var worldPosition = mapManager.GeoToWorldPosition(pin.LatLong);
             pin.UpdateWorldPosition(worldPosition);
-            pin.UpdateWorldScale(GetPinScale(_mapManager.Zoom));
+            pin.UpdateWorldScale(GetPinScale(mapManager.Zoom));
         }
     }
 
-    void AddPin(string pinName, Vector3 hitInfo, int colorType)
+    public void AddRoute(RouteData routeData)
     {
-        var latLong = _mapManager.WorldToGeoPosition(hitInfo);
+        _spawnedRoutes.Add(routeData);
+        var instantiatedRoute = Instantiate(mapRoutePrefab, gameObject.transform);
+        var routeBehavior = instantiatedRoute.GetComponent<RouteBehavior>();
+        routeBehavior.Init(routeData);
+    }
+    void AddPointToRoute(int routeID, Vector3 point)
+    {
+        var routeData = _spawnedRoutes.Find(route => route.Id == routeID);
+        var latLong = mapManager.WorldToGeoPosition(point);
+        routeData.AddPoint(latLong, point);
+    }
+    public void AddPin(string pinName, Vector3 hitInfo, int colorType)
+    {
+        var latLong = mapManager.WorldToGeoPosition(hitInfo);
         var x = latLong.x;
         var y = latLong.y;
-        var scale= GetPinScale(_mapManager.Zoom);
-        var worldPosition = _mapManager.GeoToWorldPosition(new Vector2d(x, y));
+        var scale= GetPinScale(mapManager.Zoom);
+        var worldPosition = mapManager.GeoToWorldPosition(new Vector2d(x, y));
+        var pinData = new PinData(pinName, new Vector2d(x, y), worldPosition, scale, (ColorType)colorType);
         
         var instantiatedPin = Instantiate(mapPinPrefab, gameObject.transform);
         var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
-        var pinData = new PinData(pinName, new Vector2d(x, y), worldPosition, scale, (ColorType)colorType);
         pinBehavior.Init(pinData);
-        pinBehavior.PinData = pinData;
         _spawnedPins.Add(pinData);
     }
-    
     public static float GetPinScale(float zoom)
     {
         if (zoom >= 18f) return 400f;

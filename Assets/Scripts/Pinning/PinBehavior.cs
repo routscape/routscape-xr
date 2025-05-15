@@ -6,7 +6,6 @@ public class PinBehavior : MonoBehaviour
 {
     [SerializeField] private ItemPickupHandler itemPickupHandler;
     [SerializeField] private MeshRenderer meshRenderer;
-    public PinData PinData { private get; set; }
     private void Start()
     { 
         itemPickupHandler = GetComponentInChildren<ItemPickupHandler>(); 
@@ -21,14 +20,14 @@ public class PinBehavior : MonoBehaviour
 
     public void OnHover(PointerEvent eventData)
     {
-        float newScale = PinData.WorldScale * 1.5f;
-        PinData.UpdateWorldScale(newScale);
+        float currentScale = gameObject.transform.localScale.x;
+        gameObject.transform.localScale = Vector3.one * currentScale * 1.5f;
     }
 
     public void ExitHover(PointerEvent eventData)
     {
-        float oldScale = PinData.WorldScale / 1.5f;
-        PinData.UpdateWorldScale(oldScale);
+        float currentScale = gameObject.transform.localScale.x;
+        gameObject.transform.localScale = Vector3.one * currentScale / 1.5f;
     }
 
     private void UpdatePinData(PinData pinData)

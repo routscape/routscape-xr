@@ -9,7 +9,6 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
 {
     [SerializeField] private List<Button> buttons = new();
 
-    [SerializeField] private UserInterfaceManagerScript userInterfaceManager;
     private readonly Color activeColor = new(10f / 255f, 132f / 255f, 1f, 180f / 255f);
     private readonly Color defaultColor = new(0f, 0f, 0f, 0f);
     private readonly Color drawingColor = new(0.31f, 0.88f, 0.28f, 180f / 255f);
@@ -58,16 +57,13 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
         if (!isClickAllowed) return;
         isClickAllowed = false;
         StartCoroutine(EnableClickAfterDelay(0.3f));
-
-        /* disable button click if drawing route */
-        if (userInterfaceManager.currentActiveRoute != null) return;
+        
 
         if (clickedButton == selectedButton)
         {
             Debug.Log("Selected button clicked");
             selectedButton = null;
             activeButton = clickedButton;
-            userInterfaceManager.OpenEditWindow(clickedButton);
             UpdateButtonColor(clickedButton, activeColor);
         }
         else if (clickedButton == activeButton)
@@ -78,11 +74,9 @@ public class TwoStepRadioButtonGroup : NetworkBehaviour
         }
         else
         {
-            userInterfaceManager.CloseEditWindow();
             selectedButton = clickedButton;
 
             var geoData = selectedButton.GetComponent<UIGeodata>();
-            if (geoData != null) userInterfaceManager.JumpTo(geoData.latLong);
 
             foreach (var button in buttons) UpdateButtonColor(button, defaultColor);
 

@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class NetworkEventDispatcher : NetworkBehaviour
 {
-    public static event Action<string, Vector3, int> OnPinDrop;
-    public static event Action OnRouteBegin;
+    public event Action<string, Vector3, int> OnPinDrop;
+    public event Action<String, int> OnRouteBegin;
+    public event Action OnRouteEnd;
 
     [Rpc]
     public void RPC_DropPin(string pinName, Vector3 hitInfo, int colorType)
@@ -14,8 +15,16 @@ public class NetworkEventDispatcher : NetworkBehaviour
     }
 
     [Rpc]
-    public void RPC_BeginRouteCreation()
+    public void RPC_BeginRouteCreation(string routeName, int colorType)
     {
-        OnRouteBegin?.Invoke();
+        OnRouteBegin?.Invoke(routeName, colorType);
+        Debug.Log("[NetworkEventDispatcher] BeginRouteCreation");
+    }
+    [Rpc]
+    public void RPC_EndRouteCreation()
+    {
+        OnRouteEnd?.Invoke();
+        Debug.Log("[NetworkEventDispatcher] EndRouteCreation");
+
     }
 }

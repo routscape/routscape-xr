@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,55 +7,45 @@ using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using Mapbox.Utils;
 
-public class Route
+public class RouteData
 {
     public string Name { get; private set; }
-    public string Id { get; private set; }
-
-    public GameObject prefab;
+    public int Id { get; private set; }
     public ColorType RouteColorType { get; private set; }
     public Color Color => ColorHexCodes.GetColor(RouteColorType);
-    public List<Vector2d> routePointsMap { get; }
-    public LineRenderer lineRenderer;
-    private List<Vector3> routePoints;
-
-    public Route(string name, string id, LineRenderer renderer, ColorType colorType)
+    public Action<RouteData> OnRouteDataChanged;
+    public Action<Vector3> OnRoutePointAdded;
+    public List<Vector2d> routePointsLatLong { get; private set; }
+    
+    public RouteData(string name, ColorType colorType)
     {
         Name = name;
-        Id = id;
-        lineRenderer = renderer;
+        Id = IDGenerator.GenerateID();
 		RouteColorType = colorType;
-        routePoints = new List<Vector3>();
-        routePointsMap = new List<Vector2d>();
+        routePointsLatLong = new List<Vector2d>();
     }
 
-    public void AddPoint(Vector3 point, AbstractMap mapManager)
+    public void AddPoint(Vector2d point, Vector3 worldPoint)
     {
-        routePoints.Add(point);
-        routePointsMap.Add(mapManager.WorldToGeoPosition(point));
-        lineRenderer.positionCount = routePoints.Count;
-        lineRenderer.SetPosition(routePoints.Count - 1, point);
+        routePointsLatLong.Add(point);
+        OnRoutePointAdded?.Invoke(worldPoint);
     }
 
     public Vector2d GetLocation()
     {
-        if (routePointsMap.Count == 0)
+        if (routePointsLatLong.Count == 0)
         {
             return new Vector2d(0f, 0f);
         }
 
-        return routePointsMap.ElementAt(0);
+        return routePointsLatLong.ElementAt(0);
     }
 
     public int GetPointCount()
     {
-        return routePoints.Count;
+        return routePointsLatLong.Count;
     }
-
-    public Vector3 GetRouteStartPoint()
-    {
-        return routePoints.ElementAt(0);
-    }
+    
     
     public void Rename(string newName)
     {
@@ -63,10 +54,12 @@ public class Route
         {
             Name = newName;
         }
+        OnRouteDataChanged?.Invoke(this);
     }
     
     public void ChangeColor(ColorType newColorType)
     {
         RouteColorType = newColorType;
+        OnRouteDataChanged?.Invoke(this);
     }
 }

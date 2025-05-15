@@ -14,8 +14,8 @@ public class PinDropper : MonoBehaviour
         _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
         if (_networkEventDispatcher== null)
         {
-            Debug.Log("Pin: No network persistence found!");
-            throw new Exception("[PinDropper] No network persistence found!");
+            Debug.Log("[PinDropper] No network event dispatcher found!");
+            throw new Exception("[PinDropper] No network event dispatcher found!");
         }
     }
 
