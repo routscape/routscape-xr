@@ -26,7 +26,6 @@ public class ItemPickupHandler: MonoBehaviour
         {
             Debug.LogError("[ItemPickupHandler] Missing item prefab!");
         }
-
         _leftPinchArea = GameObject.FindWithTag("left pinch area").GetComponent<Transform>();
         if (_leftPinchArea == null)
         {
@@ -48,10 +47,6 @@ public class ItemPickupHandler: MonoBehaviour
             Debug.LogError("[ItemPickupHandler] Missing right hand grab interactor!");
         }
     }
-    public void SetItemPrefab(GameObject go)
-    {
-        itemPrefab = go;
-    }
     private void SpawnItem()
     {
         var instantiatedObject= Instantiate(itemPrefab, _pinchArea.position, quaternion.identity);
@@ -63,9 +58,8 @@ public class ItemPickupHandler: MonoBehaviour
     
     private IEnumerator SelectNextFrame(HandGrabInteractable target)
     {
-        yield return new WaitForEndOfFrame();
-
-        _handGrabInteractor.ForceRelease(); 
+        yield return new WaitForFixedUpdate();
+        
         _handGrabInteractor.ForceSelect(target, true);
     }
 
@@ -77,8 +71,7 @@ public class ItemPickupHandler: MonoBehaviour
             Debug.LogError("[ItemPickupHandler] Expected the gameobject (e.g., HandGrabInteractor) itself as a property of data within the interactor!");
             return;
         }
-
-
+        
         if (interactorGameObject.tag.Contains("left"))
         {
             _pinchArea = _leftPinchArea;
