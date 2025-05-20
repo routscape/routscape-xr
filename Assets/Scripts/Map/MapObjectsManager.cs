@@ -34,12 +34,13 @@ public class MapObjectsManager: MonoBehaviour
             Debug.Log("[PinDropper] No network event dispatcher found!");
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
-        
+
+        _networkEventDispatcher.OnJumpToMapObject += JumpTo;
         routeDrawer.OnPencilHit += AddPointToRoute;
-        mapManager.OnUpdated += UpdateObjects;
     }
 
-    private void UpdateObjects()
+    //TODO: Optimize via maponselect and mapdeselect events
+    void Update()
     {
         foreach (var pin in _spawnedPins)
         {
@@ -47,6 +48,31 @@ public class MapObjectsManager: MonoBehaviour
             pin.UpdateWorldPosition(worldPosition);
             pin.UpdateWorldScale(GetPinScale(mapManager.Zoom));
         }
+
+        foreach (var route in _spawnedRoutes)
+        {
+            var points = route.routePointsLatLong;
+            for (int i = 0; i < points.Count; i++)
+            {
+                var latLong = route.routePointsLatLong[i];
+                var worldPosition = mapManager.GeoToWorldPosition(latLong);
+                route.SetVertexPosition(i, worldPosition);
+            }
+        }
+    }
+
+    private void JumpTo(int objectID)
+    {
+        Vector2d latLong = Vector2d.zero;
+        if (_spawnedRoutes.Exists(r=> r.ID == objectID))
+        {
+            latLong = _spawnedRoutes.Find(r => r.ID == objectID).GetLocation();
+        } else if (_spawnedPins.Exists(p => p.ID == objectID))
+        {
+            latLong = _spawnedPins.Find(p => p.ID == objectID).LatLong;
+        }
+        
+        mapManager.UpdateMap(latLong);
     }
 
     public void AddRoute(RouteData routeData)
@@ -56,12 +82,14 @@ public class MapObjectsManager: MonoBehaviour
         var routeBehavior = instantiatedRoute.GetComponent<RouteBehavior>();
         routeBehavior.Init(routeData);
     }
+    
     void AddPointToRoute(int routeID, Vector3 point)
     {
-        var routeData = _spawnedRoutes.Find(route => route.ID == routeID);
+        var routeData = _spawnedRoutes.Find(r => r.ID == routeID);
         var latLong = mapManager.WorldToGeoPosition(point);
         routeData.AddPoint(latLong, point);
     }
+    
     public void AddPin(PinData pinData)
     {
         var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
@@ -73,6 +101,7 @@ public class MapObjectsManager: MonoBehaviour
         pinData.ChangeLatLong(latLong);
         pinData.UpdateWorldScale(scale);
     }
+    
     public static float GetPinScale(float zoom)
     {
         if (zoom >= 18f) return 400f;
