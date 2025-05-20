@@ -38,6 +38,7 @@ namespace Pinning
             _mapManager.VectorData.SpawnPrefabAtGeoLocation(mapPin, latLong, null, true,
                 pinName);
 
+			Debug.Log($"DEBS: {latLong}");
             OnPinDrop?.Invoke(pinName, latLong, null);
         }
     }
