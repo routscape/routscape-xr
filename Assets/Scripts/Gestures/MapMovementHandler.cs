@@ -9,8 +9,7 @@ namespace Gestures
 {
     public class MapMovementHandler : NetworkBehaviour
     {
-        [SerializeField] private AbstractMap mapManager;
-        public Action OnMapMove;
+        [SerializeField] private AbstractMap mapManager; 
         
         private int _grabCount;
         private int _interactorId = -1;
@@ -94,7 +93,6 @@ namespace Gestures
         private void UpdateLatLon()
         {
             mapManager.UpdateMap(CurrentLatLong.ToVector2d());
-            OnMapMove?.Invoke();
         }
     }
 }

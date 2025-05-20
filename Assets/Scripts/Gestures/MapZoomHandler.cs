@@ -20,7 +20,6 @@ namespace Gestures
         private bool _isZooming;
         private float _lastDistance;
         public bool CanZoom { private get; set; } = true;
-        public Action OnMapZoom; 
 
         [Networked]
         [OnChangedRender(nameof(UpdateZoom))]
@@ -84,7 +83,6 @@ namespace Gestures
         private void UpdateZoom()
         {
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
-            OnMapZoom?.Invoke();
         }
     }
 }
