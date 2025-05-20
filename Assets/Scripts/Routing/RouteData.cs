@@ -7,7 +7,7 @@ using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using Mapbox.Utils;
 
-public class RouteData
+public class RouteData 
 {
     public string Name { get; private set; }
     public int ID { get; private set; }
@@ -15,6 +15,7 @@ public class RouteData
     public Color Color => ColorHexCodes.GetColor(RouteColorType);
     public Action<RouteData> OnRouteDataChanged;
     public Action<Vector3> OnRoutePointAdded;
+    public Action<int, Vector3> OnRoutePointModified;
     public List<Vector2d> routePointsLatLong { get; private set; }
     
     public RouteData(string name, ColorType colorType)
@@ -31,6 +32,12 @@ public class RouteData
         OnRoutePointAdded?.Invoke(worldPoint);
     }
 
+    public void SetVertexPosition(int index, Vector3 position)
+    {
+        position.y += 0.0015f;
+        OnRoutePointModified?.Invoke(index, position);
+    }
+
     public Vector2d GetLocation()
     {
         if (routePointsLatLong.Count == 0)
@@ -45,7 +52,6 @@ public class RouteData
     {
         return routePointsLatLong.Count;
     }
-    
     
     public void Rename(string newName)
     {
