@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     
     private NetworkEventDispatcher _networkEventDispatcher;
     private Dictionary<int, ListItemController> _listItems = new Dictionary<int, ListItemController>();
+    private bool _clicked = false;
     void Start()
     {
         _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
@@ -45,6 +46,15 @@ public class UIManager : MonoBehaviour
     
     public void OnClick(int objectID)
     {
+        //Hacky solution because why do poke events fire twice?!
+        if (_clicked)
+        {
+            _clicked = false;
+            return;
+        }
+
+        _clicked = true;
+        Debug.Log("[UIManager] Button Clicked!");
         var listItemController = _listItems[objectID];
         if (listItemController.state == "default")
         {
