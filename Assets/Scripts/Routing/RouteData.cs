@@ -10,7 +10,7 @@ using Mapbox.Utils;
 public class RouteData
 {
     public string Name { get; private set; }
-    public int Id { get; private set; }
+    public int ID { get; private set; }
     public ColorType RouteColorType { get; private set; }
     public Color Color => ColorHexCodes.GetColor(RouteColorType);
     public Action<RouteData> OnRouteDataChanged;
@@ -20,7 +20,7 @@ public class RouteData
     public RouteData(string name, ColorType colorType)
     {
         Name = name;
-        Id = IDGenerator.GenerateID();
+        ID = IDGenerator.GenerateID();
 		RouteColorType = colorType;
         routePointsLatLong = new List<Vector2d>();
     }

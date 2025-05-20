@@ -18,14 +18,12 @@ public class PinData
     }
 
     public Action<PinData> OnPinDataChanged;
-    public PinData(string name, Vector2d latLong, Vector3 worldPosition, float scale, ColorType colorType)
+    public PinData(string name, Vector3 worldPosition, ColorType colorType)
     {
         Name = name;
         WorldPosition = worldPosition;
-        WorldScale = scale;
         ID = IDGenerator.GenerateID();
         PinColorType = colorType;
-        LatLong = latLong;
     }
 
     public void ChangeName(string newName)
@@ -35,25 +33,25 @@ public class PinData
         {
             Name = newName;
         }
-        OnPinDataChanged.Invoke(this);
+        OnPinDataChanged?.Invoke(this);
     }
     
     public void ChangeColor(ColorType newColorType)
     {
         PinColorType = newColorType;
-        OnPinDataChanged.Invoke(this);
+        OnPinDataChanged?.Invoke(this);
     }
 
     public void ChangeLatLong(Vector2d latLong)
     {
         LatLong = latLong;
-        OnPinDataChanged.Invoke(this);
+        OnPinDataChanged?.Invoke(this);
     }
     
     public void UpdateWorldPosition(Vector3 position)
     {
         WorldPosition = position;
-        OnPinDataChanged.Invoke(this);
+        OnPinDataChanged?.Invoke(this);
     }
 
     public void UpdateWorldScale(float scale)

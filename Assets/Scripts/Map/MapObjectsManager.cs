@@ -35,7 +35,6 @@ public class MapObjectsManager: MonoBehaviour
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
         
-        _networkEventDispatcher.OnPinDrop += AddPin;
         routeDrawer.OnPencilHit += AddPointToRoute;
         mapManager.OnUpdated += UpdateObjects;
     }
@@ -59,23 +58,20 @@ public class MapObjectsManager: MonoBehaviour
     }
     void AddPointToRoute(int routeID, Vector3 point)
     {
-        var routeData = _spawnedRoutes.Find(route => route.Id == routeID);
+        var routeData = _spawnedRoutes.Find(route => route.ID == routeID);
         var latLong = mapManager.WorldToGeoPosition(point);
         routeData.AddPoint(latLong, point);
     }
-    public void AddPin(string pinName, Vector3 hitInfo, int colorType)
+    public void AddPin(PinData pinData)
     {
-        var latLong = mapManager.WorldToGeoPosition(hitInfo);
-        var x = latLong.x;
-        var y = latLong.y;
+        var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
         var scale= GetPinScale(mapManager.Zoom);
-        var worldPosition = mapManager.GeoToWorldPosition(new Vector2d(x, y));
-        var pinData = new PinData(pinName, new Vector2d(x, y), worldPosition, scale, (ColorType)colorType);
-        
+        _spawnedPins.Add(pinData);
         var instantiatedPin = Instantiate(mapPinPrefab, gameObject.transform);
         var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
         pinBehavior.Init(pinData);
-        _spawnedPins.Add(pinData);
+        pinData.ChangeLatLong(latLong);
+        pinData.UpdateWorldScale(scale);
     }
     public static float GetPinScale(float zoom)
     {
