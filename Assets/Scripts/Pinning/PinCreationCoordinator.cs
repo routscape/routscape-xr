@@ -12,9 +12,9 @@ public class PinCreationCoordinator : MonoBehaviour
         networkEventDispatcher.OnPinDrop += AddPin;
     }
 
-    void AddPin(string pinName, Vector3 position, int colorType)
+    void AddPin(string pinName, Vector3 position, int typeID)
     {
-        var pinData = new PinData(pinName, position, (ColorType)colorType);
+        var pinData = new PinData(pinName, position, typeID);
         mapObjectsManager.AddPin(pinData);
         uiManager.AddPin(pinData);
     }

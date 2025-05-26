@@ -11,9 +11,9 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public event Action<int> OnJumpToMapObject;
 
     [Rpc]
-    public void RPC_DropPin(string pinName, Vector3 hitInfo, int colorType)
+    public void RPC_DropPin(string pinName, Vector3 hitInfo, int typeID)
     {
-        OnPinDrop?.Invoke(pinName, hitInfo, colorType);
+        OnPinDrop?.Invoke(pinName, hitInfo, typeID);
     }
 
     [Rpc]

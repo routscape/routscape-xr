@@ -7,23 +7,23 @@ public class PinData
 {
     public string Name { get; private set; }
 	public int ID { get; private set; }
+    public int TypeID { get; private set; }
     public Vector2d LatLong { get; private set; }
     public Vector3 WorldPosition { get; private set; }
     public float WorldScale { get; private set; }
     public ColorType PinColorType { get; private set; }
-
     public Color Color
     {
         get { return ColorHexCodes.GetColor(PinColorType); }
     }
 
     public Action<PinData> OnPinDataChanged;
-    public PinData(string name, Vector3 worldPosition, ColorType colorType)
+    public PinData(string name, Vector3 worldPosition, int typeID)
     {
         Name = name;
         WorldPosition = worldPosition;
         ID = IDGenerator.GenerateID();
-        PinColorType = colorType;
+        TypeID = typeID;
     }
 
     public void ChangeName(string newName)

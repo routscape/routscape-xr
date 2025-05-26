@@ -8,11 +8,11 @@ using UnityEngine;
 
 public class MapObjectsManager: MonoBehaviour
 {
-    [SerializeField] private GameObject mapPinPrefab;
     [SerializeField] private GameObject mapRoutePrefab;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private RouteDrawer routeDrawer;
-    
+    public List<MapObjectType> mapObjectTypes;
+    private Dictionary<int, GameObject> _mapLayers = new Dictionary<int, GameObject>();
     private List<RouteData> _spawnedRoutes = new List<RouteData>();
     private List<PinData> _spawnedPins = new List<PinData>();
     private NetworkEventDispatcher _networkEventDispatcher;
@@ -37,6 +37,8 @@ public class MapObjectsManager: MonoBehaviour
 
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
         routeDrawer.OnPencilHit += AddPointToRoute;
+        
+        InitializeLayers();
     }
 
     //TODO: Optimize via maponselect and mapdeselect events
@@ -61,6 +63,20 @@ public class MapObjectsManager: MonoBehaviour
         }
     }
 
+    void InitializeLayers()
+    {
+        foreach (var mapObjectType in mapObjectTypes)
+        {
+            Debug.Log("Map Object Type Layer: " + mapObjectType.displayName + " " + mapObjectTypes.Count);
+            var go = new GameObject()
+            {
+                name = mapObjectType.displayName,
+            };
+            go.transform.SetParent(transform, false);
+            _mapLayers[mapObjectType.typeID] = go;
+        } 
+    }
+    
     private void JumpTo(int objectID)
     {
         Vector2d latLong = Vector2d.zero;
@@ -95,7 +111,10 @@ public class MapObjectsManager: MonoBehaviour
         var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
         var scale= GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
-        var instantiatedPin = Instantiate(mapPinPrefab, gameObject.transform);
+        
+        var prefab = mapObjectTypes.Find(mapObjectType => mapObjectType.typeID == pinData.TypeID).prefab;
+        var parent = _mapLayers[pinData.TypeID];
+        var instantiatedPin = Instantiate(prefab, parent.transform);
         var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
         pinBehavior.Init(pinData);
         pinData.ChangeLatLong(latLong);

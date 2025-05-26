@@ -28,7 +28,9 @@ public class PinDropper : MonoBehaviour
 
     public void OnDrop(PointerEvent eventData)
     {
-        _networkEventDispatcher.RPC_DropPin("Pin", _hitInfo.point, (int)ColorType.Red);
+        var pinName = SelectionService.NewMapObjectData.Name;
+        var typeID = SelectionService.NewMapObjectData.TypeID;
+        _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, typeID); 
         Destroy(transform.parent.parent.gameObject);
     }
 }
