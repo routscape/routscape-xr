@@ -75,20 +75,29 @@ public class PoiSpawner : MonoBehaviour
     }
 
     void SpawnPOIs()
-    {
+    {        
         foreach (var poi in pois)
         {
             Vector2d latLong = new Vector2d(poi.LatLong.x, poi.LatLong.y);
             string pinName = $"{poi.EvacuationCenter} ({poi.Barangay})";
-
+            
             _mapManager.VectorData.SpawnPrefabAtGeoLocation(
                 mapPin,
                 latLong,
-                null, // No custom data
+                (instances) => {
+                    foreach (var instance in instances)
+                    {
+                        var poiPin = instance.GetComponent<PoiPin>();
+                        if (poiPin != null)
+                        {
+                            poiPin.SetLabel(pinName); // Set label on the spawned instance
+                        }
+                    }
+                },
                 true, // Use relative scale
                 pinName
             );
-
+            
             Debug.Log($"{pinName}: {latLong}");
         }
     }
