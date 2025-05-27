@@ -5,21 +5,21 @@ using UnityEngine;
 public class NetworkEventDispatcher : NetworkBehaviour
 {
     public event Action<string, Vector3, int> OnPinDrop;
-    public event Action<String, int> OnRouteBegin;
+    public event Action<String, int, int> OnRouteBegin;
     public event Action OnRouteEnd;
     public event Action<int, string> OnHighlightListItem;
     public event Action<int> OnJumpToMapObject;
 
     [Rpc]
-    public void RPC_DropPin(string pinName, Vector3 hitInfo, int typeID)
+    public void RPC_DropPin(string pinName, Vector3 hitInfo, int objectCategory)
     {
-        OnPinDrop?.Invoke(pinName, hitInfo, typeID);
+        OnPinDrop?.Invoke(pinName, hitInfo, objectCategory);
     }
 
     [Rpc]
-    public void RPC_BeginRouteCreation(string routeName, int colorType)
+    public void RPC_BeginRouteCreation(string routeName, int objectCategory, int colorType)
     {
-        OnRouteBegin?.Invoke(routeName, colorType);
+        OnRouteBegin?.Invoke(routeName, objectCategory, colorType);
         Debug.Log("[NetworkEventDispatcher] BeginRouteCreation");
     }
     

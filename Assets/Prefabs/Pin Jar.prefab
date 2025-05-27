@@ -86,11 +86,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb135dcb9036504986899090a93fda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 0}
-  leftPinchArea: {fileID: 0}
-  rightPinchArea: {fileID: 0}
-  leftHandGrabInteractor: {fileID: 0}
-  rightHandGrabInteractor: {fileID: 0}
+  itemPrefab: {fileID: 8478618658482240049, guid: ed50345aefbaa63448f91185ef7c6bb2, type: 3}
 --- !u!1 &4978443316088809598
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,6 +101,7 @@ GameObject:
   - component: {fileID: 1450415851854714449}
   - component: {fileID: 6154107089809382129}
   - component: {fileID: 5094351186326574128}
+  - component: {fileID: 3151109360006621738}
   m_Layer: 0
   m_Name: Pin Jar
   m_TagString: Untagged
@@ -276,6 +273,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.1876004, y: 1, z: 1.314184}
   m_Center: {x: -0.0046643987, y: 0, z: 0.026737675}
+--- !u!114 &3151109360006621738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4978443316088809598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 142e2fb2239e6cc4c9d5e1e1d66dea5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPickupHandler: {fileID: 8688440367467476525}
 --- !u!1 &6712347716996865896
 GameObject:
   m_ObjectHideFlags: 0

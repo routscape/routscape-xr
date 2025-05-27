@@ -1,4 +1,5 @@
 using UnityEngine;
+using Utils;
 
 public class RouteCreationCoordinator : MonoBehaviour
 {
@@ -14,9 +15,9 @@ public class RouteCreationCoordinator : MonoBehaviour
         networkEventDispatcher.OnRouteEnd += EndRoute;
     }
     
-    private void CreateRoute(string routeName, int colorType)
+    private void CreateRoute(string routeName, int objectCategory, int colorType)
     {
-        RouteData routeData = new RouteData(routeName, (ColorType)colorType);
+        RouteData routeData = new RouteData(routeName, (MapObjectCategory)objectCategory, (ColorType)colorType);
         mapObjectsManager.AddRoute(routeData);
         routeDrawer.SetCurrentRoute(routeData.ID);
         uiManager.AddRoute(routeData);

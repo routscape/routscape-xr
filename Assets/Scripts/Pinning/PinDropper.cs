@@ -5,7 +5,6 @@ using UnityEngine;
 public class PinDropper : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
-    [SerializeField] private GameObject mapPin;
     
     private RaycastHit _hitInfo;
     private NetworkEventDispatcher _networkEventDispatcher;
@@ -29,8 +28,8 @@ public class PinDropper : MonoBehaviour
     public void OnDrop(PointerEvent eventData)
     {
         var pinName = SelectionService.NewMapObjectData.Name;
-        var typeID = SelectionService.NewMapObjectData.TypeID;
-        _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, typeID); 
+        var objectCategory = SelectionService.NewMapObjectData.ObjectCategory;
+        _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, (int)objectCategory); 
         Destroy(transform.parent.parent.gameObject);
     }
 }

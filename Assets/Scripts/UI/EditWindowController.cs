@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.XR;
+using Utils;
 
 public enum EditWindowState {
     Default,
@@ -13,10 +14,9 @@ public class EditWindowController : MonoBehaviour
 {
     [SerializeField] private MapObjectsManager mapObjectsManager;
     [SerializeField] private TMP_Dropdown tmpDropdown;
-    [SerializeField] private TMP_Text objectText;
+    [SerializeField] private TMP_InputField tmpInputField;
     [SerializeField] private TMP_Text windowTitle;
     [SerializeField] private GameObject editActionButtons;
-    [SerializeField] private GameObject defaultActionButtons;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
     private void OnValidate() => ChangeState();
     
@@ -34,29 +34,31 @@ public class EditWindowController : MonoBehaviour
     {
         InitializeDropdown();
         ChangeState();
+        SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.DefaultPin;
+        SelectionService.NewMapObjectData.Name = "Pin";
+        tmpInputField.text = "Pin";
     }
 
     public void OnDropdownChanged()
     {
-        objectText.text = tmpDropdown.options[tmpDropdown.value].text; 
+        SelectionService.NewMapObjectData.ObjectCategory = GetTypeID(tmpDropdown.options[tmpDropdown.value].text);
+        SelectionService.NewMapObjectData.Name = tmpInputField.text;
+        tmpInputField.text = tmpDropdown.options[tmpDropdown.value].text; 
     }
     
-    public void OnDefaultConfirm()
+    public void OnTextValueChanged(string value)
     {
-        SelectionService.NewMapObjectData.TypeID = GetTypeID(tmpDropdown.options[tmpDropdown.value].text);
-        SelectionService.NewMapObjectData.Name = objectText.text;
-    }
-    
-    public void OnDefaultCancel()
-    {
-        objectText.text = tmpDropdown.options[tmpDropdown.value].text;
+        SelectionService.NewMapObjectData.Name = tmpInputField.text;
     }
     
     void InitializeDropdown()
     {
         var optionDataList = new List<TMP_Dropdown.OptionData>();
-        foreach (var mapObjectType in mapObjectsManager.mapObjectTypes)
+        foreach (var mapObjectType in MapObjectCatalog.I.mapObjectTypes)
         {
+            if (!mapObjectType.isSpawnableByPinJar) continue;
+            
+            Debug.Log("[EditWindowController] New Dropdown Object");
             var optionData = new TMP_Dropdown.OptionData()
             {
                 text = mapObjectType.displayName,
@@ -65,6 +67,7 @@ public class EditWindowController : MonoBehaviour
             };
             optionDataList.Add(optionData);
         }
+        tmpDropdown.ClearOptions();
         tmpDropdown.AddOptions(optionDataList);
     }
 
@@ -73,19 +76,17 @@ public class EditWindowController : MonoBehaviour
         if (state == EditWindowState.Default)
         {
             editActionButtons.SetActive(false);
-            defaultActionButtons.SetActive(true);
             windowTitle.text = "New Pin";
         } else if (state == EditWindowState.Edit)
         {
             editActionButtons.SetActive(true);
-            defaultActionButtons.SetActive(false);
             windowTitle.text = "Edit Pin";
         }
     }
     
-    private int GetTypeID(string objectName)
+    private MapObjectCategory GetTypeID(string objectName)
     {
-        return mapObjectsManager.mapObjectTypes.Find(mapObjectType => 
-            mapObjectType.name.ToLower() == objectName.ToLower()).typeID;
+        return MapObjectCatalog.I.mapObjectTypes.Find(mapObjectType => 
+            mapObjectType.name.ToLower() == objectName.ToLower()).objectCategory;
     }
 }

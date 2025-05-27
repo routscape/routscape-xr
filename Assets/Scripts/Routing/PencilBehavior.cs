@@ -15,7 +15,10 @@ public class PencilBehavior : MonoBehaviour
             Debug.Log("[PinDropper] No network event dispatcher found!");
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
-        _networkEventDispatcher.RPC_BeginRouteCreation("Route 1", 0);
+
+        var routeName = SelectionService.NewMapObjectData.Name;
+        var objectType = SelectionService.NewMapObjectData.ObjectCategory;
+        _networkEventDispatcher.RPC_BeginRouteCreation(routeName, (int)objectType, 0);
     }
     
     

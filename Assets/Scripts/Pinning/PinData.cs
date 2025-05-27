@@ -2,12 +2,13 @@ using System;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using Mapbox.Utils;
+using Utils;
 
 public class PinData
 {
     public string Name { get; private set; }
 	public int ID { get; private set; }
-    public int TypeID { get; private set; }
+    public MapObjectCategory ObjectCategory { get; private set; }
     public Vector2d LatLong { get; private set; }
     public Vector3 WorldPosition { get; private set; }
     public float WorldScale { get; private set; }
@@ -18,12 +19,12 @@ public class PinData
     }
 
     public Action<PinData> OnPinDataChanged;
-    public PinData(string name, Vector3 worldPosition, int typeID)
+    public PinData(string name, Vector3 worldPosition, MapObjectCategory objectCategory)
     {
         Name = name;
         WorldPosition = worldPosition;
         ID = IDGenerator.GenerateID();
-        TypeID = typeID;
+        ObjectCategory = objectCategory;
     }
 
     public void ChangeName(string newName)

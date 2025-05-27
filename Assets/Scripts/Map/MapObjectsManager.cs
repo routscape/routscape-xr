@@ -5,14 +5,16 @@ using Mapbox.Unity.Map;
 using Mapbox.Utils;
 using Unity.Mathematics;
 using UnityEngine;
+using Utils;
 
 public class MapObjectsManager: MonoBehaviour
 {
-    [SerializeField] private GameObject mapRoutePrefab;
+    [SerializeField] private GameObject mapPinBehavior;
+    [SerializeField] private GameObject mapRouteBehavior;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private RouteDrawer routeDrawer;
-    public List<MapObjectType> mapObjectTypes;
-    private Dictionary<int, GameObject> _mapLayers = new Dictionary<int, GameObject>();
+    
+    private Dictionary<MapObjectCategory, GameObject> _mapLayers = new Dictionary<MapObjectCategory, GameObject>();
     private List<RouteData> _spawnedRoutes = new List<RouteData>();
     private List<PinData> _spawnedPins = new List<PinData>();
     private NetworkEventDispatcher _networkEventDispatcher;
@@ -65,15 +67,14 @@ public class MapObjectsManager: MonoBehaviour
 
     void InitializeLayers()
     {
-        foreach (var mapObjectType in mapObjectTypes)
+        foreach (var mapObjectType in MapObjectCatalog.I.mapObjectTypes)
         {
-            Debug.Log("Map Object Type Layer: " + mapObjectType.displayName + " " + mapObjectTypes.Count);
             var go = new GameObject()
             {
                 name = mapObjectType.displayName,
             };
             go.transform.SetParent(transform, false);
-            _mapLayers[mapObjectType.typeID] = go;
+            _mapLayers[mapObjectType.objectCategory] = go;
         } 
     }
     
@@ -93,9 +94,10 @@ public class MapObjectsManager: MonoBehaviour
 
     public void AddRoute(RouteData routeData)
     {
-        _spawnedRoutes.Add(routeData);
-        var instantiatedRoute = Instantiate(mapRoutePrefab, gameObject.transform);
+        var parentLayer = _mapLayers[routeData.ObjectCategory];
+        var instantiatedRoute = Instantiate(mapRouteBehavior, parentLayer.transform);
         var routeBehavior = instantiatedRoute.GetComponent<RouteBehavior>();
+        _spawnedRoutes.Add(routeData);
         routeBehavior.Init(routeData);
     }
     
@@ -111,12 +113,14 @@ public class MapObjectsManager: MonoBehaviour
         var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
         var scale= GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
-        
-        var prefab = mapObjectTypes.Find(mapObjectType => mapObjectType.typeID == pinData.TypeID).prefab;
-        var parent = _mapLayers[pinData.TypeID];
-        var instantiatedPin = Instantiate(prefab, parent.transform);
-        var pinBehavior = instantiatedPin.GetComponent<PinBehavior>(); 
-        pinBehavior.Init(pinData);
+
+        var visualPrefab = MapObjectCatalog.I.mapObjectTypes.Find(mapObjectType => mapObjectType.objectCategory == pinData.ObjectCategory).visualPrefab;
+        var parentLayer = _mapLayers[pinData.ObjectCategory];
+        var instantiatedBehavior = Instantiate(mapPinBehavior, parentLayer.transform);
+        var instantiatedVisual = Instantiate(visualPrefab, instantiatedBehavior.transform);
+        instantiatedVisual.GetComponent<Animator>().enabled = true;
+        var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
+        pinBehaviorComponent.Init(pinData);
         pinData.ChangeLatLong(latLong);
         pinData.UpdateWorldScale(scale);
     }
@@ -139,4 +143,6 @@ public class MapObjectsManager: MonoBehaviour
 
         return 200f;
     }
+    
+    
 }

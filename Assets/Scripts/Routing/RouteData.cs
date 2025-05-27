@@ -6,11 +6,13 @@ using System.Text.RegularExpressions;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using Mapbox.Utils;
+using Utils;
 
 public class RouteData 
 {
     public string Name { get; private set; }
     public int ID { get; private set; }
+    public MapObjectCategory ObjectCategory { get; private set; }
     public ColorType RouteColorType { get; private set; }
     public Color Color => ColorHexCodes.GetColor(RouteColorType);
     public Action<RouteData> OnRouteDataChanged;
@@ -18,10 +20,11 @@ public class RouteData
     public Action<int, Vector3> OnRoutePointModified;
     public List<Vector2d> routePointsLatLong { get; private set; }
     
-    public RouteData(string name, ColorType colorType)
+    public RouteData(string name, MapObjectCategory objectCategory, ColorType colorType)
     {
         Name = name;
         ID = IDGenerator.GenerateID();
+        ObjectCategory = objectCategory;
 		RouteColorType = colorType;
         routePointsLatLong = new List<Vector2d>();
     }

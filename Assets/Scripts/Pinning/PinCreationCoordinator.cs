@@ -1,5 +1,6 @@
 using Mapbox.Utils;
 using UnityEngine;
+using Utils;
 
 public class PinCreationCoordinator : MonoBehaviour
 {
@@ -12,9 +13,9 @@ public class PinCreationCoordinator : MonoBehaviour
         networkEventDispatcher.OnPinDrop += AddPin;
     }
 
-    void AddPin(string pinName, Vector3 position, int typeID)
+    void AddPin(string pinName, Vector3 position, int objectCategory)
     {
-        var pinData = new PinData(pinName, position, typeID);
+        var pinData = new PinData(pinName, position, (MapObjectCategory)objectCategory);
         mapObjectsManager.AddPin(pinData);
         uiManager.AddPin(pinData);
     }
