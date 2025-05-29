@@ -78,6 +78,7 @@ public class PoiSpawner : MonoBehaviour
     {        
         foreach (var poi in pois)
         {
+            
             Vector2d latLong = new Vector2d(poi.LatLong.x, poi.LatLong.y);
             string pinName = $"{poi.EvacuationCenter} ({poi.Barangay})";
             
