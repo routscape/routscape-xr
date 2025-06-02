@@ -1371,9 +1371,9 @@ GameObject:
   - component: {fileID: 6861701113023460454}
   - component: {fileID: 8668910025153596131}
   - component: {fileID: 9076987553853846154}
-  - component: {fileID: 1396984166583834735}
   - component: {fileID: 7829009852939393031}
   - component: {fileID: 3474830988010304087}
+  - component: {fileID: 4087599385118158060}
   m_Layer: 5
   m_Name: CalibrateButton
   m_TagString: Untagged
@@ -1539,8 +1539,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1396984166583834735}
-        m_TargetAssemblyTypeName: ButtonTest, Assembly-CSharp
+      - m_Target: {fileID: 4087599385118158060}
+        m_TargetAssemblyTypeName: CalibrationToggle, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -1551,18 +1551,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1396984166583834735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8902036374203903968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 670edf737d09eaf4daa237c8627857b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7829009852939393031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1607,6 +1595,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 20
   image: {fileID: 7829009852939393031}
+--- !u!114 &4087599385118158060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8902036374203903968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aac19cf58f544fa0bcc3012e79e1563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeImage: {fileID: 21300000, guid: 45d65456e178d4f2498ae2aec7f95cda, type: 3}
+  inactiveImage: {fileID: 21300000, guid: 290d158031622c645aa55f8bd981be12, type: 3}
+  itemImage: {fileID: 2324167977870962489}
+  gameObjects: []
 --- !u!1 &9168669108408888354
 GameObject:
   m_ObjectHideFlags: 0

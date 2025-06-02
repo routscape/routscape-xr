@@ -5,38 +5,48 @@ public class CalibrationToggle : MonoBehaviour
 {
     [SerializeField] private Sprite activeImage;
     [SerializeField] private Sprite inactiveImage;
+    [SerializeField] private Image itemImage;
     [SerializeField] private GameObject[] gameObjects;
-    private bool isActive;
-
-    private Button itemButton;
-    private Image itemImage;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool _isActive;
+    private float _lastFrame;
+    
     private void Start()
     {
-        itemButton = GetComponent<Button>();
-        itemImage = GetComponent<Image>();
-
-        if (itemButton != null) itemButton.onClick.AddListener(OnButtonClick);
-
         SetItemState(true);
     }
 
-    private void OnButtonClick()
+    public void OnClick()
     {
+        if (HasInputFiredTwice())
+        {
+            return;
+        }
+        
         foreach (var go in gameObjects) go.SetActive(!go.activeSelf);
-        SetItemState(!isActive);
+        SetItemState(!_isActive);
     }
 
     private void SetItemState(bool newState)
     {
-        isActive = newState;
+        _isActive = newState;
 
         // Set item image based on its state
         if (itemImage != null)
         {
             Debug.Log("New item state...");
-            itemImage.sprite = isActive ? activeImage : inactiveImage;
+            itemImage.sprite = _isActive ? activeImage : inactiveImage;
+            itemImage.color = Color.black;
         }
+    }
+    
+    private bool HasInputFiredTwice()
+    {
+        //Hacky solution because why do poke events fire twice?!
+        if (_lastFrame == Time.frameCount)
+        {
+            return true;
+        }
+        _lastFrame = Time.frameCount;
+        return false;
     }
 }
