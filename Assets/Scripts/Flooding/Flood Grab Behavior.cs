@@ -12,10 +12,12 @@ public class FloodGrabBehavior : NetworkBehaviour
     [SerializeField] private GameObject floodCube;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private MeshFilter meshFilter;
+    [SerializeField] private BoxCollider boxCollider;
+    [SerializeField] private MeshRenderer meshRenderer;
+    
     public float floodStepMultiplier;
     public float currentFloodLevel; 
 
-    private BoxCollider _boxCollider;
     private int _grabCount;
     private Vector3 _lastPinchPos; 
 
@@ -25,7 +27,7 @@ public class FloodGrabBehavior : NetworkBehaviour
 
     public override void Spawned()
     {
-        _boxCollider = transform.parent.GetComponent<BoxCollider>();
+        boxCollider = transform.parent.GetComponent<BoxCollider>();
         mapManager.OnUpdated += CalculateNewBounds;
         CalculateNewBounds();
     }
@@ -75,6 +77,24 @@ public class FloodGrabBehavior : NetworkBehaviour
         _lastPinchPos = newPinchPos;
     }
 
+    public void SetFloodLevel(float centimeters)
+    {
+        currentFloodLevel = centimeters;
+        CalculateNewBounds();
+    }
+
+    public void Show()
+    {
+        meshRenderer.enabled = true;
+        boxCollider.enabled = true;
+    }
+
+    public void Hide()
+    {
+        meshRenderer.enabled = false;
+        boxCollider.enabled = false;
+    }
+    
     private Vector3 GetPinchArea(GameObject go)
     {
         if (go.tag.Contains("left")) return GameObject.FindWithTag("left pinch area").transform.position;
@@ -95,7 +115,7 @@ public class FloodGrabBehavior : NetworkBehaviour
     {
         meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, (float)CurrentBounds));
         var meshBounds = meshFilter.mesh.bounds;
-        _boxCollider.center = meshBounds.center;
-        _boxCollider.size = meshBounds.size;
+        boxCollider.center = meshBounds.center;
+        boxCollider.size = meshBounds.size;
     }
 }
