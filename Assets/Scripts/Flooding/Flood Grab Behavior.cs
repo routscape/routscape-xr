@@ -1,32 +1,40 @@
 using Flooding;
 using Fusion;
+using Mapbox.Map;
+using Mapbox.Unity.Map;
+using Mapbox.Unity.Utilities;
+using Mapbox.Utils;
 using Oculus.Interaction;
 using UnityEngine;
 
 public class FloodGrabBehavior : NetworkBehaviour
 {
     [SerializeField] private GameObject floodCube;
-    public float floodStepMultiplier = 0.05f;
-    private BoxCollider _boxCollider;
+    [SerializeField] private AbstractMap mapManager;
+    [SerializeField] private MeshFilter meshFilter;
+    public float floodStepMultiplier;
+    public float currentFloodLevel; 
 
+    private BoxCollider _boxCollider;
     private int _grabCount;
-    private bool _hasLastPinchPos; // because you only have a valid "previous" after one frame
-    private Vector3 _lastPinchPos; // <- keep track of last pinch position
+    private Vector3 _lastPinchPos; 
 
     [Networked]
     [OnChangedRender(nameof(MoveFlood))]
-    private float CurrentHeight { get; set; } = 1;
+    private double CurrentBounds { get; set; } = 1;
 
-    private void Start()
+    public override void Spawned()
     {
         _boxCollider = transform.parent.GetComponent<BoxCollider>();
+        mapManager.OnUpdated += CalculateNewBounds;
+        CalculateNewBounds();
     }
 
     public void OnSelect(PointerEvent pointerEvent)
     {
-        var gameObject = pointerEvent.Data as GameObject;
+        var go= pointerEvent.Data as GameObject;
 
-        if (gameObject == null)
+        if (go == null)
         {
             Debug.LogError("[FLOOD CUBE] interactor expected in Data property of hand!");
             return;
@@ -38,11 +46,7 @@ public class FloodGrabBehavior : NetworkBehaviour
 
         if (++_grabCount != 1) return;
 
-        // Initialize last pinch pos so we can compare next frame
         _lastPinchPos = pinchArea;
-        _hasLastPinchPos = true;
-
-        Debug.Log("Flood Selected");
     }
 
     public void OnDeselect(PointerEvent pointerEvent)
@@ -56,33 +60,40 @@ public class FloodGrabBehavior : NetworkBehaviour
         if (!Object.HasStateAuthority) return;
 
         if (_grabCount != 1) return;
-        var gameObject = pointerEvent.Data as GameObject;
-        var pinchArea = GetPinchArea(gameObject);
+        var go = pointerEvent.Data as GameObject;
+        var pinchArea = GetPinchArea(go);
 
         var newPinchPos = pinchArea;
         var deltaY = newPinchPos.y - _lastPinchPos.y;
         if (Mathf.Abs(deltaY) < 0.0001f) return;
 
         var currentDelta = deltaY * floodStepMultiplier;
-        var newHeight = CurrentHeight + currentDelta;
-        CurrentHeight = newHeight;
-
-        Debug.Log("NEW HEIGHT " + newHeight);
-
+        var newFloodLevel = currentFloodLevel + currentDelta;
+        currentFloodLevel = newFloodLevel;
+        CalculateNewBounds();
+        
         _lastPinchPos = newPinchPos;
     }
 
-    private Vector3 GetPinchArea(GameObject gameObject)
+    private Vector3 GetPinchArea(GameObject go)
     {
-        if (gameObject.tag.Contains("left")) return GameObject.FindWithTag("left pinch area").transform.position;
+        if (go.tag.Contains("left")) return GameObject.FindWithTag("left pinch area").transform.position;
 
         return GameObject.FindWithTag("right pinch area").transform.position;
     }
 
+    private void CalculateNewBounds()
+    {
+        RectD referenceTileRect = Conversions.TileBounds(TileCover.CoordinateToTileId(mapManager.CenterLatitudeLongitude, mapManager.AbsoluteZoom));
+        double zoomDifference = mapManager.Zoom - mapManager.AbsoluteZoom;
+        double floodLevelInMeters = currentFloodLevel / 100;
+        double unitsPerMeter = (mapManager.Options.scalingOptions.unityTileSize / referenceTileRect.Size.x) * Mathd.Pow(2d, zoomDifference);
+        CurrentBounds = floodLevelInMeters * unitsPerMeter;
+    }
+    
     private void MoveFlood()
     {
-        var meshFilter = floodCube.GetComponent<MeshFilter>();
-        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, CurrentHeight));
+        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, (float)CurrentBounds));
         var meshBounds = meshFilter.mesh.bounds;
         _boxCollider.center = meshBounds.center;
         _boxCollider.size = meshBounds.size;
