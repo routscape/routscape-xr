@@ -2,6 +2,7 @@ using System;
 using Oculus.Interaction;
 using Oculus.Interaction.Input;
 using UnityEngine;
+using Utils;
 
 public class PencilBehavior : MonoBehaviour
 {
@@ -16,9 +17,8 @@ public class PencilBehavior : MonoBehaviour
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
 
-        var routeName = SelectionService.NewMapObjectData.Name;
-        var objectType = SelectionService.NewMapObjectData.ObjectCategory;
-        _networkEventDispatcher.RPC_BeginRouteCreation(routeName, (int)objectType, 0);
+        var routeName = "Route";
+        _networkEventDispatcher.RPC_BeginRouteCreation(routeName, (int)MapObjectCategory.Route, 0);
     }
     
     

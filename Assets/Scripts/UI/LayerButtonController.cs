@@ -1,14 +1,12 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FloodButtonController: MonoBehaviour
+public class LayerButtonController : MonoBehaviour
 {
-    [SerializeField] private FloodGrabBehavior floodGrabBehavior;
-    [SerializeField] private Button floodButtonGraphic;
-    [SerializeField] private GameObject floodEditWindow;
+    [SerializeField] private Button layerButton;
+    [SerializeField] private GameObject layerWindow;
     
-    private bool _showFlood;
+    private bool _showLayerWindow;
     private static readonly Color ActiveNormal = new Color(0.31f, 0.88f, 0.28f, 180f / 255f);
     private static readonly Color ActiveHighlighted = new Color(0.41f, 0.98f, 0.38f, 200f / 255f); 
     private static readonly Color ActivePressed = new Color(0.21f, 0.78f, 0.18f, 220f / 255f);
@@ -19,8 +17,8 @@ public class FloodButtonController: MonoBehaviour
     private static ColorBlock _inactiveColorBlock;
     private static ColorBlock _activeColorBlock;
     private float _lastFrame;
-
-    private void Start()
+    
+    void Start()
     {
         _inactiveColorBlock.normalColor = InactiveNormal;
         _inactiveColorBlock.highlightedColor = Highlighted;
@@ -35,25 +33,23 @@ public class FloodButtonController: MonoBehaviour
         _activeColorBlock.colorMultiplier = 1f;
     }
 
-    public void OnFloodClicked()
+    public void OnLayerClicked()
     {
         if (HasInputFiredTwice())
         {
             return;
         }
-        _showFlood = !_showFlood;
+        _showLayerWindow = !_showLayerWindow;
 
-        if (_showFlood)
+        if (_showLayerWindow)
         {
-            floodButtonGraphic.colors = _activeColorBlock;
-            floodEditWindow.SetActive(true);
-            floodGrabBehavior.Show();
+            layerButton.colors = _activeColorBlock;
+            layerWindow.SetActive(true);
         }
         else
         {
-            floodButtonGraphic.colors = _inactiveColorBlock; 
-            floodEditWindow.SetActive(false);
-            floodGrabBehavior.Hide();
+            layerButton.colors = _inactiveColorBlock; 
+            layerWindow.SetActive(false);
         }
     }
     

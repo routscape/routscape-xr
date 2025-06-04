@@ -38,6 +38,13 @@ public class ListItemController : MonoBehaviour
         label.text = text;
     }
 
+    public void SetIcon(Sprite icon)
+    {
+        var oldColor = circle.color;
+        circle.sprite = icon;
+        circle.color = oldColor;
+    }
+    
     public void SetItemColor(ColorType colorType)
     {
         circle.color = ColorHexCodes.GetColor(colorType);

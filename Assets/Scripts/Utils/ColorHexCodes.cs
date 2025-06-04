@@ -4,7 +4,8 @@ public enum ColorType
 {
     Red = 0,
     Green = 1,
-    Blue = 2
+    Blue = 2,
+    None = 3
 }
 
 public static class ColorHexCodes

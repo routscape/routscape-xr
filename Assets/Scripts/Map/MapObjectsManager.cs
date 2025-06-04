@@ -39,6 +39,7 @@ public class MapObjectsManager: MonoBehaviour
 
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
         routeDrawer.OnPencilHit += AddPointToRoute;
+        LayerStateManager.I.LayerStateChanged += OnLayerStateChanged;
         
         InitializeLayers();
     }
@@ -76,6 +77,15 @@ public class MapObjectsManager: MonoBehaviour
             go.transform.SetParent(transform, false);
             _mapLayers[mapObjectType.objectCategory] = go;
         } 
+    }
+
+    void OnLayerStateChanged()
+    {
+        foreach (var layerState in LayerStateManager.I.LayerStates)
+        {
+            Debug.Log("[MapObjectsManager] Layer State: " + layerState.State);
+            _mapLayers[layerState.ObjectCategory].SetActive(layerState.State);
+        }
     }
     
     private void JumpTo(int objectID)
