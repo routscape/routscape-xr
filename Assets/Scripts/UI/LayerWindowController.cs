@@ -9,7 +9,7 @@ public class LayerWindowController : MonoBehaviour
     [SerializeField] private Transform listItemParent;
     
     private Dictionary<MapObjectCategory, ListItemController> _listItems = new Dictionary<MapObjectCategory, ListItemController>();
-
+    private int _lastFrame;
     void Start()
     {
         if (MapObjectCatalog.I == null)
@@ -34,6 +34,11 @@ public class LayerWindowController : MonoBehaviour
 
     void OnClick(MapObjectCategory objectCategory)
     {
+        if (HasInputFiredTwice())
+        {
+            return;
+        }
+        
         var listItemController = _listItems[objectCategory];
         if (listItemController.state == "default")
         {
@@ -46,6 +51,17 @@ public class LayerWindowController : MonoBehaviour
             listItemController.state = "default";
             LayerStateManager.I.SetLayerState(objectCategory, true);
         }
+    }
+    
+    private bool HasInputFiredTwice()
+    {
+        //Hacky solution because why do poke events fire twice?!
+        if (_lastFrame == Time.frameCount)
+        {
+            return true;
+        }
+        _lastFrame = Time.frameCount;
+        return false;
     }
 }
 

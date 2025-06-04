@@ -2,7 +2,7 @@ namespace Utils
 {
     public enum MapObjectCategory
     {
-        DefaultPin,
+        Pin,
         SOS,
         FallenTree,
         FallenPost,

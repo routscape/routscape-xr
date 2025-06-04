@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.XR;
 using Utils;
 
@@ -19,6 +21,7 @@ public class EditWindowController : MonoBehaviour
     [SerializeField] private TMP_Text windowTitle;
     [SerializeField] private GameObject editActionButtons;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
+    
     private void OnValidate() => ChangeState();
     
     public EditWindowState State
@@ -35,7 +38,7 @@ public class EditWindowController : MonoBehaviour
     {
         InitializeDropdown();
         ChangeState();
-        SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.DefaultPin;
+        SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.Pin;
         SelectionService.NewMapObjectData.Name = "Pin";
         tmpInputField.text = "Pin";
     }
