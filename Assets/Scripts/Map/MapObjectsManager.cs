@@ -61,13 +61,9 @@ public class MapObjectsManager : MonoBehaviour
 
         foreach (var route in _spawnedRoutes)
         {
-            var points = route.routePointsLatLong;
-            for (int i = 0; i < points.Count; i++)
-            {
-                var latLong = route.routePointsLatLong[i];
-                var worldPosition = mapManager.GeoToWorldPosition(latLong);
-                route.SetVertexPosition(i, worldPosition);
-            }
+            var latLong = route.ParentLatLong;
+            var newWorldPosition = mapManager.GeoToWorldPosition(latLong);
+            route.UpdateWorldPosition(newWorldPosition);
         }
     }
 
@@ -112,6 +108,9 @@ public class MapObjectsManager : MonoBehaviour
     {
         var parentLayer = _mapLayers[routeData.ObjectCategory];
         var instantiatedRoute = Instantiate(mapRouteBehavior, parentLayer.transform);
+        routeData.SetParentTransform(instantiatedRoute.transform);
+        var latLong = mapManager.WorldToGeoPosition(routeData.ParentTransform.TransformPoint(routeData.ParentTransform.position)); //turn the route gameobject's localposition to worldspace
+        routeData.SetParentLatLong(latLong);
         var routeBehavior = instantiatedRoute.GetComponent<RouteBehavior>();
         _spawnedRoutes.Add(routeData);
         routeBehavior.Init(routeData);
@@ -121,7 +120,7 @@ public class MapObjectsManager : MonoBehaviour
     {
         var routeData = _spawnedRoutes.Find(r => r.ID == routeID);
         var latLong = mapManager.WorldToGeoPosition(point);
-        routeData.AddPoint(latLong, point);
+        routeData.AddPoint(latLong, routeData.ParentTransform.InverseTransformPoint(point));
     }
 
     public void AddPin(PinData pinData)
