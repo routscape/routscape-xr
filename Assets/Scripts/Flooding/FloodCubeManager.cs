@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mapbox.Unity.Map;
+using UnityEngine;
 
 namespace Flooding
 {
@@ -10,6 +11,7 @@ namespace Flooding
         [SerializeField] private float startingFloodHeight = 1f;
         [SerializeField] private float startingFloodYScale = 0.25f;
         [SerializeField] private bool generateOnStart = true;
+        [SerializeField] private AbstractMap map;
 
         private float _cubeSizeX;
         private float _cubeSizeZ;
@@ -37,6 +39,18 @@ namespace Flooding
                 cube.transform.localScale = new Vector3(_cubeSizeX, startingFloodYScale, _cubeSizeZ);
                 cube.name = $"FloodCube_{x}_{z}";
                 cube.transform.SetParent(transform);
+
+                var colorizer = cube.GetComponent<FloodCubeColorizer>();
+                if (colorizer != null)
+                {
+                    colorizer.enabled = true;
+                    colorizer.InitializeMap(map);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"FloodCubeColorizer component not found on {cube.name}. Ensure it is attached to the prefab.");
+                }
             }
         }
     }

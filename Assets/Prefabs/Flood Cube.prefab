@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7645902694875949969}
   - component: {fileID: 876844528129530888}
   - component: {fileID: 7625746879996817962}
-  - component: {fileID: 4383421650800084682}
+  - component: {fileID: 1750775660204768705}
   m_Layer: 0
   m_Name: Flood Cube
   m_TagString: Untagged
@@ -109,20 +109,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4383421650800084682
+--- !u!114 &1750775660204768705
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5792732150415900560}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6678e24350a47919b1be17cdb244bb4, type: 3}
+  m_Script: {fileID: 11500000, guid: 34b2145a61eb49c8bbbca46c7526fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceShader: {fileID: 7200000, guid: 7cab6427a20e47749bf69d71f34496b4, type: 3}
-  referenceMeshFilter: {fileID: 0}
-  maxDistance: 10
-  closeColor: {r: 0, g: 0, b: 1, a: 1}
-  farColor: {r: 1, g: 0, b: 0, a: 1}
