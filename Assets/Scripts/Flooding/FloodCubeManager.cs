@@ -10,7 +10,7 @@ namespace Flooding
         [SerializeField] private Vector4 boundaries;
         [SerializeField] private float startingFloodHeight = 1f;
         [SerializeField] private float startingFloodYScale = 0.25f;
-        [SerializeField] private bool generateOnStart = true;
+        [SerializeField] private bool generateOnStart;
         [SerializeField] private AbstractMap map;
 
         private float _cubeSizeX;
