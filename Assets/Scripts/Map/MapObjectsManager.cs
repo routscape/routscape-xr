@@ -7,45 +7,50 @@ using Unity.Mathematics;
 using UnityEngine;
 using Utils;
 
-public class MapObjectsManager: MonoBehaviour
+public class MapObjectsManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapPinBehavior;
     [SerializeField] private GameObject mapRouteBehavior;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private RouteDrawer routeDrawer;
-    
+
     private Dictionary<MapObjectCategory, GameObject> _mapLayers = new Dictionary<MapObjectCategory, GameObject>();
     private List<RouteData> _spawnedRoutes = new List<RouteData>();
     private List<PinData> _spawnedPins = new List<PinData>();
     private NetworkEventDispatcher _networkEventDispatcher;
-    
+
     void Start()
     {
         if (mapManager == null)
         {
             Debug.LogError("[MapObjectsHandler] Missing mapbox map in inspector!");
         }
+
         if (routeDrawer == null)
         {
             Debug.LogError("[MapObjectsHandler] Missing routeDrawer in inspector!");
         }
-        
-        _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
-        if (_networkEventDispatcher== null)
+
+        _networkEventDispatcher =
+            GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        if (_networkEventDispatcher == null)
         {
             Debug.Log("[PinDropper] No network event dispatcher found!");
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
 
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
+        _networkEventDispatcher.OnEraseMapObject += DeleteMapObject;
+        _networkEventDispatcher.OnRepositionPin += RepositionPin;
+        mapManager.OnUpdated += OnMapUpdated;
         routeDrawer.OnPencilHit += AddPointToRoute;
         LayerStateManager.I.LayerStateChanged += OnLayerStateChanged;
-        
+
         InitializeLayers();
     }
 
     //TODO: Optimize via maponselect and mapdeselect events
-    void Update()
+    void OnMapUpdated()
     {
         foreach (var pin in _spawnedPins)
         {
@@ -76,7 +81,7 @@ public class MapObjectsManager: MonoBehaviour
             };
             go.transform.SetParent(transform, false);
             _mapLayers[mapObjectType.objectCategory] = go;
-        } 
+        }
     }
 
     void OnLayerStateChanged()
@@ -87,18 +92,19 @@ public class MapObjectsManager: MonoBehaviour
             _mapLayers[layerState.ObjectCategory].SetActive(layerState.State);
         }
     }
-    
+
     private void JumpTo(int objectID)
     {
         Vector2d latLong = Vector2d.zero;
-        if (_spawnedRoutes.Exists(r=> r.ID == objectID))
+        if (_spawnedRoutes.Exists(r => r.ID == objectID))
         {
             latLong = _spawnedRoutes.Find(r => r.ID == objectID).GetLocation();
-        } else if (_spawnedPins.Exists(p => p.ID == objectID))
+        }
+        else if (_spawnedPins.Exists(p => p.ID == objectID))
         {
             latLong = _spawnedPins.Find(p => p.ID == objectID).LatLong;
         }
-        
+
         mapManager.UpdateMap(latLong);
     }
 
@@ -110,29 +116,61 @@ public class MapObjectsManager: MonoBehaviour
         _spawnedRoutes.Add(routeData);
         routeBehavior.Init(routeData);
     }
-    
+
     void AddPointToRoute(int routeID, Vector3 point)
     {
         var routeData = _spawnedRoutes.Find(r => r.ID == routeID);
         var latLong = mapManager.WorldToGeoPosition(point);
         routeData.AddPoint(latLong, point);
     }
-    
+
     public void AddPin(PinData pinData)
     {
         var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
-        var scale= GetPinScale(mapManager.Zoom);
+        var scale = GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
 
-        var visualPrefab = MapObjectCatalog.I.mapObjectTypes.Find(mapObjectType => mapObjectType.objectCategory == pinData.ObjectCategory).visualPrefab;
+        var visualPrefab = MapObjectCatalog.I.mapObjectTypes
+            .Find(mapObjectType => mapObjectType.objectCategory == pinData.ObjectCategory).visualPrefab;
         var parentLayer = _mapLayers[pinData.ObjectCategory];
         var instantiatedBehavior = Instantiate(mapPinBehavior, parentLayer.transform);
         var instantiatedVisual = Instantiate(visualPrefab, instantiatedBehavior.transform);
+        var visualMeshRenderer = instantiatedVisual.GetComponentInChildren<MeshRenderer>();
         instantiatedVisual.GetComponent<Animator>().enabled = true;
         var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
+        pinBehaviorComponent.meshRenderer = visualMeshRenderer;
         pinBehaviorComponent.Init(pinData);
         pinData.ChangeLatLong(latLong);
         pinData.UpdateWorldScale(scale);
+    }
+
+    private void RepositionPin(int objectID, Vector3 worldPosition)
+    {
+        if (!_spawnedPins.Exists(p => p.ID == objectID))
+        {
+            return;
+        }
+        
+        var pinData = _spawnedPins.Find(p => p.ID == objectID);
+        var latLong = mapManager.WorldToGeoPosition(worldPosition);
+        pinData.ChangeLatLong(latLong);
+        pinData.UpdateWorldPosition(worldPosition);
+    }
+
+private void DeleteMapObject(int objectID)
+    {
+        if (_spawnedRoutes.Exists(r => r.ID == objectID))
+        {
+           
+        } else if (_spawnedPins.Exists(p => p.ID == objectID))
+        {
+            var mapObject = _spawnedPins.Find(r => r.ID == objectID);
+            mapObject.DeleteSelf();
+            _spawnedPins.Remove(mapObject);
+        } else
+        {
+            Debug.LogWarning("[MapObjectsHandler] You tried to delete a non existent object with ID " + objectID);
+        }
     }
     
     public static float GetPinScale(float zoom)

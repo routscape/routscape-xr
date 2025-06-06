@@ -12,6 +12,7 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public event Action<int> OnEraseMapObject;
     public event Action OnEraseBegin; //select the eraser
     public event Action OnEraseEnd; //release the eraser
+    public event Action<int, Vector3> OnRepositionPin;
 
     [Rpc]
     public void RPC_DropPin(string pinName, Vector3 hitInfo, int objectCategory)
@@ -67,5 +68,11 @@ public class NetworkEventDispatcher : NetworkBehaviour
     {
         Debug.Log("[NetworkEventDispatcher] EraseEnd");
         OnEraseEnd?.Invoke();
+    }
+
+    [Rpc]
+    public void RPC_RepositionPin(int objectID, Vector3 hitInfo)
+    {
+        OnRepositionPin?.Invoke(objectID, hitInfo);
     }
 }

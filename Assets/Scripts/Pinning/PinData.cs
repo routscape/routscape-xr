@@ -19,6 +19,7 @@ public class PinData
     }
 
     public Action<PinData> OnPinDataChanged;
+    public Action OnDelete;
     public PinData(string name, Vector3 worldPosition, MapObjectCategory objectCategory)
     {
         Name = name;
@@ -59,5 +60,10 @@ public class PinData
     {
         WorldScale = scale;
         OnPinDataChanged.Invoke(this);
+    }
+
+    public void DeleteSelf()
+    {
+        OnDelete?.Invoke();
     }
 }

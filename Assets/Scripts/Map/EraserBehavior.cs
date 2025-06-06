@@ -13,6 +13,6 @@ public class EraserBehavior : MonoBehaviour
     public void OnRelease(PointerEvent eventData)
     {
         _networkEventDispatcher.RPC_EraseEnd();
-        Destroy(transform.parent.gameObject);
+        Destroy(gameObject);
     }
 }
