@@ -5,11 +5,14 @@ namespace Flooding
 {
     public class FloodCubeColorizer : MonoBehaviour
     {
+        private static readonly int ColorProperty = Shader.PropertyToID("_Color");
         [SerializeField] private float alpha = 0.5f;
         private Bounds _bounds;
 
         private float _distanceToMap;
         private AbstractMap _map;
+
+        private MaterialPropertyBlock _propertyBlock;
         private Renderer _renderer;
         private Color _transparentGreen;
         private Color _transparentRed;
@@ -20,6 +23,7 @@ namespace Flooding
             _transparentRed = new Color(1, 0, 0, alpha);
             _renderer = GetComponent<Renderer>();
             _bounds = _renderer.bounds;
+            _propertyBlock = new MaterialPropertyBlock();
         }
 
         private void FixedUpdate()
@@ -49,8 +53,9 @@ namespace Flooding
 
             var color = Color.Lerp(_transparentRed, _transparentGreen, _distanceToMap / 100f);
 
-            var renderer = GetComponent<Renderer>();
-            renderer.material.SetColor("_Color", color);
+            _renderer.GetPropertyBlock(_propertyBlock);
+            _propertyBlock.SetColor(ColorProperty, color);
+            _renderer.SetPropertyBlock(_propertyBlock);
         }
 
         public void InitializeMap(AbstractMap map)
