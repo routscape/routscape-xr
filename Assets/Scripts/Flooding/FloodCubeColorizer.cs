@@ -62,11 +62,21 @@ namespace Flooding
 
             Color color;
             if (_distanceToMap <= _lowFloodThreshold)
-                color = _transparentGreen;
+            {
+                // Smooth gradient from green to yellow
+                var t = Mathf.InverseLerp(0, _lowFloodThreshold, _distanceToMap);
+                color = Color.Lerp(_transparentGreen, _transparentYellow, t);
+            }
             else if (_distanceToMap <= _highFloodThreshold)
-                color = _transparentYellow;
+            {
+                // Smooth gradient from yellow to red
+                var t = Mathf.InverseLerp(_lowFloodThreshold, _highFloodThreshold, _distanceToMap);
+                color = Color.Lerp(_transparentYellow, _transparentRed, t);
+            }
             else
+            {
                 color = _transparentRed;
+            }
 
             _renderer.GetPropertyBlock(_propertyBlock);
             _propertyBlock.SetColor(ColorProperty, color);
