@@ -10,6 +10,8 @@ namespace Flooding
         [SerializeField] private Vector4 boundaries;
         [SerializeField] private float startingFloodHeight = 1f;
         [SerializeField] private float startingFloodYScale = 0.25f;
+        [SerializeField] private float lowFloodThreshold = 0.02f;
+        [SerializeField] private float highFloodThreshold = 0.05f;
         [SerializeField] private bool generateOnStart;
         [SerializeField] private AbstractMap map;
 
@@ -45,6 +47,7 @@ namespace Flooding
                 {
                     colorizer.enabled = true;
                     colorizer.InitializeMap(map);
+                    colorizer.SetFloodThresholds(lowFloodThreshold, highFloodThreshold);
                 }
                 else
                 {
