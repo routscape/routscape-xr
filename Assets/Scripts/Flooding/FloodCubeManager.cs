@@ -7,13 +7,16 @@ namespace Flooding
         [SerializeField] private GameObject floodCubePrefab;
         [SerializeField] private int gridSize = 64;
         [SerializeField] private Vector4 boundaries;
+        [SerializeField] private float startingFloodHeight = 1f;
+        [SerializeField] private float startingFloodYScale = 0.25f;
+        [SerializeField] private bool generateOnStart = true;
 
         private float _cubeSizeX;
         private float _cubeSizeZ;
 
         private void Start()
         {
-            GenerateCubes();
+            if (generateOnStart) GenerateCubes();
         }
 
         private void GenerateCubes()
@@ -26,12 +29,12 @@ namespace Flooding
             {
                 var position = new Vector3(
                     boundaries.x + x * _cubeSizeX + _cubeSizeX / 2,
-                    0,
+                    startingFloodHeight,
                     boundaries.z + z * _cubeSizeZ + _cubeSizeZ / 2
                 );
 
                 var cube = Instantiate(floodCubePrefab, position, Quaternion.identity);
-                cube.transform.localScale = new Vector3(_cubeSizeX, 1, _cubeSizeZ);
+                cube.transform.localScale = new Vector3(_cubeSizeX, startingFloodYScale, _cubeSizeZ);
                 cube.name = $"FloodCube_{x}_{z}";
                 cube.transform.SetParent(transform);
             }
