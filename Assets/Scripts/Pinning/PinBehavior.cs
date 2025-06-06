@@ -68,6 +68,12 @@ public class PinBehavior : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("[PinBehavior] OnCollisionEnter " + collision.gameObject.name);
+        if (collision.gameObject.name.ToLower() != "eraser(clone)")
+        {
+            return;
+        }
+        
         Debug.Log("[PinBehavior] Deleting oneself with object ID " + PinData.ID);
         _networkEventDispatcher.RPC_EraseMapObject(PinData.ID);
     }
