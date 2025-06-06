@@ -9,6 +9,9 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public event Action OnRouteEnd;
     public event Action<int, string> OnHighlightListItem;
     public event Action<int> OnJumpToMapObject;
+    public event Action<int> OnEraseMapObject;
+    public event Action OnEraseBegin; //select the eraser
+    public event Action OnEraseEnd; //release the eraser
 
     [Rpc]
     public void RPC_DropPin(string pinName, Vector3 hitInfo, int objectCategory)
@@ -43,5 +46,26 @@ public class NetworkEventDispatcher : NetworkBehaviour
     {
         OnJumpToMapObject?.Invoke(objectID);
         Debug.Log("[NetworkEventDispatcher] JumpToMapObject");
+    }
+
+    [Rpc]
+    public void RPC_EraseMapObject(int objectID)
+    {
+        Debug.Log("[NetworkEventDispatcher] EraseMapObject");
+        OnEraseMapObject?.Invoke(objectID);
+    }
+    
+    [Rpc]
+    public void RPC_EraseBegin()
+    {
+        Debug.Log("[NetworkEventDispatcher] EraseBegin");
+        OnEraseBegin?.Invoke();
+    }
+    
+    [Rpc]
+    public void RPC_EraseEnd()
+    {
+        Debug.Log("[NetworkEventDispatcher] EraseEnd");
+        OnEraseEnd?.Invoke();
     }
 }

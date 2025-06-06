@@ -53,4 +53,9 @@ public class PinBehavior : MonoBehaviour
             meshRenderer.enabled = false;
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("[PinBehavior] Collided with " + collision.gameObject.name);
+    }
 }

@@ -45,7 +45,7 @@ public class PencilProviderBehavior : MonoBehaviour
     }
 
     private void ShowPencil()
-    {
+    { 
         meshRenderer.enabled = true;
         boxCollider.enabled = true;
     }
