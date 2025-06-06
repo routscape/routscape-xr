@@ -21,7 +21,7 @@ namespace Flooding
             if (generateOnStart) GenerateCubes();
         }
 
-        private void GenerateCubes()
+        public void GenerateCubes()
         {
             _cubeSizeX = (boundaries.y - boundaries.x) / gridSize;
             _cubeSizeZ = (boundaries.w - boundaries.z) / gridSize;
@@ -52,6 +52,12 @@ namespace Flooding
                         $"FloodCubeColorizer component not found on {cube.name}. Ensure it is attached to the prefab.");
                 }
             }
+        }
+
+        public void DestroyCubes()
+        {
+            foreach (Transform child in transform)
+                Destroy(child.gameObject);
         }
     }
 }
