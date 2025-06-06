@@ -21,7 +21,6 @@ public class PencilBehavior : MonoBehaviour
         _networkEventDispatcher.RPC_BeginRouteCreation(routeName, (int)MapObjectCategory.Route, 0);
     }
     
-    
     public void OnDestroy()
     {
        _networkEventDispatcher.RPC_EndRouteCreation();

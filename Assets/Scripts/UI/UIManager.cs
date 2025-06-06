@@ -43,6 +43,16 @@ public class UIManager : MonoBehaviour
         listItemController.AddListener(() => {OnClick(routeData.ID);});
         _listItems[routeData.ID] = listItemController;
     }
+
+    public void DeleteRoute()
+    {
+        
+    }
+
+    public void DeletePin()
+    {
+        
+    }
     
     public void OnClick(int objectID)
     {

@@ -13,6 +13,7 @@ public class MapObjectsManager : MonoBehaviour
     [SerializeField] private GameObject mapRouteBehavior;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private RouteDrawer routeDrawer;
+    [SerializeField] private MapZoomHandler mapZoomHandler;
 
     private Dictionary<MapObjectCategory, GameObject> _mapLayers = new Dictionary<MapObjectCategory, GameObject>();
     private List<RouteData> _spawnedRoutes = new List<RouteData>();
@@ -42,6 +43,7 @@ public class MapObjectsManager : MonoBehaviour
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
         _networkEventDispatcher.OnEraseMapObject += DeleteMapObject;
         _networkEventDispatcher.OnRepositionPin += RepositionPin;
+        mapZoomHandler.OnZoom += OnMapZoom;
         mapManager.OnUpdated += OnMapUpdated;
         routeDrawer.OnPencilHit += AddPointToRoute;
         LayerStateManager.I.LayerStateChanged += OnLayerStateChanged;
@@ -64,6 +66,20 @@ public class MapObjectsManager : MonoBehaviour
             var latLong = route.ParentLatLong;
             var newWorldPosition = mapManager.GeoToWorldPosition(latLong);
             route.UpdateWorldPosition(newWorldPosition);
+        }
+    }
+
+    void OnMapZoom()
+    {
+        foreach (var route in _spawnedRoutes)
+        {
+            var points = route.RoutePointsLatLong;
+            for (int i = 0; i < points.Count; i++)
+            {
+                var newPos = mapManager.GeoToWorldPosition(points[i]);
+                newPos = route.ParentTransform.InverseTransformPoint(newPos);
+                route.SetVertexPosition(i, newPos);
+            }
         }
     }
 
@@ -156,11 +172,13 @@ public class MapObjectsManager : MonoBehaviour
         pinData.UpdateWorldPosition(worldPosition);
     }
 
-private void DeleteMapObject(int objectID)
+    public void DeleteMapObject(int objectID)
     {
         if (_spawnedRoutes.Exists(r => r.ID == objectID))
         {
-           
+            var mapObject = _spawnedRoutes.Find(r => r.ID == objectID);
+            mapObject.DeleteSelf();
+            _spawnedRoutes.Remove(mapObject);
         } else if (_spawnedPins.Exists(p => p.ID == objectID))
         {
             var mapObject = _spawnedPins.Find(r => r.ID == objectID);

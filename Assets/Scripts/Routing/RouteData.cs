@@ -19,7 +19,9 @@ public class RouteData
     public Color Color => ColorHexCodes.GetColor(RouteColorType);
     public Action<RouteData> OnRouteDataChanged;
     public Action<Vector3> OnRoutePointAdded;
+    public Action OnRouteBakeMesh;
     public Action<int, Vector3> OnRoutePointModified;
+    public Action OnDelete;
     public List<Vector2d> RoutePointsLatLong { get; private set; }
     
     public RouteData(string name, MapObjectCategory objectCategory, ColorType colorType)
@@ -39,7 +41,7 @@ public class RouteData
 
     public void SetVertexPosition(int index, Vector3 position)
     {
-        position.y += 0.0015f;
+        position.y += 6f;
         OnRoutePointModified?.Invoke(index, position);
     }
 
@@ -69,6 +71,11 @@ public class RouteData
         //hacky solution, data class directly influences behavior without event, idk any other workarounds
     }
 
+    public void BakeMesh()
+    {
+        OnRouteBakeMesh?.Invoke();
+    }
+
     public int GetPointCount()
     {
         return RoutePointsLatLong.Count;
@@ -88,5 +95,10 @@ public class RouteData
     {
         RouteColorType = newColorType;
         OnRouteDataChanged?.Invoke(this);
+    }
+
+    public void DeleteSelf()
+    {
+        OnDelete?.Invoke();
     }
 }

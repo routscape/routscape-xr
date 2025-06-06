@@ -9,6 +9,8 @@ public class RouteCreationCoordinator : MonoBehaviour
     [SerializeField] UIManager uiManager;
     [SerializeField] NetworkEventDispatcher networkEventDispatcher;
 
+    private RouteData newRouteData;
+
     void Start()
     {
         networkEventDispatcher.OnRouteBegin += CreateRoute;
@@ -21,11 +23,25 @@ public class RouteCreationCoordinator : MonoBehaviour
         mapObjectsManager.AddRoute(routeData);
         routeDrawer.SetCurrentRoute(routeData.ID);
         uiManager.AddRoute(routeData);
+        newRouteData = routeData;
     }
 
     private void EndRoute()
     {
+        if (newRouteData == null)
+        {
+            return;
+        }
+        if (newRouteData.RoutePointsLatLong.Count <= 5)
+        {
+            mapObjectsManager.DeleteMapObject(newRouteData.ID);
+            routeDrawer.EndRoute();
+            return;
+        }
+        
+        newRouteData.BakeMesh();
         routeDrawer.EndRoute();
+        newRouteData = null;
     }
 }
 
