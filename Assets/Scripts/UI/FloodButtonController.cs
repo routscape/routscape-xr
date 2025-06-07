@@ -8,6 +8,7 @@ public class FloodButtonController: MonoBehaviour
     [SerializeField] private Button floodButtonGraphic;
     [SerializeField] private GameObject floodEditWindow;
     
+    private NetworkEventDispatcher _networkEventDispatcher;
     private bool _showFlood;
     private static readonly Color ActiveNormal = new Color(0.31f, 0.88f, 0.28f, 180f / 255f);
     private static readonly Color ActiveHighlighted = new Color(0.41f, 0.98f, 0.38f, 200f / 255f); 
@@ -22,6 +23,7 @@ public class FloodButtonController: MonoBehaviour
 
     private void Start()
     {
+        _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
         _inactiveColorBlock.normalColor = InactiveNormal;
         _inactiveColorBlock.highlightedColor = Highlighted;
         _inactiveColorBlock.pressedColor = Pressed;
@@ -33,9 +35,16 @@ public class FloodButtonController: MonoBehaviour
         _activeColorBlock.pressedColor = ActivePressed;
         _activeColorBlock.selectedColor = ActiveNormal;
         _activeColorBlock.colorMultiplier = 1f;
+
+        _networkEventDispatcher.OnToggleFlood += ToggleFlood;
     }
 
     public void OnFloodClicked()
+    {
+        _networkEventDispatcher.RPC_ToggleFlood();
+    }
+
+    void ToggleFlood()
     {
         if (HasInputFiredTwice())
         {

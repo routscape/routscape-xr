@@ -13,6 +13,7 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public event Action OnEraseBegin; //select the eraser
     public event Action OnEraseEnd; //release the eraser
     public event Action<int, Vector3> OnRepositionPin;
+    public event Action OnToggleFlood;
 
     [Rpc]
     public void RPC_DropPin(string pinName, Vector3 hitInfo, int objectCategory)
@@ -74,5 +75,11 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public void RPC_RepositionPin(int objectID, Vector3 hitInfo)
     {
         OnRepositionPin?.Invoke(objectID, hitInfo);
+    }
+
+    [Rpc]
+    public void RPC_ToggleFlood()
+    {
+        OnToggleFlood?.Invoke();
     }
 }
