@@ -60,6 +60,7 @@ namespace Gestures
 
             _interactorId = -1;
             --_grabCount;
+            //gesture end
         }
 
         public void OnMove(PointerEvent pointerEvent)
@@ -92,6 +93,7 @@ namespace Gestures
 
         private void UpdateLatLon()
         {
+            //gesture in action
             mapManager.UpdateMap(CurrentLatLong.ToVector2d());
         }
     }

@@ -42,6 +42,7 @@ namespace Gestures
 
             if (_isZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
             {
+                //minus gesture
                 OnZoomEnd?.Invoke();
                 _isZooming = false;
                 return;
@@ -49,6 +50,7 @@ namespace Gestures
 
             if (!_isZooming && IsPinching(leftHand) && IsPinching(rightHand))
             {
+                //gesture in action
                 _isZooming = true;
                 Object.RequestStateAuthority();
                 InitializeReferenceDistance();
