@@ -41,15 +41,15 @@ public class FloodButtonController: MonoBehaviour
 
     public void OnFloodClicked()
     {
+        if (HasInputFiredTwice())
+        {
+            return;
+        }
         _networkEventDispatcher.RPC_ToggleFlood();
     }
 
     void ToggleFlood()
     {
-        if (HasInputFiredTwice())
-        {
-            return;
-        }
         _showFlood = !_showFlood;
 
         if (_showFlood)
