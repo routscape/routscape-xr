@@ -7,7 +7,7 @@ using Mapbox.Utils;
 using Oculus.Interaction;
 using UnityEngine;
 
-public class FloodGrabBehavior : NetworkBehaviour
+public class FloodGrabBehavior : MonoBehaviour
 {
     [SerializeField] private GameObject floodCube;
     [SerializeField] private AbstractMap mapManager;
@@ -20,12 +20,9 @@ public class FloodGrabBehavior : NetworkBehaviour
 
     private int _grabCount;
     private Vector3 _lastPinchPos; 
+    private double _currentBounds  = 1;
 
-    [Networked]
-    [OnChangedRender(nameof(MoveFlood))]
-    private double CurrentBounds { get; set; } = 1;
-
-    public override void Spawned()
+    void Start()
     {
         boxCollider = transform.parent.GetComponent<BoxCollider>();
         mapManager.OnUpdated += CalculateNewBounds;
@@ -41,8 +38,7 @@ public class FloodGrabBehavior : NetworkBehaviour
             Debug.LogError("[FLOOD CUBE] interactor expected in Data property of hand!");
             return;
         }
-
-        Object.RequestStateAuthority();
+        
 
         var pinchArea = GetPinchArea(gameObject);
 
@@ -59,8 +55,6 @@ public class FloodGrabBehavior : NetworkBehaviour
 
     public void OnMove(PointerEvent pointerEvent)
     {
-        if (!Object.HasStateAuthority) return;
-
         if (_grabCount != 1) return;
         var go = pointerEvent.Data as GameObject;
         var pinchArea = GetPinchArea(go);
@@ -81,6 +75,7 @@ public class FloodGrabBehavior : NetworkBehaviour
     {
         currentFloodLevel = centimeters;
         CalculateNewBounds();
+        MoveFlood();
     }
 
     public void Show()
@@ -108,12 +103,12 @@ public class FloodGrabBehavior : NetworkBehaviour
         double zoomDifference = mapManager.Zoom - mapManager.AbsoluteZoom;
         double floodLevelInMeters = currentFloodLevel / 100;
         double unitsPerMeter = (mapManager.Options.scalingOptions.unityTileSize / referenceTileRect.Size.x) * Mathd.Pow(2d, zoomDifference);
-        CurrentBounds = floodLevelInMeters * unitsPerMeter;
+        _currentBounds = floodLevelInMeters * unitsPerMeter;
     }
     
     private void MoveFlood()
     {
-        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, (float)CurrentBounds));
+        meshFilter.mesh.RecalculateMeshByBounds(new Vector3(1, 1, (float)_currentBounds));
         var meshBounds = meshFilter.mesh.bounds;
         boxCollider.center = meshBounds.center;
         boxCollider.size = meshBounds.size;
