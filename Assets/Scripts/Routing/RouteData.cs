@@ -21,6 +21,7 @@ public class RouteData
     public Action<Vector3> OnRoutePointAdded;
     public Action OnRouteBakeMesh;
     public Action<int, Vector3> OnRoutePointModified;
+    public Action OnUpdateColliders;
     public Action OnDelete;
     public List<Vector2d> RoutePointsLatLong { get; private set; }
     
@@ -100,5 +101,10 @@ public class RouteData
     public void DeleteSelf()
     {
         OnDelete?.Invoke();
+    }
+
+    public void UpdateColliders()
+    {
+        OnUpdateColliders?.Invoke();
     }
 }

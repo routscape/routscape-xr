@@ -21,6 +21,7 @@ namespace Gestures
         private float _lastDistance;
         public bool CanZoom { private get; set; } = true;
         public Action OnZoom;
+        public Action OnZoomEnd;
 
         [Networked]
         [OnChangedRender(nameof(UpdateZoom))]
@@ -41,6 +42,7 @@ namespace Gestures
 
             if (_isZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
             {
+                OnZoomEnd?.Invoke();
                 _isZooming = false;
                 return;
             }

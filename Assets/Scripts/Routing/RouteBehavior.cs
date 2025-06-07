@@ -1,15 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RouteBehavior : MonoBehaviour
 {
     [SerializeField] LineRenderer lineRenderer;
     public RouteData RouteData;
+    private List<CapsuleCollider> _colliders;
     private Mesh _bakedMesh;
     private NetworkEventDispatcher _networkEventDispatcher;
     
     void Start()
     {
         _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        _colliders = new List<CapsuleCollider>();
     }
     
     public void Init(RouteData routeData)
@@ -18,6 +21,7 @@ public class RouteBehavior : MonoBehaviour
         routeData.OnRoutePointModified += ModifyPoint;
         routeData.OnRouteBakeMesh += BakeMesh;
         routeData.OnDelete += DeleteSelf;
+        routeData.OnUpdateColliders += UpdateColliders;
         RouteData = routeData;
     }
     
@@ -49,35 +53,51 @@ public class RouteBehavior : MonoBehaviour
             _bakedMesh.Clear();
         }
         
-        BuildColliders(lineRenderer);
+        BuildColliders();
     }
     
-    void BuildColliders(LineRenderer lr)
+    void BuildColliders()
     {
         float radius = 0.5f;
         // clear old ones when rebaking
         foreach (var c in GetComponentsInChildren<CapsuleCollider>())
             Destroy(c);
 
-        int count = lr.positionCount;
+        int count = lineRenderer.positionCount;
         for (int i = 0; i < count - 1; ++i)
         {
-            Vector3 p0 = lr.GetPosition(i);
-            Vector3 p1 = lr.GetPosition(i + 1);
+            Vector3 p0 = lineRenderer.GetPosition(i);
+            Vector3 p1 = lineRenderer.GetPosition(i + 1);
             Vector3 mid = (p0 + p1) * 0.5f;
 
             float len   = Vector3.Distance(p0, p1);
 
             var go = new GameObject($"SegCol_{i}");
             go.layer = 8;
-            go.transform.SetParent(lr.transform, false);   // keep in same local space
+            go.transform.SetParent(lineRenderer.transform, false); 
             go.transform.localPosition = mid;
             go.transform.up = (p1 - p0).normalized;
 
             var col = go.AddComponent<CapsuleCollider>();
             col.radius = radius;
-            col.height = len + radius * 2f;   // Unity measures height *including* the hemispherical ends
-            col.direction = 1;                // 0-x, 1-y, 2-z → we aligned Y with the segment
+            col.height = len + radius * 2f;   
+            col.direction = 1;                
+            _colliders.Add(col);
+        }
+    }
+
+    void UpdateColliders()
+    {
+        float radius = 0.5f;
+        for(int i = 0; i < _colliders.Count; i++)
+        {
+            CapsuleCollider col = _colliders[i];
+            Vector3 p0 = lineRenderer.GetPosition(i);
+            Vector3 p1 = lineRenderer.GetPosition(i + 1);
+            Vector3 mid = (p0 + p1) * 0.5f;
+            float len   = Vector3.Distance(p0, p1);
+            col.gameObject.transform.localPosition = mid;
+            col.height = len + radius * 2f;
         }
     }
 

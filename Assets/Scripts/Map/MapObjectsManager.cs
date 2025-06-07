@@ -44,6 +44,7 @@ public class MapObjectsManager : MonoBehaviour
         _networkEventDispatcher.OnEraseMapObject += DeleteMapObject;
         _networkEventDispatcher.OnRepositionPin += RepositionPin;
         mapZoomHandler.OnZoom += OnMapZoom;
+        mapZoomHandler.OnZoomEnd += OnMapZoomEnd;
         mapManager.OnUpdated += OnMapUpdated;
         routeDrawer.OnPencilHit += AddPointToRoute;
         LayerStateManager.I.LayerStateChanged += OnLayerStateChanged;
@@ -80,6 +81,14 @@ public class MapObjectsManager : MonoBehaviour
                 newPos = route.ParentTransform.InverseTransformPoint(newPos);
                 route.SetVertexPosition(i, newPos);
             }
+        }
+    }
+
+    void OnMapZoomEnd()
+    {
+        foreach (var route in _spawnedRoutes)
+        {
+            route.UpdateColliders();
         }
     }
 
