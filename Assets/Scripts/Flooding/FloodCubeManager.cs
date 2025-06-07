@@ -1,0 +1,66 @@
+﻿using Mapbox.Unity.Map;
+using UnityEngine;
+
+namespace Flooding
+{
+    public class FloodCubeManager : MonoBehaviour
+    {
+        [SerializeField] private GameObject floodCubePrefab;
+        [SerializeField] private int gridSize = 64;
+        [SerializeField] private Vector4 boundaries;
+        [SerializeField] private float startingFloodHeight = 1f;
+        [SerializeField] private float startingFloodYScale = 0.25f;
+        [SerializeField] private float lowFloodThreshold = 0.02f;
+        [SerializeField] private float highFloodThreshold = 0.05f;
+        [SerializeField] private bool generateOnStart;
+        [SerializeField] private AbstractMap map;
+
+        private float _cubeSizeX;
+        private float _cubeSizeZ;
+
+        private void Start()
+        {
+            if (generateOnStart) GenerateCubes();
+        }
+
+        public void GenerateCubes()
+        {
+            _cubeSizeX = (boundaries.y - boundaries.x) / gridSize;
+            _cubeSizeZ = (boundaries.w - boundaries.z) / gridSize;
+
+            for (var x = 0; x < gridSize; x++)
+            for (var z = 0; z < gridSize; z++)
+            {
+                var position = new Vector3(
+                    boundaries.x + x * _cubeSizeX + _cubeSizeX / 2,
+                    startingFloodHeight,
+                    boundaries.z + z * _cubeSizeZ + _cubeSizeZ / 2
+                );
+
+                var cube = Instantiate(floodCubePrefab, position, Quaternion.identity);
+                cube.transform.localScale = new Vector3(_cubeSizeX, startingFloodYScale, _cubeSizeZ);
+                cube.name = $"FloodCube_{x}_{z}";
+                cube.transform.SetParent(transform);
+
+                var colorizer = cube.GetComponent<FloodCubeColorizer>();
+                if (colorizer != null)
+                {
+                    colorizer.enabled = true;
+                    colorizer.InitializeMap(map);
+                    colorizer.SetFloodThresholds(lowFloodThreshold, highFloodThreshold);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"FloodCubeColorizer component not found on {cube.name}. Ensure it is attached to the prefab.");
+                }
+            }
+        }
+
+        public void DestroyCubes()
+        {
+            foreach (Transform child in transform)
+                Destroy(child.gameObject);
+        }
+    }
+}
