@@ -35,7 +35,6 @@ public class CalibrationToggle : MonoBehaviour
         {
             Debug.Log("New item state...");
             itemImage.sprite = _isActive ? activeImage : inactiveImage;
-            itemImage.color = Color.black;
         }
     }
     
