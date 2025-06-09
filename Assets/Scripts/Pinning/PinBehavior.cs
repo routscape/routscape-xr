@@ -10,11 +10,29 @@ public class PinBehavior : MonoBehaviour
     public MeshRenderer meshRenderer;
     
     private NetworkEventDispatcher _networkEventDispatcher;
+    private Material _defaultMaterial;
+    private Material _ghostMaterial;
+
     private void Start()
     { 
         _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
         itemPickupHandler = GetComponentInChildren<ItemPickupHandler>(); 
         itemPickupHandler.OnInstantiateObject += OnPinPlacementEditSpawned;
+
+        //material for reposition
+        _defaultMaterial = new Material(ShaderReferenceService.DefaultLitShader);
+        _defaultMaterial.color = meshRenderer.material.color;
+        //same material but transparent, for reposition
+        _ghostMaterial = new Material(ShaderReferenceService.DefaultLitShader);
+        _ghostMaterial.SetFloat("_Surface", 1);
+        _ghostMaterial.SetOverrideTag("RenderType", "Transparent");
+        _ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        _ghostMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        _ghostMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        _ghostMaterial.SetInt("_ZWrite", 0);
+        _ghostMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        var ghostColor = meshRenderer.material.color;
+        _ghostMaterial.color = new Color(ghostColor.r, ghostColor.g, ghostColor.b, 0.75f);
     }
     public void Init(PinData pinData)
     {
@@ -50,7 +68,7 @@ public class PinBehavior : MonoBehaviour
         var instantiatedVisual = Instantiate(visualPrefab, go.GetNamedChild("Behavior").transform);
         var visualMeshRenderer = instantiatedVisual.GetComponentInChildren<MeshRenderer>();
         pinDropperEdit.SetReferenceDistanceY(gameObject.transform.position.y);
-        pinDropperEdit.SetMeshRenderer(visualMeshRenderer);
+        pinDropperEdit.SetMeshRenderer(visualMeshRenderer, _defaultMaterial, _ghostMaterial);
         pinDropperEdit.OnStateChanged += ToggleVisibility;
         SelectionService.EditMapObjectData.ObjectID = PinData.ID;
     }

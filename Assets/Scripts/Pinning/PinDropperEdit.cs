@@ -6,8 +6,9 @@ using UnityEngine;
 public class PinDropperEdit : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
-    [SerializeField] private Material redMaterial;
-    [SerializeField] private Material ghostMaterial;
+    
+    private Material _dropMaterial;
+    private Material _ghostMaterial;
     public float stateChangeDistanceThreshold = 1f;
     public Action<string> OnStateChanged;
     public MeshRenderer meshRenderer;
@@ -17,6 +18,7 @@ public class PinDropperEdit : MonoBehaviour
     private RaycastHit _hitInfo;
     private NetworkEventDispatcher _networkEventDispatcher;
     private bool _hasMeshInit;
+
     void Start()
     {
         stateChangeDistanceThreshold *= 1000f;
@@ -54,14 +56,14 @@ public class PinDropperEdit : MonoBehaviour
     private void TransitionToDrop()
     {
         _mode = "drop";
-        meshRenderer.material = redMaterial;
+        meshRenderer.material = _dropMaterial;
         OnStateChanged?.Invoke("drop");
     }
     
     private void TransitionToGhost()
     {
         _mode = "ghost";
-        meshRenderer.material = ghostMaterial;
+        meshRenderer.material = _ghostMaterial;
         OnStateChanged?.Invoke("ghost");
     }
     
@@ -71,10 +73,12 @@ public class PinDropperEdit : MonoBehaviour
         _hasDistanceReferenceSet = true;
     }
 
-    public void SetMeshRenderer(MeshRenderer mr)
+    public void SetMeshRenderer(MeshRenderer mr, Material dropMaterial, Material ghostMaterial)
     {
         meshRenderer = mr;
         _hasMeshInit = true;
+        _dropMaterial = dropMaterial;
+        _ghostMaterial = ghostMaterial;
         TransitionToGhost();
     }
     

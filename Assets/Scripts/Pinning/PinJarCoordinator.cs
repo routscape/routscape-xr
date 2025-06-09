@@ -4,7 +4,7 @@ using UnityEngine;
 public class PinJarCoordinator : MonoBehaviour
 {
     [SerializeField] private ItemPickupHandler itemPickupHandler;
-
+    
     void Start()
     {
         itemPickupHandler.OnInstantiateObject += OnObjectInstantiated;
@@ -16,5 +16,7 @@ public class PinJarCoordinator : MonoBehaviour
         var visualPrefab =
             MapObjectCatalog.I.mapObjectTypes.Find(objectType => objectType.objectCategory == objectCategory).visualPrefab;
         var instantiatedVisual = Instantiate(visualPrefab, go.GetNamedChild("Behavior").transform);
+        var material = instantiatedVisual.GetComponent<MeshRenderer>().material;
+        material.shader = ShaderReferenceService.DefaultLitShader;
     }
 }
