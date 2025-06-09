@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Gestures;
 using Mapbox.Unity.Map;
+using Mapbox.Unity.MeshGeneration.Data;
 using Mapbox.Utils;
 using Unity.Mathematics;
 using UnityEngine;
