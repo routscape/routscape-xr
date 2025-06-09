@@ -22,7 +22,6 @@ public class RouteCreationCoordinator : MonoBehaviour
         RouteData routeData = new RouteData(routeName, (MapObjectCategory)objectCategory, (ColorType)colorType);
         mapObjectsManager.AddRoute(routeData);
         routeDrawer.SetCurrentRoute(routeData.ID);
-        uiManager.AddRoute(routeData);
         newRouteData = routeData;
     }
 
@@ -39,6 +38,7 @@ public class RouteCreationCoordinator : MonoBehaviour
             return;
         }
         
+        uiManager.AddRoute(newRouteData);
         newRouteData.BakeMesh();
         routeDrawer.EndRoute();
         newRouteData = null;
