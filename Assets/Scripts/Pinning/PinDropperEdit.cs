@@ -28,9 +28,16 @@ public class PinDropperEdit : MonoBehaviour
     
     private void FixedUpdate()
     {
-        Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _hitInfo, 100f);
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, _hitInfo.point);
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _hitInfo, 100f))
+        {
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(1, _hitInfo.point);
+        }
+        else
+        {
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(1, transform.position);
+        }
         if (!_hasDistanceReferenceSet || !_hasMeshInit)
         {
             return;
@@ -84,6 +91,11 @@ public class PinDropperEdit : MonoBehaviour
     
     public void OnDrop(PointerEvent eventData)
     {
+        if (_hitInfo.point == Vector3.zero)
+        {
+            Destroy(transform.parent.parent.gameObject);
+            return;
+        }
         if (_mode == "ghost")
         {
            Debug.Log("[PinDropperEdit] Emit Edit!"); 

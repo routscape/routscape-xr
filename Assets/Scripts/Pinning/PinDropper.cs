@@ -20,13 +20,26 @@ public class PinDropper : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _hitInfo, 100f);
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, _hitInfo.point);
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _hitInfo, 100f))
+        {
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(1, _hitInfo.point);
+        }
+        else
+        {
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(1, transform.position);
+        }
     }
 
     public void OnDrop(PointerEvent eventData)
     {
+        if (_hitInfo.point == Vector3.zero)
+        {
+            Destroy(transform.parent.parent.gameObject);
+            return;
+        }
+        
         var pinName = SelectionService.NewMapObjectData.Name;
         var objectCategory = SelectionService.NewMapObjectData.ObjectCategory;
         _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, (int)objectCategory); 
