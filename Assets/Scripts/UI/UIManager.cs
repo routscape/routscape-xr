@@ -44,16 +44,6 @@ public class UIManager : MonoBehaviour
         _listItems[routeData.ID] = listItemController;
     }
 
-    public void DeleteRoute()
-    {
-        
-    }
-
-    public void DeletePin()
-    {
-        
-    }
-    
     public void OnClick(int objectID)
     {
         //Hacky solution because why do poke events fire twice?!
@@ -80,6 +70,18 @@ public class UIManager : MonoBehaviour
             _networkEventDispatcher.RPC_HighlightListItem(objectID, "default");
             listItemController.state = "default";
         }
+    }
+
+    public void DeleteItem(int objectID)
+    {
+        if (!_listItems.ContainsKey(objectID))
+        {
+            Debug.LogWarning("[UIManager] Attempting to delete non existent object with ID " + objectID);
+        }
+
+        var listItem = _listItems[objectID];
+        _listItems.Remove(objectID);
+        listItem.gameObject.Destroy();
     }
 
     void HighlightListItem(int objectID, string listColorType)

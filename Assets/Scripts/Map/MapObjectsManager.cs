@@ -41,7 +41,6 @@ public class MapObjectsManager : MonoBehaviour
         }
 
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
-        _networkEventDispatcher.OnEraseMapObject += DeleteMapObject;
         _networkEventDispatcher.OnRepositionPin += RepositionPin;
         mapZoomHandler.OnZoom += OnMapZoom;
         mapZoomHandler.OnZoomEnd += OnMapZoomEnd;
