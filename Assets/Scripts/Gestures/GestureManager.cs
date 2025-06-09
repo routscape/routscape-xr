@@ -1,16 +1,33 @@
+using System;
+using Gestures;
 using UnityEngine;
 
 public class GestureManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private MapZoomHandler mapZoomHandler;
+    public Action OnGestureEnd;
+
+    private int _numSelections;
+
     void Start()
     {
-        
+        mapZoomHandler.OnZoomBegin += OnMapSelected;
+        mapZoomHandler.OnZoomEnd += OnMapDeselected;
+    }
+    
+    public void OnMapSelected()
+    {
+        _numSelections++;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnMapDeselected()
     {
-        
+        _numSelections--;
+        if (mapZoomHandler.IsZooming || _numSelections != 0)
+        {
+            return;
+        }
+        Debug.Log("[GestureManager] on gesture end");
+        OnGestureEnd?.Invoke(); 
     }
 }

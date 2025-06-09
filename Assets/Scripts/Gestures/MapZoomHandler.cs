@@ -14,13 +14,13 @@ namespace Gestures
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
         [SerializeField] private FloodParentingBehavior floodBehavior;
-
         [SerializeField] private float zoomSpeed = 1f;
+        public bool IsZooming { get; private set; }
+        private bool _previousIsZooming;
         private bool _isSpawned;
-        private bool _isZooming;
         private float _lastDistance;
-        public bool CanZoom { private get; set; } = true;
         public Action OnZoom;
+        public Action OnZoomBegin;
         public Action OnZoomEnd;
 
         [Networked]
@@ -34,29 +34,27 @@ namespace Gestures
 
         private void LateUpdate()
         {
-            if (!CanZoom) return;
             if (!_isSpawned) return;
 
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            if (_isZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
+            if (IsZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
             {
-                //minus gesture
-                OnZoomEnd?.Invoke();
-                _isZooming = false;
+                IsZooming = false;
+                InvokeZoomEnd();
                 return;
             }
 
-            if (!_isZooming && IsPinching(leftHand) && IsPinching(rightHand))
+            if (!IsZooming && IsPinching(leftHand) && IsPinching(rightHand))
             {
-                //gesture in action
-                _isZooming = true;
+                IsZooming = true;
+                InvokeZoomBegin();
                 Object.RequestStateAuthority();
                 InitializeReferenceDistance();
             }
 
-            if (!_isZooming) return;
+            if (!IsZooming) return;
 
             leftHand.GetJointPose(HandJointId.HandPalm, out var leftHandPose);
             rightHand.GetJointPose(HandJointId.HandPalm, out var rightHandPose);
@@ -68,6 +66,28 @@ namespace Gestures
             CurrentZoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
 
             _lastDistance = distance;
+        }
+
+        private void InvokeZoomBegin()
+        {
+            if (_previousIsZooming == IsZooming)
+            {
+                return;
+            }
+
+            _previousIsZooming = IsZooming;
+            OnZoomBegin?.Invoke();
+        }
+        
+        private void InvokeZoomEnd()
+        {
+            if (_previousIsZooming == IsZooming)
+            {
+                return;
+            }
+
+            _previousIsZooming = IsZooming;
+            OnZoomEnd?.Invoke();
         }
 
         public override void Spawned()

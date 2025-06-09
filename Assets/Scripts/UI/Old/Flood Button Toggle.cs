@@ -32,7 +32,6 @@ public class FloodButtonToggle : NetworkBehaviour
         floodCube.GetComponent<MeshRenderer>().enabled = isActive;
         floodCube.GetComponent<BoxCollider>().enabled = isActive;
         mapMesh.SetActive(!isActive);
-        mapZoomHandler.CanZoom = !isActive;
     }
 
     [Rpc]
