@@ -10,5 +10,18 @@ namespace Clipping
         {
             Shader.SetGlobalVector("_ClipRegion", clipRegion);
         }
+
+        public void SetClipRegion(Vector4 newClipRegion)
+        {
+            clipRegion = newClipRegion;
+
+            Debug.Log($"[ClipRegionController] Setting global shader property `_ClipRegion` to: {clipRegion}");
+            Shader.SetGlobalVector("_ClipRegion", clipRegion);
+        }
+
+        public Vector4 GetClipRegion()
+        {
+            return clipRegion;
+        }
     }
 }
