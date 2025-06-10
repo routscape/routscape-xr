@@ -28,10 +28,5 @@ namespace Flooding
         {
             label.text = text;
         }
-
-        public float GetBoundsY()
-        {
-            return _renderer.bounds.max.y;
-        }
     }
 }

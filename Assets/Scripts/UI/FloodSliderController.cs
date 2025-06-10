@@ -1,3 +1,4 @@
+using Flooding;
 using Fusion;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
 {
     [SerializeField] private Slider slider;
-    [SerializeField] private FloodGrabBehavior floodGrabBehavior;
+    [SerializeField] private FloodCubeManager floodCubeManager;
     [Networked]
     [OnChangedRender(nameof(NetworkedSliderValueChanged))]
     private float CurrentSliderValue { get; set; }
@@ -24,14 +25,14 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
         if (_previousSliderValue > CurrentSliderValue)
         {
             change = _previousSliderValue - CurrentSliderValue;
-            newFloodLevel = floodGrabBehavior.currentFloodLevel - change; 
-            floodGrabBehavior.SetFloodLevel(newFloodLevel); 
+            newFloodLevel = floodCubeManager.floodHeight - change; 
+            floodCubeManager.SetFloodHeight(newFloodLevel);
         }
         else
         {
             change = CurrentSliderValue - _previousSliderValue;
-            newFloodLevel = floodGrabBehavior.currentFloodLevel + change; 
-            floodGrabBehavior.SetFloodLevel(newFloodLevel); 
+            newFloodLevel = floodCubeManager.floodHeight + change; 
+            floodCubeManager.SetFloodHeight(newFloodLevel);
         }
         _previousSliderValue = CurrentSliderValue;
 

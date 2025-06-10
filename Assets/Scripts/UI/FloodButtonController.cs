@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class FloodButtonController: MonoBehaviour
 {
-    [SerializeField] private FloodGrabBehavior floodGrabBehavior;
+    [SerializeField] private GameObject floodCubeManagerParent;
     [SerializeField] private Button floodButtonGraphic;
     [SerializeField] private GameObject floodEditWindow;
     
@@ -56,13 +56,13 @@ public class FloodButtonController: MonoBehaviour
         {
             floodButtonGraphic.colors = _activeColorBlock;
             floodEditWindow.SetActive(true);
-            floodGrabBehavior.Show();
+            floodCubeManagerParent.SetActive(true);
         }
         else
         {
             floodButtonGraphic.colors = _inactiveColorBlock; 
             floodEditWindow.SetActive(false);
-            floodGrabBehavior.Hide();
+            floodCubeManagerParent.SetActive(false);
         }
     }
     

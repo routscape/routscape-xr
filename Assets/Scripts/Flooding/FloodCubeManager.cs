@@ -46,6 +46,7 @@ namespace Flooding
             mapZoomHandler.OnZoom += ReScaleHeight;
             gestureManager.OnGestureEnd += RenderCubes;
             gestureManager.OnGestureEnd += ReScaleHeight;
+            gameObject.SetActive(false);
         }
 
         private void RenderCubes()
@@ -135,21 +136,11 @@ namespace Flooding
             }
         }
 
-        private float GetHeightFromLatLong(Vector2d latlong)
+        public void SetFloodHeight(float value)
         {
-            //Find the tile given latlong
-            var tileIDUnwrapped = TileCover.CoordinateToTileId(latlong, (int)mapManager.Zoom);
-            var tile = mapManager.MapVisualizer.GetUnityTileFromUnwrappedTileId(tileIDUnwrapped);
-
-            var v2d = Conversions.LatLonToMeters(latlong);
-            var v2dcenter = tile.Rect.Center - new Vector2d(tile.Rect.Size.x / 2, tile.Rect.Size.y / 2);
-            var diff = v2d - v2dcenter;
-
-            var Dx = (float)(diff.x / tile.Rect.Size.x);
-            var Dy = (float)(diff.y / tile.Rect.Size.y);
-
-            //height in unity units
-            return tile.QueryHeightData(Dx, Dy);
+            floodHeight = value;
+            ReScaleHeight();
+            SetCubeColors();
         }
 
         public void OnCalibrate()
