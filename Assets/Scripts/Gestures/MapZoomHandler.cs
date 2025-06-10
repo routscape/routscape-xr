@@ -107,6 +107,7 @@ namespace Gestures
 
         private void UpdateZoom()
         {
+            Debug.Log("[Map Zoom Handler] World Relative Scale: " + mapManager.WorldRelativeScale);
             OnZoom?.Invoke();
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
         }
