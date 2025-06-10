@@ -39,10 +39,10 @@ namespace Flooding
         {
             _floodCubes = new FloodCube[gridSize * gridSize];
             _mapHeights = new float[gridSize * gridSize];
-            _planePositions = new Vector3[gridSize * gridSize];
+            
             GenerateCubes();
             ReScaleHeight();
-            GetCubeHeights();
+            
             mapZoomHandler.OnZoom += ReScaleHeight;
             gestureManager.OnGestureEnd += RenderCubes;
             gestureManager.OnGestureEnd += ReScaleHeight;
@@ -50,7 +50,6 @@ namespace Flooding
 
         private void RenderCubes()
         {
-            GetCubeHeights();
             GetMapHeights();
             SetCubeColors();
         }
@@ -82,28 +81,16 @@ namespace Flooding
                 index++;
             }
         }
-
-        private void GetCubeHeights()
-        {
-            for (var i = 0; i < gridSize * gridSize; i++)
-            {
-                var plane = _floodCubes[i];
-                var planePosition = new Vector3(plane.transform.position.x, transform.position.y,
-                    plane.transform.position.z);
-
-                _planePositions[i] = planePosition;
-            }
-        }
-
+        
         private void GetMapHeights()
         {
             for (var i = 0; i < _floodCubes.Length; i++)
             {
-                var latLong = mapManager.WorldToGeoPosition(_floodCubes[i].transform.position);
+                var position = _floodCubes[i].transform.position;
+                var latLong = mapManager.WorldToGeoPosition(new Vector3(position.x, transform.position.y, position.z));
                 _mapHeights[i] = mapManager.GeoToWorldPosition(latLong).y;
             }
         }
-
 
         //Method when map zooms in
         private void ReScaleHeight()
@@ -125,7 +112,7 @@ namespace Flooding
             for (var i = 0; i < gridSize * gridSize; i++)
             {
                 var color = new Color();
-                var distance = Mathf.Abs(_planePositions[i].y - _mapHeights[i]);
+                var distance = Mathf.Abs(transform.position.y - _mapHeights[i]);
                 if (distance <= lowFloodThreshold)
                 {
                     // Smooth gradient from green to yellow
@@ -144,7 +131,7 @@ namespace Flooding
                 }
 
                 _floodCubes[i].SetColor(color);
-                _floodCubes[i].SetText(_planePositions[i].y + ", " + _mapHeights[i]);
+                _floodCubes[i].SetText(transform.position.y + ", " + _mapHeights[i]);
             }
         }
 
