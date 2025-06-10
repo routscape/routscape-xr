@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Flooding;
+using UnityEngine;
 
 namespace Clipping
 {
@@ -6,6 +7,7 @@ namespace Clipping
     {
         [SerializeField] private ClipRegionController clipRegionController;
         [SerializeField] private float gridSize = 1f;
+        [SerializeField] private FloodCubeManager floodCubeManager;
 
         private void Start()
         {
@@ -55,6 +57,7 @@ namespace Clipping
             Debug.Log($"[ClipRegionModifier] Updating clip region to: {clipRegion}");
 
             clipRegionController.SetClipRegion(clipRegion);
+            floodCubeManager.SetBoundaries(clipRegion);
         }
     }
 }
