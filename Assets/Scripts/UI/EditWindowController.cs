@@ -19,25 +19,11 @@ public class EditWindowController : MonoBehaviour
     [SerializeField] private TMP_Dropdown tmpDropdown;
     [SerializeField] private TMP_InputField tmpInputField;
     [SerializeField] private TMP_Text windowTitle;
-    [SerializeField] private GameObject editActionButtons;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
     
-    private void OnValidate() => ChangeState();
-    
-    public EditWindowState State
-    {
-        get => state;
-        set
-        {
-            if (state == value) return;
-            state = value;
-            ChangeState();
-        }
-    }
     void Start()
     {
         InitializeDropdown();
-        ChangeState();
         SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.Pin;
         SelectionService.NewMapObjectData.Name = "Pin";
         tmpInputField.text = "Pin";
@@ -74,19 +60,7 @@ public class EditWindowController : MonoBehaviour
         tmpDropdown.ClearOptions();
         tmpDropdown.AddOptions(optionDataList);
     }
-
-    void ChangeState()
-    {
-        if (state == EditWindowState.Default)
-        {
-            editActionButtons.SetActive(false);
-            windowTitle.text = "New Pin";
-        } else if (state == EditWindowState.Edit)
-        {
-            editActionButtons.SetActive(true);
-            windowTitle.text = "Edit Pin";
-        }
-    }
+    
     
     private MapObjectCategory GetTypeID(string objectName)
     {

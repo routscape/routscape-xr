@@ -42,6 +42,7 @@ public class PinDropper : MonoBehaviour
         
         var pinName = SelectionService.NewMapObjectData.Name;
         var objectCategory = SelectionService.NewMapObjectData.ObjectCategory;
+        Debug.Log("[PinDropper] Pin name & pin type: " + pinName + ", " + objectCategory);
         _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, (int)objectCategory); 
         Destroy(transform.parent.parent.gameObject);
     }
