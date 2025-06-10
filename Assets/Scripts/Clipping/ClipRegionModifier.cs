@@ -11,6 +11,7 @@ namespace Clipping
 
         private void Start()
         {
+            //-0.5, 0.5, 0, 1
             clipRegionController.SetClipRegion(new Vector4(
                 transform.position.x - gridSize / 2,
                 transform.position.x + gridSize / 2,

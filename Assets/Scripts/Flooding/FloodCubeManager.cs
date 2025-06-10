@@ -26,7 +26,7 @@ namespace Flooding
         [SerializeField] private Color red;
 
         public float floodHeight = 3000f;
-        private Vector4 _boundaries;
+        private Vector4 _boundaries = new(-0.5f, 0.5f, 0f, 1f);
 
         private float _cubeSizeX;
         private float _cubeSizeZ;
