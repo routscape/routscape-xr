@@ -6,7 +6,7 @@ using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using UnityEngine;
 
-public class RouteDrawer : MonoBehaviour
+public class RouteDrawer : NetworkBehaviour
 {
     [SerializeField] private LayerMask mapboxLayer;
     private Transform _tipPoint;
@@ -15,23 +15,29 @@ public class RouteDrawer : MonoBehaviour
     public float rayDistance = 0.05f;
     
     private int _currentRouteID;
+    
+    [Networked]
+    [OnChangedRender(nameof(AddPoint))]
     private Vector3 LastPoint { get; set; }
-    void Start()
+    
+    public override void Spawned()
     {
         _currentRouteID = -1;
         minDistanceBetweenPoints = 0.003f * 10000f;
-        LastPoint = Vector3.zero;
     }
+    
     public void SetCurrentRoute(int routeID)
     {
         Debug.Log("[RouteDrawer] SetCurrentRoute ID" + routeID);
         _currentRouteID = routeID;
         _tipPoint = GameObject.FindGameObjectWithTag("pencil tip point").transform;
     }
+    
     public void EndRoute()
     {
         _currentRouteID = -1;
     }
+    
     private void FixedUpdate()
     {
         if (_currentRouteID == -1 || _tipPoint == null) return;
@@ -44,18 +50,18 @@ public class RouteDrawer : MonoBehaviour
             if (distance > minDistanceBetweenPoints)
             {
                 LastPoint = hitPoint;
-                AddPoint();
             }
         }
     }
+    
     private void AddPoint()
     {
         OnPencilHit?.Invoke(_currentRouteID, LastPoint);
     }
+    
     private bool GetFingerHitPoint(out Vector3 adjustedPoint)
     {
         adjustedPoint = Vector3.zero;
-
         // **Raycast downward to detect the map**
         if (Physics.Raycast(_tipPoint.position, Vector3.down, out var hit, rayDistance, mapboxLayer))
         {
@@ -63,7 +69,6 @@ public class RouteDrawer : MonoBehaviour
             // Debug.Log($"Finger hit detected at: {adjustedPoint}");
             return true;
         }
-
         return false;
     }
 }
