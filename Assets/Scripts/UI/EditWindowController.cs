@@ -20,10 +20,11 @@ public class EditWindowController : MonoBehaviour
     [SerializeField] private TMP_InputField tmpInputField;
     [SerializeField] private TMP_Text windowTitle;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
+    [SerializeField] private MapObjectCatalog mapObjectCatalog;
     
     void Start()
     {
-        InitializeDropdown();
+        mapObjectCatalog.OnMapCatalogInitialized += InitializeDropdown;
         SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.Pin;
         SelectionService.NewMapObjectData.Name = "Pin";
         tmpInputField.text = "Pin";

@@ -6,6 +6,7 @@ public class MapObjectCatalog : MonoBehaviour
 {
     public static MapObjectCatalog I { get; private set; }
     public List<MapObjectType> mapObjectTypes = new List<MapObjectType>();
+    public Action OnMapCatalogInitialized;
     void Awake()
     {
         if (I != null)
@@ -16,5 +17,6 @@ public class MapObjectCatalog : MonoBehaviour
 
         I = this;
         DontDestroyOnLoad(gameObject);
+        OnMapCatalogInitialized?.Invoke();
     }
 }
