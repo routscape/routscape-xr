@@ -15,9 +15,17 @@ namespace Flooding
         [SerializeField] private GestureManager gestureManager;
         [SerializeField] private int gridSize = 64;
 
-        //Distance threshold in centimeters
-        [SerializeField] private float lowFloodThreshold = 0.02f;
-        [SerializeField] private float highFloodThreshold = 0.05f;
+        //Distance threshold in centimeters, for editor purposes
+        [SerializeField] private double lowFloodThresholdCentimeters = 0.02f;
+        [SerializeField] private double highFloodThresholdCentimeters = 0.05f;
+
+        //The reference flood level scaled down
+        private double _constantLowFloodThreshold;
+        private double _constantHighFloodThreshold;
+        
+        //The changing flood level
+        private double _scaledLowFloodThreshold;
+        private double _scaledHighFloodThreshold;
 
         [Header("Flood Colors")] [SerializeField]
         private Color green;
@@ -40,13 +48,31 @@ namespace Flooding
             _floodCubes = new FloodCube[gridSize * gridSize];
             _mapHeights = new float[gridSize * gridSize];
             
+            InitializeFloodThresholdScales();
             GenerateCubes();
             ReScaleHeight();
             
             mapZoomHandler.OnZoom += ReScaleHeight;
-            gestureManager.OnGestureEnd += RenderCubes;
             gestureManager.OnGestureEnd += ReScaleHeight;
+            gestureManager.OnGestureEnd += ReScaleFloodLevelThreshold;
+            gestureManager.OnGestureEnd += RenderCubes;
             gameObject.SetActive(false);
+        }
+
+        private void InitializeFloodThresholdScales()
+        {
+            //Convert to meters
+            _constantLowFloodThreshold = lowFloodThresholdCentimeters / 100f;
+            _constantHighFloodThreshold = highFloodThresholdCentimeters / 100f;
+            
+            //Scale down to accomodate map scale
+            _constantLowFloodThreshold *= 0.002508687f;
+            _constantHighFloodThreshold *= 0.002508687f;
+
+            //Divide by precise worldrelativescale to account for different zoom levels
+            double unitsPerMeter = GetUnitsPerMeterScaled();
+            _constantLowFloodThreshold /= unitsPerMeter;
+            _constantHighFloodThreshold /= unitsPerMeter;
         }
 
         private void RenderCubes()
@@ -96,35 +122,47 @@ namespace Flooding
         //Method when map zooms in
         private void ReScaleHeight()
         {
-            var referenceTileRect =
-                Conversions.TileBounds(TileCover.CoordinateToTileId(mapManager.CenterLatitudeLongitude,
-                    mapManager.AbsoluteZoom));
-            double zoomDifference = mapManager.Zoom - mapManager.AbsoluteZoom;
             double floodLevelMeters = floodHeight / 100;
-            var unitsPerMeter = mapManager.Options.scalingOptions.unityTileSize / referenceTileRect.Size.x *
-                                Mathd.Pow(2d, zoomDifference);
+            double unitsPerMeter = GetUnitsPerMeterScaled();
             transform.localPosition = new Vector3(transform.localPosition.x, (float)(floodLevelMeters * unitsPerMeter),
                 transform.localPosition.z);
         }
 
-        //TODO: Use bounds instead of transform's position...
+        private void ReScaleFloodLevelThreshold()
+        {
+            double unitsPerMeter = GetUnitsPerMeterScaled();
+            _scaledLowFloodThreshold = _constantLowFloodThreshold * unitsPerMeter;
+            _scaledHighFloodThreshold = _constantHighFloodThreshold * unitsPerMeter; 
+        }
+
+        private double GetUnitsPerMeterScaled()
+        {
+            var referenceTileRect =
+                Conversions.TileBounds(TileCover.CoordinateToTileId(mapManager.CenterLatitudeLongitude,
+                    mapManager.AbsoluteZoom));
+            double zoomDifference = mapManager.Zoom - mapManager.AbsoluteZoom;
+            var unitsPerMeter = mapManager.Options.scalingOptions.unityTileSize / referenceTileRect.Size.x * 
+                                Mathd.Pow(2d, zoomDifference);
+            return unitsPerMeter;
+        }
+
         private void SetCubeColors()
         {
             for (var i = 0; i < gridSize * gridSize; i++)
             {
                 var color = new Color();
                 var distance = Mathf.Abs(transform.position.y - _mapHeights[i]);
-                if (distance <= lowFloodThreshold)
+                if (distance <= _scaledLowFloodThreshold)
                 {
                     // Smooth gradient from green to yellow
-                    var t = Mathf.InverseLerp(0, lowFloodThreshold, distance);
-                    color = Color.Lerp(green, yellow, t);
+                    var t = Mathd.InverseLerp(0, _scaledLowFloodThreshold, distance);
+                    color = Color.Lerp(green, yellow, (float)t);
                 }
-                else if (distance <= highFloodThreshold)
+                else if (distance <= _scaledHighFloodThreshold)
                 {
                     // Smooth gradient from yellow to red
-                    var t = Mathf.InverseLerp(lowFloodThreshold, highFloodThreshold, distance);
-                    color = Color.Lerp(yellow, red, t);
+                    var t = Mathd.InverseLerp(_scaledLowFloodThreshold, _scaledHighFloodThreshold, distance);
+                    color = Color.Lerp(yellow, red, (float)t);
                 }
                 else
                 {
@@ -132,7 +170,6 @@ namespace Flooding
                 }
 
                 _floodCubes[i].SetColor(color);
-                _floodCubes[i].SetText(transform.position.y + ", " + _mapHeights[i]);
             }
         }
 
