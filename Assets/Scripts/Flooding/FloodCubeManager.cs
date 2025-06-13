@@ -54,6 +54,7 @@ namespace Flooding
             gestureManager.OnGestureEnd += ReScaleHeight;
             gestureManager.OnGestureEnd += ReScaleFloodLevelThreshold;
             gestureManager.OnGestureEnd += RenderCubes;
+            gameObject.SetActive(false);
         }
 
         private void InitializeFloodThresholdScales()
