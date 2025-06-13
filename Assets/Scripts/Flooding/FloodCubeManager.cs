@@ -43,6 +43,7 @@ namespace Flooding
         private Vector3[] _planePositions; //plane heights with respect to the map local space
 
         private bool _isCalibrating = true;
+        private float _lastFrame;
 
         private void Start()
         {
@@ -178,6 +179,11 @@ namespace Flooding
 
         public void OnCalibrate()
         {
+            if (HasInputFiredTwice())
+            {
+                return;
+            }
+            
             if (_isCalibrating)
             {
                 GenerateCubes();
@@ -203,6 +209,17 @@ namespace Flooding
         {
             // Destroy all children
             foreach (Transform child in transform) Destroy(child.gameObject);
+        }
+        
+        private bool HasInputFiredTwice()
+        {
+            //Hacky solution because why do poke events fire twice?!
+            if (_lastFrame == Time.frameCount)
+            {
+                return true;
+            }
+            _lastFrame = Time.frameCount;
+            return false;
         }
     }
 }
