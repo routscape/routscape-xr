@@ -1,12 +1,15 @@
 using System;
 using Oculus.Interaction;
+using TMPro;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
 public class PinBehavior : MonoBehaviour
 {
     [SerializeField] private ItemPickupHandler itemPickupHandler;
+    
     public PinData PinData;
+    public GameObject TextGameObject;
     public MeshRenderer meshRenderer;
     
     private NetworkEventDispatcher _networkEventDispatcher;
@@ -41,6 +44,11 @@ public class PinBehavior : MonoBehaviour
         pinData.OnPinDataChanged += UpdatePinData;
         pinData.OnDelete += DeleteSelf;
         PinData = pinData;
+    }
+
+    public void SetTextComponent(GameObject go)
+    {
+        TextGameObject = go;
     }
 
     public void OnHover(PointerEvent eventData)
@@ -78,9 +86,11 @@ public class PinBehavior : MonoBehaviour
         if (pinPlacementEditState == "ghost" || pinPlacementEditState == "dropped")
         {
             meshRenderer.enabled = true;
+            TextGameObject.SetActive(true);
         } else if (pinPlacementEditState == "drop")
         {
             meshRenderer.enabled = false;
+            TextGameObject.SetActive(false);
         }
     }
 

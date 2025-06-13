@@ -170,6 +170,7 @@ public class MapObjectsManager : MonoBehaviour
         var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
         pinBehaviorComponent.meshRenderer = visualMeshRenderer;
         pinBehaviorComponent.Init(pinData);
+        pinBehaviorComponent.SetTextComponent(instantiatedText);
         pinData.ChangeLatLong(latLong);
         pinData.UpdateWorldScale(scale);
     }
