@@ -11,7 +11,7 @@ public class FloodButtonController: MonoBehaviour
     [SerializeField] private FloodSliderController coarseSlider;
     
     private NetworkEventDispatcher _networkEventDispatcher;
-    private bool _showFlood;
+    private bool _showFlood = true;
     private static readonly Color ActiveNormal = new Color(0.31f, 0.88f, 0.28f, 180f / 255f);
     private static readonly Color ActiveHighlighted = new Color(0.41f, 0.98f, 0.38f, 200f / 255f); 
     private static readonly Color ActivePressed = new Color(0.21f, 0.78f, 0.18f, 220f / 255f);
@@ -50,7 +50,7 @@ public class FloodButtonController: MonoBehaviour
 
         if (_numSlidersSpawned == 2)
         {
-            floodEditWindow.SetActive(false);
+            floodButtonGraphic.colors = _activeColorBlock;
         }
     }
 

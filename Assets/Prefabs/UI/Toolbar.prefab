@@ -745,6 +745,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 7360372820829128122}
   floodCubeManager: {fileID: 0}
+  parent: {fileID: 0}
 --- !u!114 &8655925310843419227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1434,6 +1435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 9201669162456086609}
   floodCubeManager: {fileID: 0}
+  parent: {fileID: 0}
 --- !u!114 &2017052040252789879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1860,7 +1862,7 @@ RectTransform:
   m_Father: {fileID: 3438278355724137567}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2398,7 +2400,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7868068380802321021
 Transform:
   m_ObjectHideFlags: 0
@@ -2649,7 +2651,7 @@ RectTransform:
   m_Father: {fileID: 1714079924075585077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3036,7 +3038,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6997927194839932393}
   m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 0, y: 0, z: 484}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3047,7 +3049,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -15, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 456}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 512, y: 172}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &805694230816716731
@@ -3314,6 +3316,8 @@ MonoBehaviour:
   floodCubeManagerParent: {fileID: 0}
   floodButtonGraphic: {fileID: 1678295008702384028}
   floodEditWindow: {fileID: 6003336377052988152}
+  baseSlider: {fileID: 3653905987230553754}
+  coarseSlider: {fileID: 2217299054924384304}
 --- !u!114 &6876906884602760724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3569,7 +3573,7 @@ RectTransform:
   m_Father: {fileID: 118785317309548402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4648,7 +4652,7 @@ RectTransform:
   m_Father: {fileID: 6423484338262559057}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}

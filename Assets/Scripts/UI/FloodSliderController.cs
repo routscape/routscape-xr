@@ -17,6 +17,7 @@ public class FloodSliderController : NetworkBehaviour, IPointerDownHandler, IPoi
     private float CurrentSliderValue { get; set; }
 
     private float _previousSliderValue;
+    private float _lastFrame;
     public override void Spawned()
     {
         slider.onValueChanged.AddListener(OnSliderValueChanged);
@@ -51,6 +52,10 @@ public class FloodSliderController : NetworkBehaviour, IPointerDownHandler, IPoi
     }
     private void OnSliderValueChanged(float value)
     {
+        if (HasInputFiredTwice())
+        {
+            return;
+        }
         CurrentSliderValue = value;
     }
 
@@ -64,5 +69,16 @@ public class FloodSliderController : NetworkBehaviour, IPointerDownHandler, IPoi
     {
         Debug.Log("[FloodSliderController] State Authority Released");
         Object.ReleaseStateAuthority();
+    }
+    
+    private bool HasInputFiredTwice()
+    {
+        //Hacky solution because why do poke events fire twice?!
+        if (_lastFrame == Time.frameCount)
+        {
+            return true;
+        }
+        _lastFrame = Time.frameCount;
+        return false;
     }
 }

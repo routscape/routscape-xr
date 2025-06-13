@@ -18,6 +18,11 @@ namespace Flooding
         //Distance threshold in centimeters, for editor purposes
         [SerializeField] private double lowFloodThresholdCentimeters = 0.02f;
         [SerializeField] private double highFloodThresholdCentimeters = 0.05f;
+        
+        [Header("Flood Colors")] 
+        [SerializeField] private Color green;
+        [SerializeField] private Color yellow;
+        [SerializeField] private Color red;
 
         //The reference flood level scaled down
         private double _constantLowFloodThreshold;
@@ -26,13 +31,7 @@ namespace Flooding
         //The changing flood level
         private double _scaledLowFloodThreshold;
         private double _scaledHighFloodThreshold;
-
-        [Header("Flood Colors")] [SerializeField]
-        private Color green;
-
-        [SerializeField] private Color yellow;
-        [SerializeField] private Color red;
-
+        
         public float floodHeight = 3000f;
         private Vector4 _boundaries = new(-0.5f, 0.5f, 0f, 1f);
 
@@ -43,22 +42,17 @@ namespace Flooding
         private float[] _mapHeights; //map heights with respect to its own local space
         private Vector3[] _planePositions; //plane heights with respect to the map local space
 
+        private bool _isCalibrating = true;
+
         private void Start()
         {
             _floodCubes = new FloodCube[gridSize * gridSize];
             _mapHeights = new float[gridSize * gridSize];
             
-            InitializeFloodThresholdScales();
-            GenerateCubes();
-            ReScaleHeight();
-            GetMapHeights();
-            RenderCubes();
-            
             mapZoomHandler.OnZoom += ReScaleHeight;
             gestureManager.OnGestureEnd += ReScaleHeight;
             gestureManager.OnGestureEnd += ReScaleFloodLevelThreshold;
             gestureManager.OnGestureEnd += RenderCubes;
-            gameObject.SetActive(false);
         }
 
         private void InitializeFloodThresholdScales()
@@ -184,8 +178,20 @@ namespace Flooding
 
         public void OnCalibrate()
         {
-            DestroyCubes();
-            GenerateCubes();
+            if (_isCalibrating)
+            {
+                GenerateCubes();
+                InitializeFloodThresholdScales();
+                ReScaleHeight();
+                ReScaleFloodLevelThreshold();
+                RenderCubes();   
+            }
+            else
+            { 
+                DestroyCubes();
+            }
+
+            _isCalibrating = !_isCalibrating;
         }
 
         public void SetBoundaries(Vector4 boundaries)
