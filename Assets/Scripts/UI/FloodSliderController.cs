@@ -1,3 +1,4 @@
+using System;
 using Flooding;
 using Fusion;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
 {
     [SerializeField] private Slider slider;
     [SerializeField] private FloodCubeManager floodCubeManager;
+    [SerializeField] private GameObject parent;
+    public Action OnSpawned;
     [Networked]
     [OnChangedRender(nameof(NetworkedSliderValueChanged))]
     private float CurrentSliderValue { get; set; }
@@ -16,6 +19,7 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
     public override void Spawned()
     {
         slider.onValueChanged.AddListener(OnSliderValueChanged);
+        OnSpawned?.Invoke();
     }
 
     private void NetworkedSliderValueChanged()

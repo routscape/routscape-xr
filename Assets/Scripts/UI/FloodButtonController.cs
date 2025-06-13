@@ -7,6 +7,8 @@ public class FloodButtonController: MonoBehaviour
     [SerializeField] private GameObject floodCubeManagerParent;
     [SerializeField] private Button floodButtonGraphic;
     [SerializeField] private GameObject floodEditWindow;
+    [SerializeField] private FloodSliderController baseSlider;
+    [SerializeField] private FloodSliderController coarseSlider;
     
     private NetworkEventDispatcher _networkEventDispatcher;
     private bool _showFlood;
@@ -20,6 +22,7 @@ public class FloodButtonController: MonoBehaviour
     private static ColorBlock _inactiveColorBlock;
     private static ColorBlock _activeColorBlock;
     private float _lastFrame;
+    private int _numSlidersSpawned;
 
     private void Start()
     {
@@ -37,6 +40,18 @@ public class FloodButtonController: MonoBehaviour
         _activeColorBlock.colorMultiplier = 1f;
 
         _networkEventDispatcher.OnToggleFlood += ToggleFlood;
+        baseSlider.OnSpawned += OnSliderSpawned;
+        coarseSlider.OnSpawned += OnSliderSpawned;
+    }
+
+    private void OnSliderSpawned()
+    {
+        _numSlidersSpawned++;
+
+        if (_numSlidersSpawned == 2)
+        {
+            floodEditWindow.SetActive(false);
+        }
     }
 
     public void OnFloodClicked()
