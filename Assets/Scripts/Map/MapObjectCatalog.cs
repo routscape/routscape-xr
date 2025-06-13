@@ -2,21 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class MapObjectCatalog : MonoBehaviour
 {
     public static MapObjectCatalog I { get; private set; }
-    public List<MapObjectType> mapObjectTypes = new List<MapObjectType>();
-    public Action OnMapCatalogInitialized;
+    public List<MapObjectType> mapObjectTypes;
     void Awake()
     {
-        if (I != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
+        if (I && I != this) { DestroyImmediate(gameObject); return; }
+        
         I = this;
-        DontDestroyOnLoad(gameObject);
-        OnMapCatalogInitialized?.Invoke();
     }
 }

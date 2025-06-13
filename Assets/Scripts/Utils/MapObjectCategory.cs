@@ -4,6 +4,7 @@ namespace Utils
     {
         Pin,
         SOS,
+        LiveWire,
         FallenTree,
         FallenPost,
         OpenManHole,

@@ -20,11 +20,10 @@ public class EditWindowController : MonoBehaviour
     [SerializeField] private TMP_InputField tmpInputField;
     [SerializeField] private TMP_Text windowTitle;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
-    [SerializeField] private MapObjectCatalog mapObjectCatalog;
     
     void Start()
     {
-        mapObjectCatalog.OnMapCatalogInitialized += InitializeDropdown;
+        InitializeDropdown();
         SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.Pin;
         SelectionService.NewMapObjectData.Name = "Pin";
         tmpInputField.text = "Pin";
@@ -32,9 +31,10 @@ public class EditWindowController : MonoBehaviour
 
     public void OnDropdownChanged()
     {
-        SelectionService.NewMapObjectData.ObjectCategory = GetTypeID(tmpDropdown.options[tmpDropdown.value].text);
-        SelectionService.NewMapObjectData.Name = tmpInputField.text;
         tmpInputField.text = tmpDropdown.options[tmpDropdown.value].text; 
+        SelectionService.NewMapObjectData.ObjectCategory = GetTypeID(tmpDropdown.options[tmpDropdown.value].text);
+        Debug.Log("[EditWindowController] Object Type: " + SelectionService.NewMapObjectData.ObjectCategory);
+        SelectionService.NewMapObjectData.Name = tmpInputField.text;
     }
     
     public void OnTextValueChanged(string value)
@@ -66,6 +66,6 @@ public class EditWindowController : MonoBehaviour
     private MapObjectCategory GetTypeID(string objectName)
     {
         return MapObjectCatalog.I.mapObjectTypes.Find(mapObjectType => 
-            mapObjectType.name.ToLower() == objectName.ToLower()).objectCategory;
+            mapObjectType.displayName.ToLower() == objectName.ToLower()).objectCategory;
     }
 }
