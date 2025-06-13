@@ -11,6 +11,7 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
     [SerializeField] private FloodCubeManager floodCubeManager;
     [SerializeField] private GameObject parent;
     public Action OnSpawned;
+    
     [Networked]
     [OnChangedRender(nameof(NetworkedSliderValueChanged))]
     private float CurrentSliderValue { get; set; }
@@ -24,6 +25,7 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
 
     private void NetworkedSliderValueChanged()
     {
+        Debug.Log("[FloodSliderController] new slider value!");
         float change;
         float newFloodLevel;
         if (_previousSliderValue > CurrentSliderValue)
@@ -40,7 +42,7 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
         }
         _previousSliderValue = CurrentSliderValue;
 
-        if (Object.HasInputAuthority)
+        if (Object.HasStateAuthority)
         {
             return;
         }
