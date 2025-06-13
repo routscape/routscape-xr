@@ -4,6 +4,7 @@ using Gestures;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.MeshGeneration.Data;
 using Mapbox.Utils;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using Utils;
@@ -12,6 +13,7 @@ public class MapObjectsManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapPinBehavior;
     [SerializeField] private GameObject mapRouteBehavior;
+    [SerializeField] private GameObject mapObjectText;
     [SerializeField] private AbstractMap mapManager;
     [SerializeField] private RouteDrawer routeDrawer;
     [SerializeField] private MapZoomHandler mapZoomHandler;
@@ -159,6 +161,10 @@ public class MapObjectsManager : MonoBehaviour
         var parentLayer = _mapLayers[pinData.ObjectCategory];
         var instantiatedBehavior = Instantiate(mapPinBehavior, parentLayer.transform);
         var instantiatedVisual = Instantiate(visualPrefab, instantiatedBehavior.transform);
+        var instantiatedText = Instantiate(mapObjectText, instantiatedBehavior.transform, false);
+        
+        var textComponent = instantiatedText.GetComponent<TMP_Text>();
+        textComponent.text = pinData.Name; 
         var visualMeshRenderer = instantiatedVisual.GetComponentInChildren<MeshRenderer>();
         instantiatedVisual.GetComponent<Animator>().enabled = true;
         var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
