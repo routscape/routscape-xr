@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
+public class FloodSliderController : NetworkBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Slider slider;
     [SerializeField] private FloodCubeManager floodCubeManager;
@@ -54,8 +54,15 @@ public class FloodSliderController : NetworkBehaviour, IPointerClickHandler
         CurrentSliderValue = value;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
+        Debug.Log("[FloodSliderController] State Authority Requested");
         Object.RequestStateAuthority();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Debug.Log("[FloodSliderController] State Authority Released");
+        Object.ReleaseStateAuthority();
     }
 }

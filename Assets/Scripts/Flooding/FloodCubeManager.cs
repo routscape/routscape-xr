@@ -51,6 +51,8 @@ namespace Flooding
             InitializeFloodThresholdScales();
             GenerateCubes();
             ReScaleHeight();
+            GetMapHeights();
+            RenderCubes();
             
             mapZoomHandler.OnZoom += ReScaleHeight;
             gestureManager.OnGestureEnd += ReScaleHeight;
