@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
-[ExecuteInEditMode]
 public class MapObjectCatalog : MonoBehaviour
 {
     public static MapObjectCatalog I { get; private set; }
@@ -12,5 +12,10 @@ public class MapObjectCatalog : MonoBehaviour
         if (I && I != this) { DestroyImmediate(gameObject); return; }
         
         I = this;
+    }
+
+    public MapObjectType GetTypeInfo(MapObjectCategory objectCategory)
+    {
+        return mapObjectTypes.Find(mapObjectType => mapObjectType.objectCategory == objectCategory);
     }
 }

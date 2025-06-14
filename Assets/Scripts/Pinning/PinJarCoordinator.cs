@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ public class PinJarCoordinator : MonoBehaviour
     {
         var objectCategory = SelectionService.NewMapObjectData.ObjectCategory;
         var visualPrefab =
-            MapObjectCatalog.I.mapObjectTypes.Find(objectType => objectType.objectCategory == objectCategory).visualPrefab;
+            MapObjectCatalog.I.GetTypeInfo(objectCategory).visualPrefab;
+        Debug.Log("[PinJarCoordinator] visual prefab: " + visualPrefab);
         var instantiatedVisual = Instantiate(visualPrefab, go.GetNamedChild("Behavior").transform);
         var material = instantiatedVisual.GetComponent<MeshRenderer>().material;
         material.shader = ShaderReferenceService.DefaultLitShader;

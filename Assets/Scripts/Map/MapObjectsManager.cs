@@ -156,8 +156,7 @@ public class MapObjectsManager : MonoBehaviour
         var scale = GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
 
-        var visualPrefab = MapObjectCatalog.I.mapObjectTypes
-            .Find(mapObjectType => mapObjectType.objectCategory == pinData.ObjectCategory).visualPrefab;
+        var visualPrefab = MapObjectCatalog.I.GetTypeInfo(pinData.ObjectCategory).visualPrefab;
         var parentLayer = _mapLayers[pinData.ObjectCategory];
         var instantiatedBehavior = Instantiate(mapPinBehavior, parentLayer.transform);
         var instantiatedVisual = Instantiate(visualPrefab, instantiatedBehavior.transform);

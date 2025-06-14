@@ -49,7 +49,7 @@ public class EditWindowController : MonoBehaviour
         {
             if (!mapObjectType.isSpawnableByPinJar) continue;
             
-            Debug.Log("[EditWindowController] New Dropdown Object");
+            Debug.Log("[EditWindowController] New Dropdown Object with visual " + mapObjectType.visualPrefab);
             var optionData = new TMP_Dropdown.OptionData()
             {
                 text = mapObjectType.displayName,
