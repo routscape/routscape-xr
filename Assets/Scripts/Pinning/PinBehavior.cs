@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Oculus.Interaction;
 using TMPro;
 using Unity.XR.CoreUtils;
@@ -10,33 +11,48 @@ public class PinBehavior : MonoBehaviour
     
     public PinData PinData;
     public GameObject TextGameObject;
-    public MeshRenderer meshRenderer;
+    public MeshRenderer[] meshRenderers;
     
     private NetworkEventDispatcher _networkEventDispatcher;
-    private Material _defaultMaterial;
-    private Material _ghostMaterial;
+    private Material[]_defaultMaterials;
+    private Material[] _ghostMaterials;
 
     private void Start()
     { 
         _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
         itemPickupHandler = GetComponentInChildren<ItemPickupHandler>(); 
         itemPickupHandler.OnInstantiateObject += OnPinPlacementEditSpawned;
-
-        //material for reposition
-        _defaultMaterial = new Material(ShaderReferenceService.DefaultLitShader);
-        _defaultMaterial.color = meshRenderer.material.color;
-        //same material but transparent, for reposition
-        _ghostMaterial = new Material(ShaderReferenceService.DefaultLitShader);
-        _ghostMaterial.SetFloat("_Surface", 1);
-        _ghostMaterial.SetOverrideTag("RenderType", "Transparent");
-        _ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        _ghostMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        _ghostMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        _ghostMaterial.SetInt("_ZWrite", 0);
-        _ghostMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        var ghostColor = meshRenderer.material.color;
-        _ghostMaterial.color = new Color(ghostColor.r, ghostColor.g, ghostColor.b, 0.75f);
     }
+
+    private void InitializeDefaultMaterials()
+    {
+        _defaultMaterials = new Material[meshRenderers.Length];
+        for(int i = 0; i < meshRenderers.Length; i++)
+        {
+            _defaultMaterials[i] = new Material(ShaderReferenceService.DefaultLitShader);
+            _defaultMaterials[i].color = meshRenderers[i].material.color;
+        }
+    }
+
+    private void InitializeGhostMaterials()
+    {
+        _ghostMaterials =  new Material[meshRenderers.Length];
+        for(int i = 0; i < meshRenderers.Length; i++)
+        {
+            //same material but transparent, for reposition
+            _ghostMaterials[i] = new Material(ShaderReferenceService.DefaultLitShader);
+            _ghostMaterials[i].SetFloat("_Surface", 1);
+            _ghostMaterials[i].SetOverrideTag("RenderType", "Transparent");
+            _ghostMaterials[i].EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            _ghostMaterials[i].SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _ghostMaterials[i].SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            _ghostMaterials[i].SetInt("_ZWrite", 0);
+            _ghostMaterials[i].renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            var ghostColor = meshRenderers[i].material.color;
+            _ghostMaterials[i].color = new Color(ghostColor.r, ghostColor.g, ghostColor.b, 0.75f);
+        }
+    }
+    
     public void Init(PinData pinData)
     {
         gameObject.transform.position = pinData.WorldPosition;
@@ -44,6 +60,9 @@ public class PinBehavior : MonoBehaviour
         pinData.OnPinDataChanged += UpdatePinData;
         pinData.OnDelete += DeleteSelf;
         PinData = pinData;
+        
+        InitializeDefaultMaterials();
+        InitializeGhostMaterials();
     }
 
     public void SetTextComponent(GameObject go)
@@ -74,9 +93,9 @@ public class PinBehavior : MonoBehaviour
         var pinDropperEdit = go.GetComponentInChildren<PinDropperEdit>();
         var visualPrefab = MapObjectCatalog.I.mapObjectTypes.Find(mapObjectType => mapObjectType.objectCategory == PinData.ObjectCategory).visualPrefab;
         var instantiatedVisual = Instantiate(visualPrefab, go.GetNamedChild("Behavior").transform);
-        var visualMeshRenderer = instantiatedVisual.GetComponentInChildren<MeshRenderer>();
+        var visualMeshRenderer = instantiatedVisual.GetComponentsInChildren<MeshRenderer>();
         pinDropperEdit.SetReferenceDistanceY(gameObject.transform.position.y);
-        pinDropperEdit.SetMeshRenderer(visualMeshRenderer, _defaultMaterial, _ghostMaterial);
+        pinDropperEdit.SetMeshRenderer(visualMeshRenderer, _defaultMaterials, _ghostMaterials);
         pinDropperEdit.OnStateChanged += ToggleVisibility;
         SelectionService.EditMapObjectData.ObjectID = PinData.ID;
     }
@@ -85,12 +104,20 @@ public class PinBehavior : MonoBehaviour
     {
         if (pinPlacementEditState == "ghost" || pinPlacementEditState == "dropped")
         {
-            meshRenderer.enabled = true;
+            SetVisibility(true);
             TextGameObject.SetActive(true);
         } else if (pinPlacementEditState == "drop")
         {
-            meshRenderer.enabled = false;
+            SetVisibility(false);
             TextGameObject.SetActive(false);
+        }
+    }
+
+    private void SetVisibility(bool visibility)
+    {
+        foreach (var mr in meshRenderers)
+        {
+            mr.enabled = visibility;
         }
     }
 

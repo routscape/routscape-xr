@@ -18,7 +18,16 @@ public class PinJarCoordinator : MonoBehaviour
             MapObjectCatalog.I.GetTypeInfo(objectCategory).visualPrefab;
         Debug.Log("[PinJarCoordinator] visual prefab: " + visualPrefab);
         var instantiatedVisual = Instantiate(visualPrefab, go.GetNamedChild("Behavior").transform);
-        var material = instantiatedVisual.GetComponent<MeshRenderer>().material;
-        material.shader = ShaderReferenceService.DefaultLitShader;
+        var meshRenderers = instantiatedVisual.GetComponentsInChildren<MeshRenderer>();
+        ApplyNonClippedShader(meshRenderers);
+    }
+
+    void ApplyNonClippedShader(MeshRenderer[] meshRenderers)
+    {
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            
+            meshRenderers[i].material.shader = ShaderReferenceService.DefaultLitShader;
+        }
     }
 }

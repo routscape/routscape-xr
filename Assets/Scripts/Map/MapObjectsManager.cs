@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gestures;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.MeshGeneration.Data;
@@ -164,10 +165,10 @@ public class MapObjectsManager : MonoBehaviour
         
         var textComponent = instantiatedText.GetComponent<TMP_Text>();
         textComponent.text = pinData.Name; 
-        var visualMeshRenderer = instantiatedVisual.GetComponentInChildren<MeshRenderer>();
+        var visualMeshRenderers = instantiatedVisual.GetComponentsInChildren<MeshRenderer>();
         instantiatedVisual.GetComponent<Animator>().enabled = true;
         var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
-        pinBehaviorComponent.meshRenderer = visualMeshRenderer;
+        pinBehaviorComponent.meshRenderers = visualMeshRenderers;
         pinBehaviorComponent.Init(pinData);
         pinBehaviorComponent.SetTextComponent(instantiatedText);
         pinData.ChangeLatLong(latLong);

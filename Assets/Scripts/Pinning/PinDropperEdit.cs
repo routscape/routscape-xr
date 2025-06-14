@@ -7,11 +7,11 @@ public class PinDropperEdit : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
     
-    private Material _dropMaterial;
-    private Material _ghostMaterial;
+    private Material[] _dropMaterial;
+    private Material[] _ghostMaterial;
     public float stateChangeDistanceThreshold = 1f;
     public Action<string> OnStateChanged;
-    public MeshRenderer meshRenderer;
+    public MeshRenderer[] meshRenderers;
     private float _distanceReferenceY;
     private bool _hasDistanceReferenceSet;
     private string _mode = "ghost";
@@ -63,14 +63,20 @@ public class PinDropperEdit : MonoBehaviour
     private void TransitionToDrop()
     {
         _mode = "drop";
-        meshRenderer.material = _dropMaterial;
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshRenderers[i].material = _dropMaterial[i];
+        }
         OnStateChanged?.Invoke("drop");
     }
     
     private void TransitionToGhost()
     {
         _mode = "ghost";
-        meshRenderer.material = _ghostMaterial;
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshRenderers[i].material = _ghostMaterial[i];
+        }
         OnStateChanged?.Invoke("ghost");
     }
     
@@ -80,9 +86,9 @@ public class PinDropperEdit : MonoBehaviour
         _hasDistanceReferenceSet = true;
     }
 
-    public void SetMeshRenderer(MeshRenderer mr, Material dropMaterial, Material ghostMaterial)
+    public void SetMeshRenderer(MeshRenderer[] mr, Material[] dropMaterial, Material[] ghostMaterial)
     {
-        meshRenderer = mr;
+        meshRenderers = mr;
         _hasMeshInit = true;
         _dropMaterial = dropMaterial;
         _ghostMaterial = ghostMaterial;

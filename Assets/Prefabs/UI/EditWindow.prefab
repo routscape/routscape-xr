@@ -811,8 +811,8 @@ MonoBehaviour:
   _flexBasis:
     Value: NaN
     Unit: 3
-  _flexGrow: 1
-  _flexShrink: 0
+  _flexGrow: 0
+  _flexShrink: 1
   _justifyContent: 2
   _alignItems: 1
   _alignSelf: 0
@@ -1594,7 +1594,25 @@ MonoBehaviour:
     - m_Text: Pin
       m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
-    - m_Text: Test
+    - m_Text: SOS
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Fallen Post
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Fallen Tree
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Open Man Hole
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Live Wire
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Other Blockage
+      m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Field Hospital
       m_Image: {fileID: 21300000, guid: 2f8349570a152884fb6cf7ebdc8c18b3, type: 3}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
@@ -1912,8 +1930,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125.5, y: -50.5}
-  m_SizeDelta: {x: 219, y: 45}
+  m_AnchoredPosition: {x: 245, y: -50.5}
+  m_SizeDelta: {x: 458, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6600738443050880996
 MonoBehaviour:
@@ -2749,15 +2767,15 @@ MonoBehaviour:
   _flexBasis:
     Value: NaN
     Unit: 3
-  _flexGrow: 0
+  _flexGrow: 1
   _flexShrink: 0
   _justifyContent: 0
   _alignItems: 1
   _alignSelf: 0
   _alignContent: 0
   _width:
-    Value: 115
-    Unit: 1
+    Value: NaN
+    Unit: 3
   _height:
     Value: 100
     Unit: 2
@@ -3135,7 +3153,6 @@ MonoBehaviour:
   tmpInputField: {fileID: 7880727766461477568}
   windowTitle: {fileID: 3864641344259169096}
   state: 0
-  mapObjectCatalog: {fileID: 0}
 --- !u!1 &6063589342223615299
 GameObject:
   m_ObjectHideFlags: 0
@@ -4248,7 +4265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: 4daad642-b8f5-4485-890b-3c7b6bfee38e
+  instanceId: 8819e891-fa7e-46be-838a-59fe2b650375
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8
