@@ -148,12 +148,14 @@ public class MapObjectsManager : MonoBehaviour
     {
         var routeData = _spawnedRoutes.Find(r => r.ID == routeID);
         var latLong = mapManager.WorldToGeoPosition(point);
-        routeData.AddPoint(latLong, routeData.ParentTransform.InverseTransformPoint(point));
+        var newPoint = mapManager.GeoToWorldPosition(latLong);
+        routeData.AddPoint(latLong, routeData.ParentTransform.InverseTransformPoint(newPoint));
     }
 
     public void AddPin(PinData pinData)
     {
         var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
+        var worldPos = mapManager.GeoToWorldPosition(latLong);
         var scale = GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
 
@@ -172,6 +174,7 @@ public class MapObjectsManager : MonoBehaviour
         pinBehaviorComponent.Init(pinData);
         pinBehaviorComponent.SetTextComponent(instantiatedText);
         pinData.ChangeLatLong(latLong);
+        pinData.UpdateWorldPosition(worldPos);
         pinData.UpdateWorldScale(scale);
     }
 
@@ -183,9 +186,10 @@ public class MapObjectsManager : MonoBehaviour
         }
         
         var pinData = _spawnedPins.Find(p => p.ID == objectID);
-        var latLong = mapManager.WorldToGeoPosition(worldPosition);
-        pinData.ChangeLatLong(latLong);
-        pinData.UpdateWorldPosition(worldPosition);
+        var newLatLong = mapManager.WorldToGeoPosition(worldPosition);
+        var newWorldPos = mapManager.GeoToWorldPosition(newLatLong);
+        pinData.ChangeLatLong(newLatLong);
+        pinData.UpdateWorldPosition(newWorldPos);
     }
 
     public void DeleteMapObject(int objectID)
