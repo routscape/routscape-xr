@@ -36,7 +36,7 @@ public class RouteDrawer : NetworkBehaviour
     {
         _tipPoint = tipTransform;
         _hasTipPointSet = true;
-
+        Object.RequestStateAuthority();
     }
     
     public void SetCurrentRoute(RouteData routeData)
@@ -52,7 +52,7 @@ public class RouteDrawer : NetworkBehaviour
         _hasTipPointSet = false;
     }
     
-    public override void FixedUpdateNetwork()
+    void FixedUpdate()
     {
         if (_currentRouteID == -1 || !_hasTipPointSet) return;
 
@@ -64,6 +64,7 @@ public class RouteDrawer : NetworkBehaviour
             distance *= 10000; // floating comparison sucks
             if (distance > minDistanceBetweenPoints)
             {
+                Debug.Log("[RouteDrawer] New Point Added to Route: " + _currentRouteID);
                 LastPoint = hitPoint;
                 latLong = _mapManager.WorldToGeoPosition(LastPoint);
                 LatLong = new Vector2((float)latLong.x, (float)latLong.y);
@@ -73,7 +74,6 @@ public class RouteDrawer : NetworkBehaviour
     
     private void AddPoint()
     {
-        Debug.Log("[RouteDrawer] New Point Added to Route: " + _currentRouteID);
         var latLong = new Vector2d(LatLong.x, LatLong.y);
         var worldPos = _mapManager.GeoToWorldPosition(latLong);
         _currentRoute.AddPoint(latLong, worldPos); 
