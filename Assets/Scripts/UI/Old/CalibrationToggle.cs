@@ -24,6 +24,8 @@ public class CalibrationToggle : MonoBehaviour
         
         foreach (var go in gameObjects) go.SetActive(!go.activeSelf);
         SetItemState(!_isActive);
+        
+        gameObject.SetActive(false);
     }
 
     private void SetItemState(bool newState)
