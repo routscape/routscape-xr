@@ -20,6 +20,7 @@ public class EditWindowController : MonoBehaviour
     [SerializeField] private TMP_InputField tmpInputField;
     [SerializeField] private TMP_Text windowTitle;
     [SerializeField] private EditWindowState state = EditWindowState.Default;
+    private string defaultName;
     
     void Start()
     {
@@ -27,11 +28,19 @@ public class EditWindowController : MonoBehaviour
         SelectionService.NewMapObjectData.ObjectCategory = MapObjectCategory.Pin;
         SelectionService.NewMapObjectData.Name = "Pin";
         tmpInputField.text = "Pin";
+        defaultName = "Pin";
+    }
+
+    public void SetDefaultName()
+    {
+        tmpInputField.text = defaultName;
+        SelectionService.NewMapObjectData.Name = defaultName;
     }
 
     public void OnDropdownChanged()
     {
-        tmpInputField.text = tmpDropdown.options[tmpDropdown.value].text; 
+        tmpInputField.text = tmpDropdown.options[tmpDropdown.value].text;
+        defaultName = tmpDropdown.options[tmpDropdown.value].text;
         SelectionService.NewMapObjectData.ObjectCategory = GetTypeID(tmpDropdown.options[tmpDropdown.value].text);
         Debug.Log("[EditWindowController] Object Type: " + SelectionService.NewMapObjectData.ObjectCategory);
         SelectionService.NewMapObjectData.Name = tmpInputField.text;
