@@ -13072,6 +13072,7 @@ GameObject:
   - component: {fileID: 1582953477}
   - component: {fileID: 1582953478}
   - component: {fileID: 1582953480}
+  - component: {fileID: 1582953488}
   - component: {fileID: 1582953487}
   - component: {fileID: 1582953482}
   - component: {fileID: 1582953483}
@@ -13191,6 +13192,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapObjectsManager: {fileID: 1582953478}
   uiManager: {fileID: 1823125686}
+--- !u!114 &1582953488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582953476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec8821677a82264ba8300a5b171974a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapObjectsManager: {fileID: 1582953478}
+  routeDrawer: {fileID: 1946708122}
+  uiManager: {fileID: 1823125686}
+  networkEventDispatcher: {fileID: 1152012650}
 --- !u!1 &1588804531
 GameObject:
   m_ObjectHideFlags: 0
