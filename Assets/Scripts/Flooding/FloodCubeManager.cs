@@ -1,4 +1,5 @@
-﻿using Gestures;
+﻿using ExitGames.Client.Photon.StructWrapping;
+using Gestures;
 using Mapbox.Map;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
@@ -45,15 +46,19 @@ namespace Flooding
         private bool _isCalibrating = true;
         private float _lastFrame;
 
+        private NetworkEventDispatcher _networkEventDispatcher;
+
         private void Start()
         {
+            _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher")
+                .GetComponent<NetworkEventDispatcher>();
             _floodCubes = new FloodCube[gridSize * gridSize];
             _mapHeights = new float[gridSize * gridSize];
             
             mapZoomHandler.OnZoom += ReScaleHeight;
-            gestureManager.OnGestureEnd += ReScaleHeight;
-            gestureManager.OnGestureEnd += ReScaleFloodLevelThreshold;
-            gestureManager.OnGestureEnd += RenderCubes;
+            _networkEventDispatcher.OnGestureEnd += ReScaleHeight;
+            _networkEventDispatcher.OnGestureEnd += ReScaleFloodLevelThreshold;
+            _networkEventDispatcher.OnGestureEnd += RenderCubes;
             gameObject.SetActive(false);
         }
 

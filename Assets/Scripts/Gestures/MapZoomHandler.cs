@@ -15,8 +15,10 @@ namespace Gestures
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
         [SerializeField] private FloodParentingBehavior floodBehavior;
         [SerializeField] private float zoomSpeed = 1f;
+        
         public bool IsZooming { get; private set; }
         private bool _previousIsZooming;
+        private NetworkEventDispatcher _networkEventDispatcher;
         private bool _isSpawned;
         private float _lastDistance;
         public Action OnZoom;
@@ -30,6 +32,8 @@ namespace Gestures
         private void Start()
         {
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, mapManager.Zoom);
+            _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher")
+                .GetComponent<NetworkEventDispatcher>();
         }
 
         private void LateUpdate()
@@ -76,7 +80,7 @@ namespace Gestures
             }
 
             _previousIsZooming = IsZooming;
-            OnZoomBegin?.Invoke();
+            _networkEventDispatcher.RPC_ZoomBegin();
         }
         
         private void InvokeZoomEnd()
@@ -87,7 +91,7 @@ namespace Gestures
             }
 
             _previousIsZooming = IsZooming;
-            OnZoomEnd?.Invoke();
+            _networkEventDispatcher.RPC_ZoomEnd();
         }
 
         public override void Spawned()

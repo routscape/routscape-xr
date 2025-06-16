@@ -5,14 +5,16 @@ using UnityEngine;
 public class GestureManager : MonoBehaviour
 {
     [SerializeField] private MapZoomHandler mapZoomHandler;
-    public Action OnGestureEnd;
+    private NetworkEventDispatcher _networkEventDispatcher;
 
     private int _numSelections;
 
     void Start()
     {
-        mapZoomHandler.OnZoomBegin += OnMapSelected;
-        mapZoomHandler.OnZoomEnd += OnMapDeselected;
+        _networkEventDispatcher =
+            GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        _networkEventDispatcher.OnZoomBegin += OnMapSelected;
+        _networkEventDispatcher.OnZoomEnd += OnMapDeselected;
     }
     
     public void OnMapSelected()
@@ -28,6 +30,6 @@ public class GestureManager : MonoBehaviour
             return;
         }
         Debug.Log("[GestureManager] on gesture end");
-        OnGestureEnd?.Invoke(); 
+        _networkEventDispatcher.RPC_GestureEnd();
     }
 }

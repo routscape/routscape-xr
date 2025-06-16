@@ -8,6 +8,7 @@ public class RouteBehavior : MonoBehaviour
     private List<CapsuleCollider> _colliders;
     private Mesh _bakedMesh;
     private NetworkEventDispatcher _networkEventDispatcher;
+    private const float Radius = 0.0012543435f;
     
     void Start()
     {
@@ -58,37 +59,39 @@ public class RouteBehavior : MonoBehaviour
     
     void BuildColliders()
     {
-        float radius = 0.5f;
-        // clear old ones when rebaking
         foreach (var c in GetComponentsInChildren<CapsuleCollider>())
-            Destroy(c);
+            Destroy(c.gameObject);   
+
+        _colliders.Clear();
 
         int count = lineRenderer.positionCount;
+
         for (int i = 0; i < count - 1; ++i)
         {
             Vector3 p0 = lineRenderer.GetPosition(i);
             Vector3 p1 = lineRenderer.GetPosition(i + 1);
-            Vector3 mid = (p0 + p1) * 0.5f;
 
-            float len   = Vector3.Distance(p0, p1);
+            Vector3 mid   = (p0 + p1) * 0.5f;
+            float   len   = Vector3.Distance(p0, p1);
 
             var go = new GameObject($"SegCol_{i}");
-            go.layer = 8;
-            go.transform.SetParent(lineRenderer.transform, false); 
-            go.transform.localPosition = mid;
-            go.transform.up = (p1 - p0).normalized;
+            go.layer = 8;                    
+
+            go.transform.position = mid;      
+            go.transform.up       = (p1 - p0).normalized;
 
             var col = go.AddComponent<CapsuleCollider>();
-            col.radius = radius;
-            col.height = len + radius * 2f;   
-            col.direction = 1;                
+            col.radius    = Radius;
+            col.height    = len + Radius * 2f;   
+            col.direction = 1;                  
+
+            go.transform.SetParent(lineRenderer.transform, true);
             _colliders.Add(col);
         }
     }
 
     void UpdateColliders()
     {
-        float radius = 0.5f;
         for(int i = 0; i < _colliders.Count; i++)
         {
             CapsuleCollider col = _colliders[i];
@@ -96,8 +99,8 @@ public class RouteBehavior : MonoBehaviour
             Vector3 p1 = lineRenderer.GetPosition(i + 1);
             Vector3 mid = (p0 + p1) * 0.5f;
             float len   = Vector3.Distance(p0, p1);
-            col.gameObject.transform.localPosition = mid;
-            col.height = len + radius * 2f;
+            col.gameObject.transform.position= mid;
+            col.height = len + Radius * 2f;
         }
     }
 

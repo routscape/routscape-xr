@@ -36,13 +36,14 @@ public class RouteData
 
     public void AddPoint(Vector2d point, Vector3 worldPoint)
     {
+        worldPoint.y += 0.0009f;
         RoutePointsLatLong.Add(point);
         OnRoutePointAdded?.Invoke(worldPoint);
     }
 
     public void SetVertexPosition(int index, Vector3 position)
     {
-        position.y += 6f;
+        position.y += 0.0009f;
         OnRoutePointModified?.Invoke(index, position);
     }
 

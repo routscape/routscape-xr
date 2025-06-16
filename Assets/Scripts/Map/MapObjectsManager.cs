@@ -16,7 +16,6 @@ public class MapObjectsManager : MonoBehaviour
     [SerializeField] private GameObject mapRouteBehavior;
     [SerializeField] private GameObject mapObjectText;
     [SerializeField] private AbstractMap mapManager;
-    [SerializeField] private RouteDrawer routeDrawer;
     [SerializeField] private MapZoomHandler mapZoomHandler;
 
     private Dictionary<MapObjectCategory, GameObject> _mapLayers = new Dictionary<MapObjectCategory, GameObject>();
@@ -31,11 +30,6 @@ public class MapObjectsManager : MonoBehaviour
             Debug.LogError("[MapObjectsHandler] Missing mapbox map in inspector!");
         }
 
-        if (routeDrawer == null)
-        {
-            Debug.LogError("[MapObjectsHandler] Missing routeDrawer in inspector!");
-        }
-
         _networkEventDispatcher =
             GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
         if (_networkEventDispatcher == null)
@@ -46,16 +40,13 @@ public class MapObjectsManager : MonoBehaviour
 
         _networkEventDispatcher.OnJumpToMapObject += JumpTo;
         _networkEventDispatcher.OnRepositionPin += RepositionPin;
-        mapZoomHandler.OnZoom += OnMapZoom;
-        mapZoomHandler.OnZoomEnd += OnMapZoomEnd;
+        _networkEventDispatcher.OnGestureEnd += UpdateRouteColliders;
         mapManager.OnUpdated += OnMapUpdated;
-        routeDrawer.OnPencilHit += AddPointToRoute;
         LayerStateManager.I.LayerStateChanged += OnLayerStateChanged;
 
         InitializeLayers();
     }
 
-    //TODO: Optimize via maponselect and mapdeselect events
     void OnMapUpdated()
     {
         foreach (var pin in _spawnedPins)
@@ -67,27 +58,16 @@ public class MapObjectsManager : MonoBehaviour
 
         foreach (var route in _spawnedRoutes)
         {
-            var latLong = route.ParentLatLong;
-            var newWorldPosition = mapManager.GeoToWorldPosition(latLong);
-            route.UpdateWorldPosition(newWorldPosition);
-        }
-    }
-
-    void OnMapZoom()
-    {
-        foreach (var route in _spawnedRoutes)
-        {
-            var points = route.RoutePointsLatLong;
-            for (int i = 0; i < points.Count; i++)
+            var latLongs = route.RoutePointsLatLong;
+            for (int i = 0; i < latLongs.Count; i++)
             {
-                var newPos = mapManager.GeoToWorldPosition(points[i]);
-                newPos = route.ParentTransform.InverseTransformPoint(newPos);
-                route.SetVertexPosition(i, newPos);
+                var newWorldPosition = mapManager.GeoToWorldPosition(latLongs[i]);
+                route.SetVertexPosition(i, newWorldPosition);
             }
         }
     }
 
-    void OnMapZoomEnd()
+    void UpdateRouteColliders()
     {
         foreach (var route in _spawnedRoutes)
         {
@@ -144,18 +124,9 @@ public class MapObjectsManager : MonoBehaviour
         routeBehavior.Init(routeData);
     }
 
-    void AddPointToRoute(int routeID, Vector3 point)
-    {
-        var routeData = _spawnedRoutes.Find(r => r.ID == routeID);
-        var latLong = mapManager.WorldToGeoPosition(point);
-        var newPoint = mapManager.GeoToWorldPosition(latLong);
-        routeData.AddPoint(latLong, routeData.ParentTransform.InverseTransformPoint(newPoint));
-    }
-
     public void AddPin(PinData pinData)
     {
-        var latLong = mapManager.WorldToGeoPosition(pinData.WorldPosition);
-        var worldPos = mapManager.GeoToWorldPosition(latLong);
+        var worldPos = mapManager.GeoToWorldPosition(pinData.LatLong);
         var scale = GetPinScale(mapManager.Zoom);
         _spawnedPins.Add(pinData);
 
@@ -170,15 +141,15 @@ public class MapObjectsManager : MonoBehaviour
         var visualMeshRenderers = instantiatedVisual.GetComponentsInChildren<MeshRenderer>();
         instantiatedVisual.GetComponent<Animator>().enabled = true;
         var pinBehaviorComponent = instantiatedBehavior.GetComponent<PinBehavior>();
+        
         pinBehaviorComponent.meshRenderers = visualMeshRenderers;
-        pinBehaviorComponent.Init(pinData);
-        pinBehaviorComponent.SetTextComponent(instantiatedText);
-        pinData.ChangeLatLong(latLong);
         pinData.UpdateWorldPosition(worldPos);
         pinData.UpdateWorldScale(scale);
+        pinBehaviorComponent.Init(pinData);
+        pinBehaviorComponent.SetTextComponent(instantiatedText);
     }
 
-    private void RepositionPin(int objectID, Vector3 worldPosition)
+    private void RepositionPin(int objectID, double latitude, double longitude)
     {
         if (!_spawnedPins.Exists(p => p.ID == objectID))
         {
@@ -186,7 +157,7 @@ public class MapObjectsManager : MonoBehaviour
         }
         
         var pinData = _spawnedPins.Find(p => p.ID == objectID);
-        var newLatLong = mapManager.WorldToGeoPosition(worldPosition);
+        var newLatLong = new Vector2d(latitude, longitude);
         var newWorldPos = mapManager.GeoToWorldPosition(newLatLong);
         pinData.ChangeLatLong(newLatLong);
         pinData.UpdateWorldPosition(newWorldPos);
@@ -210,7 +181,7 @@ public class MapObjectsManager : MonoBehaviour
         }
     }
     
-    public static float GetPinScale(float zoom)
+    private static float GetPinScale(float zoom)
     {
         if (zoom >= 18f) return 400f;
 
@@ -228,6 +199,4 @@ public class MapObjectsManager : MonoBehaviour
 
         return 200f;
     }
-    
-    
 }

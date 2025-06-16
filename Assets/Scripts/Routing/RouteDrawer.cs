@@ -4,45 +4,60 @@ using System.Linq;
 using Fusion;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
+using Mapbox.Utils;
 using UnityEngine;
 
 public class RouteDrawer : NetworkBehaviour
 {
     [SerializeField] private LayerMask mapboxLayer;
+    private AbstractMap _mapManager;
     private Transform _tipPoint;
-    public Action<int, Vector3> OnPencilHit;
+    public Action<int, Vector2d> OnPencilHit;
     public float minDistanceBetweenPoints = 0.003f * 10000f;
     public float rayDistance = 0.05f;
     
     private int _currentRouteID;
-    
+    private RouteData _currentRoute;
+    private Vector3 LastPoint;
+    private bool _hasTipPointSet;
+
     [Networked]
     [OnChangedRender(nameof(AddPoint))]
-    private Vector3 LastPoint { get; set; }
-    
+    private Vector2 LatLong{ get; set; }
+
     public override void Spawned()
     {
+        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
         _currentRouteID = -1;
         minDistanceBetweenPoints = 0.003f * 10000f;
     }
-    
-    public void SetCurrentRoute(int routeID)
+
+    public void SetTipPoint(Transform tipTransform)
     {
-        Debug.Log("[RouteDrawer] SetCurrentRoute ID" + routeID);
-        _currentRouteID = routeID;
-        _tipPoint = GameObject.FindGameObjectWithTag("pencil tip point").transform;
+        _tipPoint = tipTransform;
+        _hasTipPointSet = true;
+
+    }
+    
+    public void SetCurrentRoute(RouteData routeData)
+    {
+        Debug.Log("[RouteDrawer] SetCurrentRoute ID" + routeData.ID);
+        _currentRouteID = routeData.ID;
+        _currentRoute = routeData;
     }
     
     public void EndRoute()
     {
         _currentRouteID = -1;
+        _hasTipPointSet = false;
     }
     
-    private void FixedUpdate()
+    public override void FixedUpdateNetwork()
     {
-        if (_currentRouteID == -1 || _tipPoint == null) return;
+        if (_currentRouteID == -1 || !_hasTipPointSet) return;
 
         Vector3 hitPoint;
+        Vector2d latLong;
         if (GetFingerHitPoint(out hitPoint)) // Ensure raycast hits something
         {
             var distance = Vector3.Distance(hitPoint, LastPoint);
@@ -50,13 +65,18 @@ public class RouteDrawer : NetworkBehaviour
             if (distance > minDistanceBetweenPoints)
             {
                 LastPoint = hitPoint;
+                latLong = _mapManager.WorldToGeoPosition(LastPoint);
+                LatLong = new Vector2((float)latLong.x, (float)latLong.y);
             }
         }
     }
     
     private void AddPoint()
     {
-        OnPencilHit?.Invoke(_currentRouteID, LastPoint);
+        Debug.Log("[RouteDrawer] New Point Added to Route: " + _currentRouteID);
+        var latLong = new Vector2d(LatLong.x, LatLong.y);
+        var worldPos = _mapManager.GeoToWorldPosition(latLong);
+        _currentRoute.AddPoint(latLong, worldPos); 
     }
     
     private bool GetFingerHitPoint(out Vector3 adjustedPoint)

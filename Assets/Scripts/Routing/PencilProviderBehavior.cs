@@ -1,6 +1,5 @@
 using System;
 using Oculus.Interaction;
-using Oculus.Interaction.Input;
 using UnityEngine;
 
 public class PencilProviderBehavior : MonoBehaviour
@@ -8,6 +7,7 @@ public class PencilProviderBehavior : MonoBehaviour
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private BoxCollider boxCollider;
     [SerializeField] private GameObject pencilPrefab;
+    [SerializeField] private RouteDrawer routeDrawer;
     private NetworkEventDispatcher _networkEventDispatcher;
     private Transform _pinchPoint;
     private GameObject _instantiatedPencil;
@@ -31,6 +31,7 @@ public class PencilProviderBehavior : MonoBehaviour
     {
         _instantiatedPencil = Instantiate(pencilPrefab, _pinchPoint);
         _instantiatedPencil.transform.localPosition = new Vector3(0, -0.00630000001f, -0.00889999978f);
+        routeDrawer.SetTipPoint(GameObject.FindGameObjectWithTag("pencil tip point").transform);
     }
 
     public void OnRelease(PointerEvent eventData)

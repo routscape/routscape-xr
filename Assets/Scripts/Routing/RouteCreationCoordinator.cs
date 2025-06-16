@@ -21,7 +21,7 @@ public class RouteCreationCoordinator : MonoBehaviour
     {
         RouteData routeData = new RouteData(routeName, (MapObjectCategory)objectCategory, (ColorType)colorType);
         mapObjectsManager.AddRoute(routeData);
-        routeDrawer.SetCurrentRoute(routeData.ID);
+        routeDrawer.SetCurrentRoute(routeData);
         newRouteData = routeData;
     }
 

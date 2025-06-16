@@ -1,4 +1,5 @@
 using System;
+using Mapbox.Unity.Map;
 using Oculus.Interaction;
 using Unity.Mathematics;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine;
 public class PinDropperEdit : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
+    private AbstractMap _mapManager;
     
     private Material[] _dropMaterial;
     private Material[] _ghostMaterial;
@@ -24,6 +26,7 @@ public class PinDropperEdit : MonoBehaviour
         stateChangeDistanceThreshold *= 1000f;
         _networkEventDispatcher =
             GameObject.FindWithTag("network event dispatcher").GetComponent<NetworkEventDispatcher>();
+        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
     }
     
     private void FixedUpdate()
@@ -107,8 +110,9 @@ public class PinDropperEdit : MonoBehaviour
            Debug.Log("[PinDropperEdit] Emit Edit!"); 
         } else if (_mode == "drop")
         {
-            Debug.Log("[PinDropperEdit] Emit Reposition!"); 
-            _networkEventDispatcher.RPC_RepositionPin(SelectionService.EditMapObjectData.ObjectID, _hitInfo.point);
+            Debug.Log("[PinDropperEdit] Emit Reposition!");
+            var latLong = _mapManager.WorldToGeoPosition(_hitInfo.point);
+            _networkEventDispatcher.RPC_RepositionPin(SelectionService.EditMapObjectData.ObjectID, latLong.x, latLong.y);
             OnStateChanged?.Invoke("dropped");
         }
         Destroy(transform.parent.parent.gameObject);

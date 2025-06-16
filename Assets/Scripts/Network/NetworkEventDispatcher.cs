@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NetworkEventDispatcher : NetworkBehaviour
 {
-    public event Action<string, Vector3, int> OnPinDrop;
+    public event Action<string, double, double, int> OnPinDrop;
     public event Action<String, int, int> OnRouteBegin;
     public event Action OnRouteEnd;
     public event Action<int, string> OnHighlightListItem;
@@ -12,13 +12,15 @@ public class NetworkEventDispatcher : NetworkBehaviour
     public event Action<int> OnEraseMapObject;
     public event Action OnEraseBegin; //select the eraser
     public event Action OnEraseEnd; //release the eraser
-    public event Action<int, Vector3> OnRepositionPin;
+    public event Action<int, double, double> OnRepositionPin;
     public event Action OnToggleFlood;
-
+    public event Action OnZoomBegin;
+    public event Action OnZoomEnd;
+    public event Action OnGestureEnd;
     [Rpc]
-    public void RPC_DropPin(string pinName, Vector3 hitInfo, int objectCategory)
+    public void RPC_DropPin(string pinName, double latitude, double longitude, int objectCategory)
     {
-        OnPinDrop?.Invoke(pinName, hitInfo, objectCategory);
+        OnPinDrop?.Invoke(pinName, latitude, longitude, objectCategory);
     }
 
     [Rpc]
@@ -72,14 +74,32 @@ public class NetworkEventDispatcher : NetworkBehaviour
     }
 
     [Rpc]
-    public void RPC_RepositionPin(int objectID, Vector3 hitInfo)
+    public void RPC_RepositionPin(int objectID, double latitude, double longitude)
     {
-        OnRepositionPin?.Invoke(objectID, hitInfo);
+        OnRepositionPin?.Invoke(objectID, latitude, longitude);
     }
 
     [Rpc]
     public void RPC_ToggleFlood()
     {
         OnToggleFlood?.Invoke();
+    }
+
+    [Rpc]
+    public void RPC_ZoomBegin()
+    {
+        OnZoomBegin?.Invoke();
+    }
+    
+    [Rpc]
+    public void RPC_ZoomEnd()
+    {
+        OnZoomEnd?.Invoke();
+    }
+
+    [Rpc]
+    public void RPC_GestureEnd()
+    {
+        OnGestureEnd?.Invoke();
     }
 }

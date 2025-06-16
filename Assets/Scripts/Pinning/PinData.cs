@@ -20,10 +20,10 @@ public class PinData
 
     public Action<PinData> OnPinDataChanged;
     public Action OnDelete;
-    public PinData(string name, Vector3 worldPosition, MapObjectCategory objectCategory)
+    public PinData(string name, Vector2d latLong, MapObjectCategory objectCategory)
     {
         Name = name;
-        WorldPosition = worldPosition;
+        LatLong = latLong;
         ID = IDGenerator.GenerateID();
         ObjectCategory = objectCategory;
     }
@@ -59,7 +59,7 @@ public class PinData
     public void UpdateWorldScale(float scale)
     {
         WorldScale = scale;
-        OnPinDataChanged.Invoke(this);
+        OnPinDataChanged?.Invoke(this);
     }
 
     public void DeleteSelf()

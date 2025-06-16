@@ -1,11 +1,13 @@
 using System;
+using Mapbox.Unity.Map;
 using Oculus.Interaction;
 using UnityEngine;
 
 public class PinDropper : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
-    
+
+    private AbstractMap _mapManager;
     private RaycastHit _hitInfo;
     private NetworkEventDispatcher _networkEventDispatcher;
     private void Start()
@@ -16,6 +18,7 @@ public class PinDropper : MonoBehaviour
             Debug.Log("[PinDropper] No network event dispatcher found!");
             throw new Exception("[PinDropper] No network event dispatcher found!");
         }
+        _mapManager = GameObject.FindWithTag("mapbox map").GetComponent<AbstractMap>();
     }
 
     private void FixedUpdate()
@@ -42,8 +45,9 @@ public class PinDropper : MonoBehaviour
         
         var pinName = SelectionService.NewMapObjectData.Name;
         var objectCategory = SelectionService.NewMapObjectData.ObjectCategory;
+        var latlong = _mapManager.WorldToGeoPosition(_hitInfo.point);
         Debug.Log("[PinDropper] Pin name & pin type: " + pinName + ", " + objectCategory);
-        _networkEventDispatcher.RPC_DropPin(pinName, _hitInfo.point, (int)objectCategory); 
+        _networkEventDispatcher.RPC_DropPin(pinName, latlong.x, latlong.y, (int)objectCategory); 
         Destroy(transform.parent.parent.gameObject);
     }
 }
