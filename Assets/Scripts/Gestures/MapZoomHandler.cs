@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using Mapbox.Unity.Map;
 using Oculus.Interaction.Input;
@@ -12,12 +13,17 @@ namespace Gestures
         [SerializeField] private AbstractMap mapManager;
         [SerializeField] private FingerFeatureStateProvider leftFingerFeatureStateProvider;
         [SerializeField] private FingerFeatureStateProvider rightFingerFeatureStateProvider;
-
+        [SerializeField] private FloodParentingBehavior floodBehavior;
         [SerializeField] private float zoomSpeed = 1f;
+        
+        public bool IsZooming { get; private set; }
+        private bool _previousIsZooming;
+        private NetworkEventDispatcher _networkEventDispatcher;
         private bool _isSpawned;
-        private bool _isZooming;
         private float _lastDistance;
-        public bool CanZoom { private get; set; } = true;
+        public Action OnZoom;
+        public Action OnZoomBegin;
+        public Action OnZoomEnd;
 
         [Networked]
         [OnChangedRender(nameof(UpdateZoom))]
@@ -26,30 +32,33 @@ namespace Gestures
         private void Start()
         {
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, mapManager.Zoom);
+            _networkEventDispatcher = GameObject.FindWithTag("network event dispatcher")
+                .GetComponent<NetworkEventDispatcher>();
         }
 
         private void LateUpdate()
         {
-            if (!CanZoom) return;
             if (!_isSpawned) return;
 
             var leftHand = leftFingerFeatureStateProvider.Hand;
             var rightHand = rightFingerFeatureStateProvider.Hand;
 
-            if (_isZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
+            if (IsZooming && (!IsPinching(leftHand) || !IsPinching(rightHand)))
             {
-                _isZooming = false;
+                IsZooming = false;
+                InvokeZoomEnd();
                 return;
             }
 
-            if (!_isZooming && IsPinching(leftHand) && IsPinching(rightHand))
+            if (!IsZooming && IsPinching(leftHand) && IsPinching(rightHand))
             {
-                _isZooming = true;
+                IsZooming = true;
+                InvokeZoomBegin();
                 Object.RequestStateAuthority();
                 InitializeReferenceDistance();
             }
 
-            if (!_isZooming) return;
+            if (!IsZooming) return;
 
             leftHand.GetJointPose(HandJointId.HandPalm, out var leftHandPose);
             rightHand.GetJointPose(HandJointId.HandPalm, out var rightHandPose);
@@ -61,6 +70,28 @@ namespace Gestures
             CurrentZoom = Mathf.Max(0.0f, Mathf.Min(mapManager.Zoom + zoomAmount, 21.0f));
 
             _lastDistance = distance;
+        }
+
+        private void InvokeZoomBegin()
+        {
+            if (_previousIsZooming == IsZooming)
+            {
+                return;
+            }
+
+            _previousIsZooming = IsZooming;
+            _networkEventDispatcher.RPC_ZoomBegin();
+        }
+        
+        private void InvokeZoomEnd()
+        {
+            if (_previousIsZooming == IsZooming)
+            {
+                return;
+            }
+
+            _previousIsZooming = IsZooming;
+            _networkEventDispatcher.RPC_ZoomEnd();
         }
 
         public override void Spawned()
@@ -80,7 +111,8 @@ namespace Gestures
 
         private void UpdateZoom()
         {
-            Debug.Log("[MapZoomHandler] Update Zoom");
+            Debug.Log("[Map Zoom Handler] World Relative Scale: " + mapManager.WorldRelativeScale);
+            OnZoom?.Invoke();
             mapManager.UpdateMap(mapManager.CenterLatitudeLongitude, CurrentZoom);
         }
     }

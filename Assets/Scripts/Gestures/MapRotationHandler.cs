@@ -35,6 +35,7 @@ namespace Gestures
         {
             if (!Object.HasStateAuthority)
             {
+                //gesture in action
                 Debug.Log("[MapRotationHandler] Updating rotation to " + CurrentRotation);
                 monitoredTransform.rotation = CurrentRotation;
             }
@@ -96,6 +97,7 @@ namespace Gestures
 
             if (rayInteractor == leftRayInteractor) _leftPositionSet = false;
             if (rayInteractor == rightRayInteractor) _rightPositionSet = false;
+            //gesture end
         }
     }
 }
